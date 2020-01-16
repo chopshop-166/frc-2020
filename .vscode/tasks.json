@@ -14,7 +14,9 @@
     "tasks": [
         {
             "label": "build",
-            "args": [],
+            "args": [
+                "build"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -22,21 +24,28 @@
         },
         {
             "label": "clean",
-            "args": []
+            "args": [
+                "clean"
+            ]
         },
         {
             "label": "deploy",
             "args": [
+                "deploy",
                 "--offline"
             ]
         },
         {
             "label": "riolog",
-            "args": []
+            "args": [
+                "riolog"
+            ]
         },
         {
             "label": "shuffleboard",
-            "args": []
+            "args": [
+                "shuffleboard"
+            ]
         }
     ]
 }
