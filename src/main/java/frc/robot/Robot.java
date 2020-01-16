@@ -8,11 +8,16 @@
 package frc.robot;
 
 import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Drive;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
 
   private Command autonomousCommand;
+  private ButtonXboxController driveController = new ButtonXboxController(1);
+  final private Drive drive = new Drive();
 
   final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -36,6 +43,8 @@ public class Robot extends TimedRobot {
     configureButtonBindings();
 
     autoChooser.setDefaultOption("Nothing", null);
+
+    drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
 
   }
 
