@@ -1,9 +1,15 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Talon;
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.maps.RobotMap;
 
 public class Intake extends SubsystemBase {
-    private Talon roller = new Talon(0);
-    private Talon belt = new Talon(1);
+    private SendableSpeedController roller;
+
+    public Intake(RobotMap.IntakeMap map) {
+        super();
+        roller = map.roller();
+    }
 }

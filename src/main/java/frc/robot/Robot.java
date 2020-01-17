@@ -11,13 +11,16 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.maps.RobotMap;
+import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Intake;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,7 +33,12 @@ public class Robot extends TimedRobot {
 
   private Command autonomousCommand;
   private ButtonXboxController driveController = new ButtonXboxController(1);
-  final private Drive drive = new Drive();
+
+  RobotMap map = new TempestMap();
+
+  final private Drive drive = new Drive(map.getDriveMap());
+
+  final private Intake intake = new Intake(map.getIntakeMap());
 
   final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 

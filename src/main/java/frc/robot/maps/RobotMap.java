@@ -1,5 +1,19 @@
 package frc.robot.maps;
 
-public interface RobotMap {
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
+public interface RobotMap {
+    public interface DriveMap {
+        public SendableSpeedController left();
+
+        public SendableSpeedController right();
+    }
+
+    public DriveMap getDriveMap();
+
+    public interface IntakeMap {
+        public SendableSpeedController roller();
+    }
+
+    public IntakeMap getIntakeMap();
 }

@@ -2,25 +2,24 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.maps.RobotMap;
 
 public class Drive extends SubsystemBase {
 
-    private final SpeedController rightMotorGroup;
-    private final SpeedController leftMotorGroup;
+    private final SendableSpeedController rightMotorGroup;
+    private final SendableSpeedController leftMotorGroup;
     private final DifferentialDrive driveTrain;
 
-    public Drive() {
+    public Drive(RobotMap.DriveMap map) {
         super();
-        rightMotorGroup = new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3));
-        leftMotorGroup = new SpeedControllerGroup(new WPI_TalonSRX(1), new WPI_TalonSRX(4));
+        rightMotorGroup = map.right();
+        leftMotorGroup = map.left();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
     }
 
