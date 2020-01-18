@@ -22,4 +22,12 @@ public class Intake extends SubsystemBase {
             rollerMotor.set(0);
         }, this);
     }
+
+    public CommandBase intakeReverse() {
+        return new StartEndCommand(() -> {
+            rollerMotor.set(-0.85);
+        }, () -> {
+            rollerMotor.set(0);
+        }, this);
+    }
 }

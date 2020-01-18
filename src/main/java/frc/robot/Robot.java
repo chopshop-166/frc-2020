@@ -35,6 +35,8 @@ public class Robot extends TimedRobot {
 
   private Command autonomousCommand;
   private ButtonXboxController driveController = new ButtonXboxController(1);
+  private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
+  private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
 
   RobotMap map = new TempestMap();
 
@@ -125,7 +127,8 @@ public class Robot extends TimedRobot {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
     aButton.whenHeld(intake.intake());
+    bButton.whenHeld(intake.intakeReverse());
+
   }
 }
