@@ -48,7 +48,8 @@ public class Robot extends TimedRobot {
     private Command autonomousCommand;
     private ButtonXboxController driveController = new ButtonXboxController(1);
 
-    RobotMap map = new TempestMap();
+  RobotMap map = RobotUtils.getMapForName("Tempest", RobotMap.class, "frc.robot.maps", new RobotMap() {
+  });
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());

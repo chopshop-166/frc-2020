@@ -5,12 +5,19 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 public interface RobotMap {
     public interface DriveMap {
-        public SendableSpeedController left();
+        default public SendableSpeedController left() {
+            return new MockSpeedController();
+        }
 
-        public SendableSpeedController right();
+        default public SendableSpeedController right() {
+            return new MockSpeedController();
+        }
     }
 
-    public DriveMap getDriveMap();
+    default public DriveMap getDriveMap() {
+        return new DriveMap() {
+        };
+    }
 
     public interface IntakeMap {
         default public SendableSpeedController roller() {
@@ -18,7 +25,10 @@ public interface RobotMap {
         }
     }
 
-    public IntakeMap getIntakeMap();
+    default public IntakeMap getIntakeMap() {
+        return new IntakeMap() {
+        };
+    }
 
     public interface ShooterMap {
         default public SendableSpeedController shooterWheel() {
@@ -26,7 +36,10 @@ public interface RobotMap {
         }
     }
 
-    public ShooterMap getShooterMap();
+    default public ShooterMap getShooterMap() {
+        return new ShooterMap() {
+        };
+    }
 
     public interface ControlPanelMap {
         default public SendableSpeedController spinner() {
@@ -34,7 +47,10 @@ public interface RobotMap {
         }
     }
 
-    public ControlPanelMap getControlPanelMap();
+    default public ControlPanelMap getControlPanelMap() {
+        return new ControlPanelMap() {
+        };
+    }
 
     public interface LiftMap {
         default public SendableSpeedController elevator() {
@@ -42,5 +58,8 @@ public interface RobotMap {
         }
     }
 
-    public LiftMap getLiftMap();
+    default public LiftMap getLiftMap() {
+        return new LiftMap() {
+        };
+    }
 }

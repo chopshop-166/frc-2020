@@ -1,11 +1,13 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 
+@RobotMapFor("Tempest")
 public class TempestMap implements RobotMap {
 
     @Override

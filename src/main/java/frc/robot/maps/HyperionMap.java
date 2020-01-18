@@ -1,10 +1,12 @@
 package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.RobotMapFor;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
+@RobotMapFor("Hyperion")
 public class HyperionMap implements RobotMap {
 
     @Override
