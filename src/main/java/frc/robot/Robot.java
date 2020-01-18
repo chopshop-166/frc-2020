@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
   private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
 
-  RobotMap map = new HyperionMap();
+  RobotMap map = new TempestMap();
 
   final private Drive drive = new Drive(map.getDriveMap());
 
@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
    */
   private void configureButtonBindings() {
     aButton.whenHeld(intake.intake());
-    bButton.whenHeld(intake.intakeReverse());
+    bButton.whenHeld(intake.discharge());
 
   }
 }

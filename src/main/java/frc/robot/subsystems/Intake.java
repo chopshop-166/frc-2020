@@ -17,15 +17,15 @@ public class Intake extends SubsystemBase {
 
     public CommandBase intake() {
         return new StartEndCommand(() -> {
-            rollerMotor.set(0.85);
+            rollerMotor.set(-0.85);
         }, () -> {
             rollerMotor.set(0);
         }, this);
     }
 
-    public CommandBase intakeReverse() {
+    public CommandBase discharge() {
         return new StartEndCommand(() -> {
-            rollerMotor.set(-0.85);
+            rollerMotor.set(0.85);
         }, () -> {
             rollerMotor.set(0);
         }, this);
