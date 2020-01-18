@@ -8,11 +8,22 @@
 package frc.robot;
 
 import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.maps.RobotMap;
+import frc.robot.maps.TempestMap;
+import frc.robot.subsystems.ControlPanel;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Intake;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,6 +35,19 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
 
   private Command autonomousCommand;
+  private ButtonXboxController driveController = new ButtonXboxController(1);
+  private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
+  private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
+  private JoystickButton xButton = new JoystickButton(driveController, XBoxButton.X.get());
+  private JoystickButton yButton = new JoystickButton(driveController, XBoxButton.Y.get());
+
+  RobotMap map = new TempestMap();
+
+  final private Drive drive = new Drive(map.getDriveMap());
+
+  final private Intake intake = new Intake(map.getIntakeMap());
+
+  final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
 
   final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -36,6 +60,8 @@ public class Robot extends TimedRobot {
     configureButtonBindings();
 
     autoChooser.setDefaultOption("Nothing", null);
+
+    drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
 
   }
 
@@ -106,6 +132,10 @@ public class Robot extends TimedRobot {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // TODO
+    aButton.whenHeld(intake.intake());
+    bButton.whenHeld(intake.discharge());
+    xButton.whenHeld(controlPanel.spinForwards());
+    yButton.whenHeld(controlPanel.spinBackwards());
+
   }
 }
