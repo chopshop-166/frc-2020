@@ -35,6 +35,16 @@ public class HyperionMap implements RobotMap {
     }
 
     @Override
+    public ShooterMap getShooterMap() {
+        return new ShooterMap() {
+            @Override
+            public MockSpeedController shooterWheel() {
+                return new MockSpeedController();
+            }
+        };
+    }
+
+    @Override
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
             @Override
@@ -42,6 +52,15 @@ public class HyperionMap implements RobotMap {
                 return new MockSpeedController();
             }
         };
+    }
 
+    @Override
+    public LiftMap getLiftMap() {
+        return new LiftMap() {
+            @Override
+            public MockSpeedController elevator() {
+                return new MockSpeedController();
+            }
+        };
     }
 }

@@ -7,29 +7,30 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
-public class Intake extends SubsystemBase {
-    private SendableSpeedController rollerMotor;
+public class Lift extends SubsystemBase {
 
-    private static final double rollerMotorSpeed = 0.85;
+    private SendableSpeedController elevatorMotor;
 
-    public Intake(RobotMap.IntakeMap map) {
+    private static final double elevatorMotorSpeed = 1;
+
+    public Lift(RobotMap.LiftMap map) {
         super();
-        rollerMotor = map.roller();
+        elevatorMotor = map.elevator();
     }
 
-    public CommandBase intake() {
+    public CommandBase up() {
         return new StartEndCommand(() -> {
-            rollerMotor.set(-rollerMotorSpeed);
+            elevatorMotor.set(-elevatorMotorSpeed);
         }, () -> {
-            rollerMotor.stopMotor();
+            elevatorMotor.stopMotor();
         }, this);
     }
 
-    public CommandBase discharge() {
+    public CommandBase down() {
         return new StartEndCommand(() -> {
-            rollerMotor.set(rollerMotorSpeed);
+            elevatorMotor.set(elevatorMotorSpeed);
         }, () -> {
-            rollerMotor.stopMotor();
+            elevatorMotor.stopMotor();
         }, this);
     }
 }

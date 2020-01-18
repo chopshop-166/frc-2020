@@ -17,9 +17,21 @@ public interface RobotMap {
 
     public IntakeMap getIntakeMap();
 
+    public interface ShooterMap {
+        public SendableSpeedController shooterWheel();
+    }
+
+    public ShooterMap getShooterMap();
+
     public interface ControlPanelMap {
         public SendableSpeedController spinner();
     }
 
     public ControlPanelMap getControlPanelMap();
+
+    public interface LiftMap {
+        public SendableSpeedController elevator();
+    }
+
+    public LiftMap getLiftMap();
 }

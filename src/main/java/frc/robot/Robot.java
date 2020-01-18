@@ -24,6 +24,8 @@ import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -47,7 +49,11 @@ public class Robot extends TimedRobot {
 
   final private Intake intake = new Intake(map.getIntakeMap());
 
+  final private Shooter shooter = new Shooter(map.getShooterMap());
+
   final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
+
+  final private Lift lift = new Lift(map.getLiftMap());
 
   final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
