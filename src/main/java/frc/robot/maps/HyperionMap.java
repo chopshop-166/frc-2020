@@ -13,12 +13,12 @@ public class HyperionMap implements RobotMap {
         return new DriveMap() {
             @Override
             public SendableSpeedController left() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(1)));
+                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(3)));
             }
 
             @Override
             public SendableSpeedController right() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(3)));
+                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(1)));
             }
         };
     }

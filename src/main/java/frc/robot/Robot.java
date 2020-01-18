@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
   private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
 
-  RobotMap map = new TempestMap();
+  RobotMap map = new HyperionMap();
 
   final private Drive drive = new Drive(map.getDriveMap());
 
