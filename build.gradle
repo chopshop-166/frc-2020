@@ -3,6 +3,7 @@ plugins {
     id "com.github.spotbugs" version "3.0.0"
     id "pmd"
     id "edu.wpi.first.GradleRIO" version "2020.1.1"
+    id 'chopshop'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -60,8 +61,7 @@ dependencies {
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
-    implementation group: 'com.chopshop166', name: 'chopshoplib', version: '2020.0.0'
-    implementation group: 'com.chopshop166', name: 'lightdrive-mirror', version: '2020.0.0'
+    compile 'com.google.guava:guava:28.0-jre'
     testImplementation 'junit:junit:4.12'
 
     // Enable simulation gui support. Must check the box in vscode to enable support
@@ -69,17 +69,12 @@ dependencies {
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
 }
 
-// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
-// in order to make them all available at runtime. Also adding the manifest so WPILib
+// Setting up my Jar File by adding the manifest so WPILib
 // knows where to look for our Robot Class.
-jar {
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-}
+jar { manifest com.chopshop166.ChopShopPlugin.manifest(ROBOT_MAIN_CLASS) }
 
 ext {
     SpotBugsTask = com.github.spotbugs.SpotBugsTask
 }
 
 apply from: 'checks.gradle'
-apply from: 'versioning.gradle'
