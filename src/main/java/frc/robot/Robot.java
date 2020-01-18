@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.maps.HyperionMap;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.Drive;
@@ -38,7 +39,7 @@ public class Robot extends TimedRobot {
   private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
   private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
 
-  RobotMap map = new TempestMap();
+  RobotMap map = new HyperionMap();
 
   final private Drive drive = new Drive(map.getDriveMap());
 
