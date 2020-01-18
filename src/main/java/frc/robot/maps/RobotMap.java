@@ -3,63 +3,58 @@ package frc.robot.maps;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
-public interface RobotMap {
-    public interface DriveMap {
-        default public SendableSpeedController left() {
+public class RobotMap {
+    public static class DriveMap {
+        public SendableSpeedController left() {
             return new MockSpeedController();
         }
 
-        default public SendableSpeedController right() {
-            return new MockSpeedController();
-        }
-    }
-
-    default public DriveMap getDriveMap() {
-        return new DriveMap() {
-        };
-    }
-
-    public interface IntakeMap {
-        default public SendableSpeedController roller() {
+        public SendableSpeedController right() {
             return new MockSpeedController();
         }
     }
 
-    default public IntakeMap getIntakeMap() {
-        return new IntakeMap() {
-        };
+    public DriveMap getDriveMap() {
+        return new DriveMap();
     }
 
-    public interface ShooterMap {
-        default public SendableSpeedController shooterWheel() {
+    public static class IntakeMap {
+        public SendableSpeedController roller() {
             return new MockSpeedController();
         }
     }
 
-    default public ShooterMap getShooterMap() {
-        return new ShooterMap() {
-        };
+    public IntakeMap getIntakeMap() {
+        return new IntakeMap();
     }
 
-    public interface ControlPanelMap {
-        default public SendableSpeedController spinner() {
+    public static class ShooterMap {
+        public SendableSpeedController shooterWheel() {
             return new MockSpeedController();
         }
     }
 
-    default public ControlPanelMap getControlPanelMap() {
-        return new ControlPanelMap() {
-        };
+    public ShooterMap getShooterMap() {
+        return new ShooterMap();
     }
 
-    public interface LiftMap {
-        default public SendableSpeedController elevator() {
+    public static class ControlPanelMap {
+        public SendableSpeedController spinner() {
             return new MockSpeedController();
         }
     }
 
-    default public LiftMap getLiftMap() {
-        return new LiftMap() {
-        };
+    public ControlPanelMap getControlPanelMap() {
+        return new ControlPanelMap();
+    }
+
+    public static class LiftMap {
+        public SendableSpeedController elevator() {
+            return new MockSpeedController();
+        }
+    }
+
+    public LiftMap getLiftMap() {
+        return new LiftMap();
     }
 }

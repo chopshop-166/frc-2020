@@ -7,7 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 @RobotMapFor("Hyperion")
-public class HyperionMap implements RobotMap {
+public class HyperionMap extends RobotMap {
 
     @Override
     public DriveMap getDriveMap() {
@@ -21,31 +21,6 @@ public class HyperionMap implements RobotMap {
             public SendableSpeedController right() {
                 return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(1)));
             }
-        };
-    }
-
-    @Override
-    public IntakeMap getIntakeMap() {
-        return new IntakeMap() {
-        };
-
-    }
-
-    @Override
-    public ShooterMap getShooterMap() {
-        return new ShooterMap() {
-        };
-    }
-
-    @Override
-    public ControlPanelMap getControlPanelMap() {
-        return new ControlPanelMap() {
-        };
-    }
-
-    @Override
-    public LiftMap getLiftMap() {
-        return new LiftMap() {
         };
     }
 }

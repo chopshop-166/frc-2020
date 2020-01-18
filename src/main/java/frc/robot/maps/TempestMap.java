@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 
 @RobotMapFor("Tempest")
-public class TempestMap implements RobotMap {
+public class TempestMap extends RobotMap {
 
     @Override
     public DriveMap getDriveMap() {
@@ -34,25 +34,6 @@ public class TempestMap implements RobotMap {
                 rollerMotor.setInverted(true);
                 return SendableSpeedController.wrap(rollerMotor);
             }
-        };
-
-    }
-
-    @Override
-    public ShooterMap getShooterMap() {
-        return new ShooterMap() {
-        };
-    }
-
-    @Override
-    public ControlPanelMap getControlPanelMap() {
-        return new ControlPanelMap() {
-        };
-    }
-
-    @Override
-    public LiftMap getLiftMap() {
-        return new LiftMap() {
         };
     }
 }
