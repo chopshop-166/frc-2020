@@ -26,7 +26,6 @@ public class Drive extends SubsystemBase {
     public CommandBase drive(DoubleSupplier forward, DoubleSupplier turn) {
         return new RunCommand(() -> {
             double yAxis = forward.getAsDouble();
-
             double xAxis = turn.getAsDouble();
 
             driveTrain.arcadeDrive(yAxis, xAxis);

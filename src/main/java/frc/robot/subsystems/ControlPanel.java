@@ -8,7 +8,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
 public class ControlPanel extends SubsystemBase {
+
     private SendableSpeedController spinnerMotor;
+
+    private static final double spinnerMotorSpeed = 1;
 
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
@@ -17,17 +20,17 @@ public class ControlPanel extends SubsystemBase {
 
     public CommandBase spinForwards() {
         return new StartEndCommand(() -> {
-            spinnerMotor.set(-0.85);
+            spinnerMotor.set(-spinnerMotorSpeed);
         }, () -> {
-            spinnerMotor.set(0);
+            spinnerMotor.stopMotor();
         }, this);
     }
 
     public CommandBase spinBackwards() {
         return new StartEndCommand(() -> {
-            spinnerMotor.set(0.85);
+            spinnerMotor.set(spinnerMotorSpeed);
         }, () -> {
-            spinnerMotor.set(0);
+            spinnerMotor.stopMotor();
         }, this);
     }
 }
