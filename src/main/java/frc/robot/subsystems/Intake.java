@@ -17,19 +17,19 @@ public class Intake extends SubsystemBase {
         rollerMotor = map.roller();
     }
 
-    public CommandBase intake() {
+    private CommandBase runRoller(double motorSpeed) {
         return new StartEndCommand(() -> {
-            rollerMotor.set(-rollerMotorSpeed);
+            rollerMotor.set(motorSpeed);
         }, () -> {
             rollerMotor.stopMotor();
         }, this);
     }
 
+    public CommandBase intake() {
+        return runRoller(rollerMotorSpeed);
+    }
+
     public CommandBase discharge() {
-        return new StartEndCommand(() -> {
-            rollerMotor.set(rollerMotorSpeed);
-        }, () -> {
-            rollerMotor.stopMotor();
-        }, this);
+        return runRoller(-rollerMotorSpeed);
     }
 }

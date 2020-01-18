@@ -46,13 +46,9 @@ public class Robot extends TimedRobot {
   RobotMap map = new TempestMap();
 
   final private Drive drive = new Drive(map.getDriveMap());
-
   final private Intake intake = new Intake(map.getIntakeMap());
-
   final private Shooter shooter = new Shooter(map.getShooterMap());
-
   final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
-
   final private Lift lift = new Lift(map.getLiftMap());
 
   final private SendableChooser<Command> autoChooser = new SendableChooser<>();

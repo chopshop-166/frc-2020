@@ -1,6 +1,5 @@
 package frc.robot.maps;
 
-import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -29,7 +28,9 @@ public class TempestMap implements RobotMap {
         return new IntakeMap() {
             @Override
             public SendableSpeedController roller() {
-                return SendableSpeedController.wrap(new Talon(0));
+                final Talon rollerMotor = new Talon(0);
+                rollerMotor.setInverted(true);
+                return SendableSpeedController.wrap(rollerMotor);
             }
         };
 
@@ -38,30 +39,18 @@ public class TempestMap implements RobotMap {
     @Override
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
-            @Override
-            public MockSpeedController shooterWheel() {
-                return new MockSpeedController();
-            }
         };
     }
 
     @Override
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
-            @Override
-            public SendableSpeedController spinner() {
-                return SendableSpeedController.wrap(new Talon(1));
-            }
         };
     }
 
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-            @Override
-            public MockSpeedController elevator() {
-                return new MockSpeedController();
-            }
         };
-   }
+    }
 }
