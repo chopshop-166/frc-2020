@@ -33,4 +33,15 @@ public class HyperionMap implements RobotMap {
         };
 
     }
+
+    @Override
+    public ControlPanelMap getControlPanelMap() {
+        return new ControlPanelMap() {
+            @Override
+            public MockSpeedController spinner() {
+                return new MockSpeedController();
+            }
+        };
+
+    }
 }

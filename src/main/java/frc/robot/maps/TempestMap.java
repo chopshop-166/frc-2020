@@ -34,4 +34,15 @@ public class TempestMap implements RobotMap {
 
     }
 
+    @Override
+    public ControlPanelMap getControlPanelMap() {
+        return new ControlPanelMap() {
+            @Override
+            public SendableSpeedController spinner() {
+                return SendableSpeedController.wrap(new Talon(1));
+            }
+        };
+
+    }
+
 }

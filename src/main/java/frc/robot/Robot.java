@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.maps.HyperionMap;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.TempestMap;
+import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 
@@ -38,12 +38,16 @@ public class Robot extends TimedRobot {
   private ButtonXboxController driveController = new ButtonXboxController(1);
   private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
   private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
+  private JoystickButton xButton = new JoystickButton(driveController, XBoxButton.X.get());
+  private JoystickButton yButton = new JoystickButton(driveController, XBoxButton.Y.get());
 
-  RobotMap map = new HyperionMap();
+  RobotMap map = new TempestMap();
 
   final private Drive drive = new Drive(map.getDriveMap());
 
   final private Intake intake = new Intake(map.getIntakeMap());
+
+  final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
 
   final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -130,6 +134,8 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     aButton.whenHeld(intake.intake());
     bButton.whenHeld(intake.discharge());
+    xButton.whenHeld(controlPanel.spinForwards());
+    yButton.whenHeld(controlPanel.spinBackwards());
 
   }
 }

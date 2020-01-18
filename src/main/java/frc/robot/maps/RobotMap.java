@@ -16,4 +16,10 @@ public interface RobotMap {
     }
 
     public IntakeMap getIntakeMap();
+
+    public interface ControlPanelMap {
+        public SendableSpeedController spinner();
+    }
+
+    public ControlPanelMap getControlPanelMap();
 }
