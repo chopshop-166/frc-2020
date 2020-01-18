@@ -1,6 +1,5 @@
 package frc.robot.maps;
 
-import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -26,22 +25,25 @@ public class HyperionMap implements RobotMap {
     @Override
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
-            @Override
-            public MockSpeedController roller() {
-                return new MockSpeedController();
-            }
         };
 
     }
 
     @Override
+    public ShooterMap getShooterMap() {
+        return new ShooterMap() {
+        };
+    }
+
+    @Override
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
-            @Override
-            public MockSpeedController spinner() {
-                return new MockSpeedController();
-            }
         };
+    }
 
+    @Override
+    public LiftMap getLiftMap() {
+        return new LiftMap() {
+        };
     }
 }
