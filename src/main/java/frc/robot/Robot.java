@@ -16,6 +16,8 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.google.common.io.Resources;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -27,9 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.maps.RobotMap;
-import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
@@ -46,10 +46,12 @@ import frc.robot.subsystems.Shooter;
 public class Robot extends TimedRobot {
 
     private Command autonomousCommand;
-    private ButtonXboxController driveController = new ButtonXboxController(1);
+    final private ButtonXboxController driveController = new ButtonXboxController(1);
 
-  RobotMap map = RobotUtils.getMapForName("Tempest", RobotMap.class, "frc.robot.maps", new RobotMap() {
-  });
+    final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
+    final private String robotName = nameEntry.getString("Unknown");
+
+    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
@@ -67,6 +69,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         configureButtonBindings();
+
+        nameEntry.setPersistent();
+        nameEntry.setDefaultString("Unknown");
+        Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
 
@@ -163,6 +169,5 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kB).whenHeld(intake.discharge());
         driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
         driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
-
     }
 }
