@@ -7,14 +7,9 @@
 
 package frc.robot;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
+import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.google.common.io.Resources;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,7 +19,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -76,24 +70,7 @@ public class Robot extends TimedRobot {
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
 
-        final ShuffleboardTab tab = Shuffleboard.getTab("BuildData");
-
-        try {
-            final URL manifestURL = Resources.getResource("META-INF/MANIFEST.MF");
-            final Manifest manifest = new Manifest(manifestURL.openStream());
-            final Attributes attrs = manifest.getMainAttributes();
-
-            tab.add("Git Hash", attrs.getValue("Git-Hash")).withPosition(0, 0);
-            tab.add("Git Branch", attrs.getValue("Git-Branch")).withPosition(3, 0);
-            tab.add("Build Time", attrs.getValue("Build-Time")).withPosition(1, 0).withSize(2, 1);
-            tab.add("Git Files", attrs.getValue("Git-Files")).withPosition(0, 1).withSize(4, 1);
-        } catch (IOException ex) {
-            // Could not read the manifest, just send dummy values
-            tab.add("Git Hash", UNKNOWN_VALUE).withPosition(0, 0);
-            tab.add("Git Branch", UNKNOWN_VALUE).withPosition(0, 1);
-            tab.add("Git Files", UNKNOWN_VALUE).withPosition(1, 0);
-            tab.add("Build Time", UNKNOWN_VALUE).withPosition(1, 1);
-        }
+        DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
     }
