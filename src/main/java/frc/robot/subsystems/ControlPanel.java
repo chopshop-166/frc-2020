@@ -7,6 +7,11 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
+//Spins the control panel for a specific number of rotaions and stops on a specific color
+//Has a mode to spin for a number of rotations and a mode to spin to stop on a specific color
+//Does not have any interactions with other systems other than the space it shares on the robot
+//Triggered by motors to spin the wheels and color sensors to be able to check colors and stop on them
+
 public class ControlPanel extends SubsystemBase {
 
     private SendableSpeedController spinnerMotor;
