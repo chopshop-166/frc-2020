@@ -7,6 +7,11 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
+//The intake takes in the balls from the ground, sorts them, stores them, and puts them into the shooter
+//There is only one speed for the intake motor
+//The intake interacts with the shooter
+//It uses motors and wheels connected by belts and bands
+
 public class Intake extends SubsystemBase {
     private SendableSpeedController rollerMotor;
 
