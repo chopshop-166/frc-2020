@@ -3,7 +3,7 @@ plugins {
     id "com.github.spotbugs" version "3.0.0"
     id "pmd"
     id "edu.wpi.first.GradleRIO" version "2020.2.2"
-    id 'chopshop'
+    id "com.chopshop166.plugin" version "0.5"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -46,7 +46,6 @@ def includeDesktopSupport = true
 // Repositories for dependencies
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
@@ -67,11 +66,13 @@ dependencies {
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+
+    implementation chopshop.deps()
 }
 
 // Setting up my Jar File by adding the manifest so WPILib
 // knows where to look for our Robot Class.
-jar { manifest com.chopshop166.ChopShopPlugin.manifest(ROBOT_MAIN_CLASS) }
+jar { manifest chopshop.manifest(ROBOT_MAIN_CLASS) }
 
 ext {
     SpotBugsTask = com.github.spotbugs.SpotBugsTask

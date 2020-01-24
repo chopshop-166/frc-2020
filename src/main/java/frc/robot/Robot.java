@@ -14,13 +14,13 @@ import java.util.jar.Manifest;
 
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 import com.google.common.io.Resources;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -47,10 +47,6 @@ public class Robot extends TimedRobot {
 
     private Command autonomousCommand;
     private ButtonXboxController driveController = new ButtonXboxController(1);
-    private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
-    private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
-    private JoystickButton xButton = new JoystickButton(driveController, XBoxButton.X.get());
-    private JoystickButton yButton = new JoystickButton(driveController, XBoxButton.Y.get());
 
     RobotMap map = new TempestMap();
 
@@ -162,10 +158,10 @@ public class Robot extends TimedRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        aButton.whenHeld(intake.intake());
-        bButton.whenHeld(intake.discharge());
-        xButton.whenHeld(controlPanel.spinForwards());
-        yButton.whenHeld(controlPanel.spinBackwards());
+        driveController.getButton(Button.kA).whenHeld(intake.intake());
+        driveController.getButton(Button.kB).whenHeld(intake.discharge());
+        driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
+        driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
 
     }
 }
