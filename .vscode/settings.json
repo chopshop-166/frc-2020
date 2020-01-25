@@ -15,5 +15,6 @@
     "**/.project": true,
     "**/.settings": true,
     "**/.factorypath": true
-  }
+  },
+  "workbench.colorTheme": "Visual Studio Dark"
 }
