@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
@@ -160,8 +159,8 @@ public class Robot extends TimedRobot {
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake());
         driveController.getButton(Button.kB).whenHeld(intake.discharge());
-        driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
-        driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
+        driveController.getButton(Button.kX).whenHeld(controlPanel.spinThreeTimes());
+        driveController.getButton(Button.kY).whenHeld(controlPanel.spinToSetColor());
 
     }
 }
