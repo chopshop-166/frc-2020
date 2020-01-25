@@ -14,15 +14,15 @@ public class TempestMap implements RobotMap {
 
             @Override
             public EncodedSpeedController getRight() {
-                SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
-                        new WPI_TalonSRX(4));
+                SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
+                        new WPI_TalonSRX(3));
                 return EncodedSpeedController.join(rightGroup, new MockEncoder());
             }
 
             @Override
             public EncodedSpeedController getLeft() {
-                SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
-                        new WPI_TalonSRX(3));
+                SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
+                        new WPI_TalonSRX(4));
                 return EncodedSpeedController.join(leftGroup, new MockEncoder());
             }
         };
