@@ -1,5 +1,7 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.outputs.IDSolenoid;
+import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
@@ -21,6 +23,10 @@ public class RobotMap {
     public static class IntakeMap {
         public SendableSpeedController roller() {
             return new MockSpeedController();
+        }
+
+        default public IDSolenoid deployPiston() {
+            return new MockDSolenoid();
         }
     }
 
