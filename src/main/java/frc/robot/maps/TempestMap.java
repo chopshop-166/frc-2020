@@ -1,39 +1,38 @@
 package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.Talon;
 
 @RobotMapFor("Tempest")
 public class TempestMap extends RobotMap {
 
     @Override
-    public DriveMap getDriveMap() {
-        return new DriveMap() {
+    public DifferentialDriveMap getDriveMap() {
+        return new DifferentialDriveMap() {
+
             @Override
-            public SendableSpeedController left() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1)));
+            public EncodedSpeedController getRight() {
+                SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
+                        new WPI_TalonSRX(4));
+                return EncodedSpeedController.join(rightGroup, new MockEncoder());
             }
 
             @Override
-            public SendableSpeedController right() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3)));
+            public EncodedSpeedController getLeft() {
+                SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
+                        new WPI_TalonSRX(3));
+                return EncodedSpeedController.join(leftGroup, new MockEncoder());
             }
         };
     }
 
     @Override
     public IntakeMap getIntakeMap() {
-        return new IntakeMap() {
-            @Override
-            public SendableSpeedController intake() {
-                final Talon rollerMotor = new Talon(0);
-                rollerMotor.setInverted(true);
-                return SendableSpeedController.wrap(rollerMotor);
-            }
-        };
+        // TODO Auto-generated method stub
+        return null;
     }
 }

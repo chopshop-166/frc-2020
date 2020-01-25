@@ -1,23 +1,15 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 public class RobotMap {
-    public static class DriveMap {
-        public SendableSpeedController left() {
-            return new MockSpeedController();
-        }
 
-        public SendableSpeedController right() {
-            return new MockSpeedController();
-        }
-    }
-
-    public DriveMap getDriveMap() {
-        return new DriveMap();
+    public DifferentialDriveMap getDriveMap() {
+        return null;
     }
 
     public static class IntakeMap {

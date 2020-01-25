@@ -1,26 +1,32 @@
 package frc.robot.maps;
 
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 @RobotMapFor("Hyperion")
 public class HyperionMap extends RobotMap {
 
-    @Override
-    public DriveMap getDriveMap() {
-        return new DriveMap() {
+    public DifferentialDriveMap getDriveMap() {
+        return new DifferentialDriveMap() {
+
             @Override
-            public SendableSpeedController left() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(3)));
+            public EncodedSpeedController getRight() {
+                SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(3),
+                        new WPI_TalonSRX(4));
+                return EncodedSpeedController.join(rightGroup, new MockEncoder());
             }
 
             @Override
-            public SendableSpeedController right() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(1)));
+            public EncodedSpeedController getLeft() {
+                SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
+                        new WPI_TalonSRX(1));
+                return EncodedSpeedController.join(leftGroup, new MockEncoder());
             }
         };
+
     }
 }
