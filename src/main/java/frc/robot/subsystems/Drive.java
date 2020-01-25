@@ -14,18 +14,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * 1) What does it do? Makes motors turn a certain amount depending on how much
  * an axis is triggered
  * 
- * 2) What modes does it have? Has a mode to differentiate between right and
- * left motor groups.
+ * 2) What modes does it have? Not at the moment
  * 
  * 3) What interactions does it have with other subsystems? Does not have any
  * interactions with other systems other than the space it shares on the robot
  * 
- * 4) How is it triggered -> OI? Triggered by motors to make the robots wheels
- * spin a certain direction.
+ * 4) How is it triggered -> OI? No triggers runs by default
  * 
  * 5) Does it store any state? Right and Left motor groups.
  * 
- * 6) Sensors? Speed Controllers
+ * 6) Sensors? Encoders, Gyro
  */
 public class Drive extends SubsystemBase {
 
