@@ -2,13 +2,13 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.maps.RobotMap;
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -39,10 +39,10 @@ public class Drive extends SubsystemBase {
      * 
      * @param map represents the drive map
      */
-    public Drive(RobotMap.DriveMap map) {
+    public Drive(DifferentialDriveMap map) {
         super();
-        rightMotorGroup = map.right();
-        leftMotorGroup = map.left();
+        rightMotorGroup = map.getRight();
+        leftMotorGroup = map.getLeft();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
     }
 

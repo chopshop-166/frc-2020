@@ -1,16 +1,12 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 public interface RobotMap {
-    public interface DriveMap {
-        public SendableSpeedController left();
 
-        public SendableSpeedController right();
-    }
-
-    public DriveMap getDriveMap();
+    public DifferentialDriveMap getDriveMap();
 
     public interface IntakeMap {
         default public SendableSpeedController roller() {
