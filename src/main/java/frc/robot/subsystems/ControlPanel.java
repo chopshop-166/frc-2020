@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -42,32 +43,26 @@ public class ControlPanel extends SubsystemBase {
     }
 
     /**
-     * Spin Forwards
+     * <h1>Spins Control Panel 4 Times
+     * <h1>
      * 
-     * This command runs the motor in a positive set direction
+     * This command runs the motor in a positive direction so the color sensor
+     * detects the control panel spinning 4 times
      * 
-     * @return {@link StartEndCommand} for running the motor at spinnerMotorSpeed
+     * @return {@link InstantCommand}
      */
-    public CommandBase spinThreeTimes() {
-        return new StartEndCommand(() -> {
-            spinnerMotor.set(spinnerMotorSpeed);
-        }, () -> {
-            spinnerMotor.stopMotor();
-        }, this);
+    public CommandBase spinFourTimes() {
+        return new InstantCommand();
     }
 
     /**
-     * Spins to a defined color
+     * Spins to a Defined Color
      * 
-     * This command runs the motor in a negative set direction
+     * This command runs the motor until the color sensor detects a defined color
      * 
-     * @return {@link StartEndCommand} for running the motor at spinnerMotorSpeed
+     * @return {@link InstantCommand}
      */
     public CommandBase spinToSetColor() {
-        return new StartEndCommand(() -> {
-            spinnerMotor.set(-spinnerMotorSpeed);
-        }, () -> {
-            spinnerMotor.stopMotor();
-        }, this);
+        return new InstantCommand();
     }
 }

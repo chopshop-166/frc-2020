@@ -159,7 +159,7 @@ public class Robot extends TimedRobot {
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake());
         driveController.getButton(Button.kB).whenHeld(intake.discharge());
-        driveController.getButton(Button.kX).whenHeld(controlPanel.spinThreeTimes());
+        driveController.getButton(Button.kX).whenHeld(controlPanel.spinFourTimes());
         driveController.getButton(Button.kY).whenHeld(controlPanel.spinToSetColor());
 
     }
