@@ -7,10 +7,20 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
-//Lifts the robot to be able to climb the bar in the last 30 seconds of the game
-//It should have a mode to extend the lift, hook onto the bar, and retract the robot to lift it up
-//It doesn't interact with any other subsystems other than the space it shares
-//It is triggered through motors and a wynch to be able to extend the lift and lift up the robot (and a d-clip to lock onto the bar)
+/**
+ * SUB REVIEW Lift Subsystem What Does It Do? 1) Raises and lowers lift Manually
+ * using two different moters in sync during the last 30 seconds of the game 2)
+ * Uses ratchet mechanism to break
+ * 
+ * What Modes Does It Have? 1) Up (Extend) 2) Down (Retract) 3) Break (Ratchet)
+ * 4) Hook onto Bar using d-clip
+ * 
+ * What Interactions Does It Have With Other Subsystems? 1) None
+ * 
+ * How Is It Triggered? 1) User Input
+ * 
+ * Does It Store Any State? 1) isBreaked
+ */
 
 public class Lift extends SubsystemBase {
 
