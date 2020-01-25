@@ -21,7 +21,10 @@ import frc.robot.maps.RobotMap;
  * 
  * How Is It Triggered? 1) User Input
  * 
- * Does It Store Any State? 1) isBreaked
+ * Does It Store Any State? 1) isBreaked 2) Limit switch values 3) Encoder
+ * values
+ * 
+ * Sensors? 1) Encoders 2) Limit Switches
  */
 
 public class Lift extends SubsystemBase {
