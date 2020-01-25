@@ -48,7 +48,7 @@ public class ControlPanel extends SubsystemBase {
      * 
      * @return {@link StartEndCommand} for running the motor at spinnerMotorSpeed
      */
-    public CommandBase spinForwards() {
+    public CommandBase spinThreeTimes() {
         return new StartEndCommand(() -> {
             spinnerMotor.set(spinnerMotorSpeed);
         }, () -> {
@@ -57,13 +57,13 @@ public class ControlPanel extends SubsystemBase {
     }
 
     /**
-     * Spin Backswards
+     * Spins to a defined color
      * 
      * This command runs the motor in a negative set direction
      * 
      * @return {@link StartEndCommand} for running the motor at spinnerMotorSpeed
      */
-    public CommandBase spinBackwards() {
+    public CommandBase spinToSetColor() {
         return new StartEndCommand(() -> {
             spinnerMotor.set(-spinnerMotorSpeed);
         }, () -> {
