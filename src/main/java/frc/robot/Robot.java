@@ -54,7 +54,6 @@ public class Robot extends TimedRobot {
     final private Lift lift = new Lift(map.getLiftMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
-    final private static String UNKNOWN_VALUE = "???";
 
     /**
      * This function is run when the robot is first started up and should be used
