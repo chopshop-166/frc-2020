@@ -4,6 +4,10 @@ import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class RobotMap {
     public static class DriveMap {
@@ -55,8 +59,28 @@ public class RobotMap {
     }
 
     public static class LiftMap {
-        public SendableSpeedController elevator() {
+        public SendableSpeedController elevatorLeft() {
             return new MockSpeedController();
+        }
+
+        public SendableSpeedController elevatorRight() {
+            return new MockSpeedController();
+        }
+
+        public Solenoid liftBrake() {
+            return new Solenoid(0);
+        }
+
+        public Encoder liftEncoder() {
+            return new Encoder(0, 0);
+        }
+
+        public InvertDigitalInput upperLiftLimit() {
+            return new InvertDigitalInput(0);
+        }
+
+        public InvertDigitalInput lowerLiftLimit() {
+            return new InvertDigitalInput(0);
         }
     }
 
