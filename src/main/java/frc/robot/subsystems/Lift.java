@@ -31,9 +31,10 @@ public class Lift extends SubsystemBase {
 
     private static final double elevatorMotorSpeed = 1;
 
+    // TODO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
         super();
-        elevatorMotor = map.elevator();
+        elevatorMotor = map.elevatorLeft();
     }
 
     public CommandBase up() {
