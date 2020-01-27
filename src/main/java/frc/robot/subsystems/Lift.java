@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
+<<<<<<< Updated upstream
 /**
  * SUB REVIEW Lift Subsystem What Does It Do? 1) Raises and lowers lift Manually
  * using two different moters in sync during the last 30 seconds of the game 2)
@@ -24,6 +25,16 @@ import frc.robot.maps.RobotMap;
  * 
  * Sensors? 1) Encoders 2) Limit Switches
  */
+=======
+//Lifts the robot to be able to climb the bar in the last 30 seconds of the game
+//It should have a mode to extend the lift and retract to lift the robot at different heights depending on the position of the bar
+//It doesn't interact with any other subsystems other than the space it shares
+//It is triggered through motors and a wynch to be able to extend the lift and lift up the robot (and a d-clip to lock onto the bar)
+//Stores the distance that its gone up in order to lift back up the same amount
+//Do not know of any sensors at the moment, could possibly have sensors to tell the height of the bar (LYDAR)
+
+//Commands needed would be: going up, and pulling the robot up (putting the lift down)
+>>>>>>> Stashed changes
 
 public class Lift extends SubsystemBase {
 
@@ -37,7 +48,7 @@ public class Lift extends SubsystemBase {
         elevatorMotor = map.elevatorLeft();
     }
 
-    public CommandBase up() {
+    public CommandBase extend() {
         return new StartEndCommand(() -> {
             elevatorMotor.set(-elevatorMotorSpeed);
         }, () -> {
@@ -45,7 +56,7 @@ public class Lift extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase down() {
+    public CommandBase retract() {
         return new StartEndCommand(() -> {
             elevatorMotor.set(elevatorMotorSpeed);
         }, () -> {
