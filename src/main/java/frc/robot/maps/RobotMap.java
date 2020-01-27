@@ -8,6 +8,9 @@ import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Solenoid;
+
 public class RobotMap {
 
     public DifferentialDriveMap getDriveMap() {
@@ -64,7 +67,7 @@ public class RobotMap {
     }
 
     public static class LiftMap {
-        public SendableSpeedController elevator() {
+        public SendableSpeedController elevatorLeft() {
             return new MockSpeedController();
         }
 
