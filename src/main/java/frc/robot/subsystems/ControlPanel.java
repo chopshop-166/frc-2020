@@ -33,7 +33,7 @@ public class ControlPanel extends SubsystemBase {
     private static final double spinnerMotorSpeed = 1;
 
     /**
-     * Defines a motor
+     * Pulls a motor from the robot map
      * 
      * @param map represents the control panel map
      */
