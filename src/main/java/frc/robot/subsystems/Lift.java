@@ -37,6 +37,9 @@ public class Lift extends SubsystemBase {
         elevatorMotor = map.elevatorLeft();
     }
 
+    // TO DO give getPosition a real value and make Position a result of getPosition
+    int getPosition = 0;
+
     public CommandBase extend() {
         return new StartEndCommand(() -> {
             elevatorMotor.set(-elevatorMotorSpeed);
@@ -51,5 +54,30 @@ public class Lift extends SubsystemBase {
         }, () -> {
             elevatorMotor.stopMotor();
         }, this);
+    }
+
+    // TO DO Give goToPoint an actual point
+    public CommandBase goToPoint() {
+
+        return new CommandBase() {
+            @Override
+            public boolean isFinished() {
+                return getPosition == 2;
+            }
+
+            @Override
+            public void execute() {
+                if (getPosition > 2) {
+                    elevatorMotor.set(elevatorMotorSpeed);
+                } else {
+                    elevatorMotor.set(-elevatorMotorSpeed);
+                }
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                elevatorMotor.set(0);
+            }
+        };
     }
 }
