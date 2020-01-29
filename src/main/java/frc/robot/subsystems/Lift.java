@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
-/**
+/*
  * SUB REVIEW Lift Subsystem What Does It Do? 1) Raises and lowers lift Manually
  * using two different moters in sync during the last 30 seconds of the game 2)
  * Uses ratchet mechanism to break
