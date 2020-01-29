@@ -10,9 +10,11 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
-//The intake takes in the balls from the ground
-//There are two modes which are: Extended(Motors are on) and Retracted(Motors are off)
-//It is extended and retracted with pistons and there are motorized belts to control everything
+//The intake takes in the balls from the ground and it is raised and retracted by pneumatic pistons
+//There is only one speed for the intake motor(Member: Motor)
+//The intake interacts with the Indexer
+//It uses motors, wheels, and pistons connected by belts and bands(The controller)
+//The intake needs to make sure the balls pass through it and don't get jammed(Member: Motor)
 
 public class Intake extends SubsystemBase {
     private final SendableSpeedController rollerMotor;
@@ -42,13 +44,14 @@ public class Intake extends SubsystemBase {
         return runRoller(-rollerMotorSpeed);
     }
 
+    // Infrared Proximity Sensor
+    // pneumatic pistons to raise the intake up so that balls can get underneath
+
     public InstantCommand setPiston(final Value direction) {
         return new InstantCommand(() -> {
             deployPiston.set(direction);
         }, this);
     }
-
-    // pneumatic pistons to raise the intake up so that balls can get underneath
 
     public InstantCommand deployPiston() {
         return setPiston(Value.kForward);
@@ -57,4 +60,3 @@ public class Intake extends SubsystemBase {
     public InstantCommand retractPiston() {
         return setPiston(Value.kReverse);
     }
-}
