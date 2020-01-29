@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
 
     private Command autonomousCommand;
     private ButtonXboxController driveController = new ButtonXboxController(1);
+    private ButtonXboxController copilotController = new ButtonXboxController(5);
 
     RobotMap map = new TempestMap();
 
@@ -162,6 +163,13 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kB).whenHeld(intake.discharge());
         driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
         driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
-
+        copilotController.getButton(Button.kY).whenPressed(lift.goToPoint(Lift.liftHeights.Top)); // Get real point,
+                                                                                                  // setting
+        // to high point
+        copilotController.getButton(Button.kB).whenPressed(lift.goToPoint(Lift.liftHeights.Middle)); // Get real point,
+        // setting to middle
+        // point
+        copilotController.getButton(Button.kA).whenPressed(lift.goToPoint(Lift.liftHeights.Bottom)); // Get real point,
+        // setting to low point
     }
 }
