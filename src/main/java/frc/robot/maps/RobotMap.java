@@ -82,6 +82,14 @@ public class RobotMap {
         public InvertDigitalInput lowerLiftLimit() {
             return new InvertDigitalInput(0);
         }
+
+        default public Encoder getLeftEncoder() {
+            return new Encoder(6, 7);
+        }
+
+        default public Encoder getRightEncoder() {
+            return new Encoder(8, 9);
+        }
     }
 
     public LiftMap getLiftMap() {
