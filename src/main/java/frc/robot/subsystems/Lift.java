@@ -1,13 +1,14 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import edu.wpi.first.wpilibj.Encoder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
-/**
+/*
  * SUB REVIEW Lift Subsystem What Does It Do? 1) Raises and lowers lift Manually
  * using two different moters in sync during the last 30 seconds of the game 2)
  * Uses ratchet mechanism to break
@@ -27,6 +28,8 @@ import frc.robot.maps.RobotMap;
 
 public class Lift extends SubsystemBase {
 
+    private Encoder leftEncoder;
+    private Encoder rightEncoder;
     private SendableSpeedController elevatorMotor;
 
     private static final double elevatorMotorSpeed = 1;
@@ -34,11 +37,29 @@ public class Lift extends SubsystemBase {
     // TO DO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
         super();
+        leftEncoder = map.getLeftEncoder();
+        rightEncoder = map.getRightEncoder();
         elevatorMotor = map.elevatorLeft();
     }
 
-    // TO DO give getPosition a real value and make Position a result of getPosition
-    int getPosition = 0;
+    // TO DO Confgure encoders to actually read a position
+    int getPosition = liftHeights.Bottom.value();
+
+    public enum liftHeights {
+        Top(3), Middle(2), Bottom(1);
+
+        private int iPosition;
+
+        // Returning an interger to compare whether we're in the right place or not
+        private int value() {
+            return this.iPosition;
+        }
+
+        // Returning the level the lift is at (top middle or bottom)
+        private liftHeights(int iPosition) {
+            this.iPosition = iPosition;
+        }
+    }
 
     public CommandBase extend() {
         return new StartEndCommand(() -> {
@@ -56,13 +77,12 @@ public class Lift extends SubsystemBase {
         }, this);
     }
 
-    // TO DO Give goToPoint an actual point
-    public CommandBase goToPoint() {
+    public CommandBase goToPoint(liftHeights iPoint) {
 
         return new CommandBase() {
             @Override
             public boolean isFinished() {
-                return getPosition == 2;
+                return getPosition == iPoint.value();
             }
 
             @Override

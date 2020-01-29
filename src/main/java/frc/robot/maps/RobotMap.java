@@ -76,16 +76,20 @@ public class RobotMap {
             return new Solenoid(0);
         }
 
-        default public Encoder liftEncoder() {
-            return new Encoder(0, 0);
-        }
-
         default public InvertDigitalInput upperLiftLimit() {
             return new InvertDigitalInput(0);
         }
 
         default public InvertDigitalInput lowerLiftLimit() {
             return new InvertDigitalInput(0);
+        }
+
+        default public Encoder getLeftEncoder() {
+            return new Encoder(6, 7);
+        }
+
+        default public Encoder getRightEncoder() {
+            return new Encoder(8, 9);
         }
     }
 
