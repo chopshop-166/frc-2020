@@ -6,6 +6,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -22,6 +23,7 @@ import frc.robot.maps.RobotMap;
 public class Intake extends SubsystemBase {
     private final SendableSpeedController rollerMotor;
     private final IDSolenoid deployPiston;
+    private final IDSolenoid rollerPlacement;
 
     private static final double rollerMotorSpeed = 0.85;
 
@@ -29,6 +31,7 @@ public class Intake extends SubsystemBase {
         super();
         rollerMotor = map.roller();
         deployPiston = map.deployPiston();
+        rollerPlacement = map.placeRoller();
     }
 
     private CommandBase runRoller(final double motorSpeed) {
@@ -50,6 +53,14 @@ public class Intake extends SubsystemBase {
     // Infrared Proximity Sensor
     // pneumatic pistons to raise the intake up so that balls can get underneath
 
+    public CommandBase placeRoller() {
+        return new StartEndCommand(() -> {
+            rollerPlacement.set(Value.kForward);
+        }, () -> {
+            rollerPlacement.set(Value.kReverse);
+        }, this);
+    }
+
     public InstantCommand setPiston(final Value direction) {
         return new InstantCommand(() -> {
             deployPiston.set(direction);
@@ -63,4 +74,10 @@ public class Intake extends SubsystemBase {
     public InstantCommand retractPiston() {
         return setPiston(Value.kReverse);
     }
+
+    public class DeployIntake extends ParallelCommandGroup {
+        public DeployIntake() {
+            addCommands(runRoller(rollerMotorSpeed), placeRoller());
+        }
+    };
 }
