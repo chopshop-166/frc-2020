@@ -5,6 +5,8 @@ import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 public class RobotMap {
     public static class DriveMap {
         public SendableSpeedController left() {
@@ -20,15 +22,32 @@ public class RobotMap {
         return new DriveMap();
     }
 
+    public static class IndexMap {
+        public SendableSpeedController setIndex() {
+            return new MockSpeedController();
+        }
+
+        public SendableSpeedController quicklyOutput() {
+            return new MockSpeedController();
+        }
+
+        public IndexMap getIndexMap() {
+            return new IndexMap();
+        }
+
+        public SendableSpeedController indexMotor() {
+            return null;
+        }
+    }
+
     public static class IntakeMap {
         public SendableSpeedController roller() {
             return new MockSpeedController();
         }
 
-        default public IDSolenoid deployPiston() {
+        public IDSolenoid deployPiston() {
             return new MockDSolenoid();
         }
-    }
 
     public IntakeMap getIntakeMap() {
         return new IntakeMap();
