@@ -45,7 +45,6 @@ public class Robot extends TimedRobot {
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
     final private ButtonXboxController copilotController = new ButtonXboxController(5);
-    final private ButtonXboxController copilotController = new ButtonXboxController(6);
 
     final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
     final private String robotName = nameEntry.getString("Unknown");
