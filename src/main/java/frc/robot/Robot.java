@@ -141,9 +141,9 @@ public class Robot extends TimedRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.intake());
-        driveController.getButton(Button.kB).whenHeld(intake.discharge());
-        driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
-        driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
+        driveController.getButton(Button.kA).whenHeld(intake.runRoller());
+        driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinMotor());
+        driveController.getButton(Button.kBumperLeft).whenHeld(shooter.stopMotor());
+
     }
 }

@@ -8,28 +8,28 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
 public class Intake extends SubsystemBase {
-    private SendableSpeedController rollerMotor;
+    private SendableSpeedController intakeMotor;
+    private SendableSpeedController singulatorMotor;
+    private SendableSpeedController pierreMotor;
 
-    private static final double rollerMotorSpeed = 0.85;
+    private static final double motorSpeed = 0.5;
 
     public Intake(RobotMap.IntakeMap map) {
         super();
-        rollerMotor = map.roller();
+        intakeMotor = map.intake();
+        singulatorMotor = map.singulator();
+        pierreMotor = map.pierre();
     }
 
-    private CommandBase runRoller(double motorSpeed) {
+    public CommandBase runRoller() {
         return new StartEndCommand(() -> {
-            rollerMotor.set(motorSpeed);
+            intakeMotor.set(motorSpeed);
+            singulatorMotor.set(motorSpeed);
+            pierreMotor.set(motorSpeed);
         }, () -> {
-            rollerMotor.stopMotor();
+            intakeMotor.stopMotor();
+            singulatorMotor.stopMotor();
+            pierreMotor.stopMotor();
         }, this);
-    }
-
-    public CommandBase intake() {
-        return runRoller(rollerMotorSpeed);
-    }
-
-    public CommandBase discharge() {
-        return runRoller(-rollerMotorSpeed);
     }
 }

@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Victor;
 
 @RobotMapFor("Tempest")
 public class TempestMap extends RobotMap {
@@ -29,9 +30,37 @@ public class TempestMap extends RobotMap {
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
             @Override
-            public SendableSpeedController roller() {
+            public SendableSpeedController intake() {
+                final Victor intakeMotor = new Victor(0);
+                return SendableSpeedController.wrap(intakeMotor);
+            }
+
+            @Override
+            public SendableSpeedController singulator() {
+                final Victor indexingMotor = new Victor(0);
+                return SendableSpeedController.wrap(indexingMotor);
+            }
+
+            @Override
+            public SendableSpeedController pierre() {
+                final Victor pierreMotor = new Victor(0);
+                return SendableSpeedController.wrap(pierreMotor);
+            }
+        };
+    }
+
+    @Override
+    public ShooterMap getShooterMap() {
+        return new ShooterMap() {
+            @Override
+            public SendableSpeedController shooterWheel1() {
                 final Talon rollerMotor = new Talon(0);
-                rollerMotor.setInverted(true);
+                return SendableSpeedController.wrap(rollerMotor);
+            }
+
+            @Override
+            public SendableSpeedController shooterWheel2() {
+                final Talon rollerMotor = new Talon(1);
                 return SendableSpeedController.wrap(rollerMotor);
             }
         };
