@@ -32,4 +32,12 @@ public class Intake extends SubsystemBase {
             pierreMotor.stopMotor();
         }, this);
     }
+
+    public CommandBase runPierre() {
+        return new StartEndCommand(() -> {
+            pierreMotor.set(motorSpeed);
+        }, () -> {
+            pierreMotor.stopMotor();
+        }, this);
+    }
 }
