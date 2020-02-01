@@ -20,7 +20,7 @@ public class Shooter extends SubsystemBase {
     private SendableSpeedController shooterWheelMotor1;
     private SendableSpeedController shooterWheelMotor2;
 
-    private double speed = .85;
+    private double speed = -.85;
 
     public Shooter(RobotMap.ShooterMap map) {
         super();

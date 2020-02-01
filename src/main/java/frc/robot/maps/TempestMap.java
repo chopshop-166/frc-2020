@@ -31,19 +31,19 @@ public class TempestMap extends RobotMap {
         return new IntakeMap() {
             @Override
             public SendableSpeedController intake() {
-                final Victor intakeMotor = new Victor(0);
+                final Victor intakeMotor = new Victor(3);
                 return SendableSpeedController.wrap(intakeMotor);
             }
 
             @Override
             public SendableSpeedController singulator() {
-                final Victor indexingMotor = new Victor(0);
+                final Victor indexingMotor = new Victor(4);
                 return SendableSpeedController.wrap(indexingMotor);
             }
 
             @Override
             public SendableSpeedController pierre() {
-                final Victor pierreMotor = new Victor(0);
+                final Victor pierreMotor = new Victor(5);
                 return SendableSpeedController.wrap(pierreMotor);
             }
         };

@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase {
         return new StartEndCommand(() -> {
             intakeMotor.set(motorSpeed);
             singulatorMotor.set(motorSpeed);
-            pierreMotor.set(motorSpeed);
+            pierreMotor.set(.75);
         }, () -> {
             intakeMotor.stopMotor();
             singulatorMotor.stopMotor();
@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase {
 
     public CommandBase runPierre() {
         return new StartEndCommand(() -> {
-            pierreMotor.set(motorSpeed);
+            pierreMotor.set(.75);
         }, () -> {
             pierreMotor.stopMotor();
         }, this);

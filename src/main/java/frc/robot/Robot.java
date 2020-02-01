@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
@@ -45,7 +46,7 @@ public class Robot extends TimedRobot {
     final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
     final private String robotName = nameEntry.getString("Unknown");
 
-    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
+    final private RobotMap map = new TempestMap();
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
