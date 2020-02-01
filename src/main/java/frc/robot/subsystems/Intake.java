@@ -40,4 +40,13 @@ public class Intake extends SubsystemBase {
             pierreMotor.stopMotor();
         }, this);
     }
+
+    public CommandBase runIntakeReverse() {
+        return new StartEndCommand(() -> {
+            intakeMotor.set(-motorSpeed);
+        }, () -> {
+            intakeMotor.stopMotor();
+
+        }, this);
+    }
 }
