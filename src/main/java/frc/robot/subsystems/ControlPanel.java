@@ -27,7 +27,7 @@ public class ControlPanel extends SubsystemBase {
     }
 
     public CommandBase spinBackwards() {
-        return new StartEndCommand(() -> {
+        return new StartEndCommand((ARG) -> {
             spinnerMotor.set(spinnerMotorSpeed);
         }, () -> {
             spinnerMotor.stopMotor();
