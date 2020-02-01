@@ -25,6 +25,16 @@ public class ControlPanel extends SubsystemBase {
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
         spinnerMotor = map.spinner();
+        m_colorMatcher.addColorMatch(kBlueTarget);
+        m_colorMatcher.addColorMatch(kGreenTarget);
+        m_colorMatcher.addColorMatch(kRedTarget);
+        m_colorMatcher.addColorMatch(kYellowTarget);
+    }
+
+    public enum ColorStates {
+
+        RED, BLUE, GREEN, YELLOW, OTHER
+
     }
 
     public CommandBase spinForwards() {
@@ -55,29 +65,23 @@ public class ControlPanel extends SubsystemBase {
     public final ColorMatch m_colorMatcher = new ColorMatch();
     public static String colorString1 = "";
 
-    public void detectColor() {
-
-        m_colorMatcher.addColorMatch(kBlueTarget);
-        m_colorMatcher.addColorMatch(kGreenTarget);
-        m_colorMatcher.addColorMatch(kRedTarget);
-        m_colorMatcher.addColorMatch(kYellowTarget);
+    public ColorStates detectColor() {
 
         Color detectedColor = m_colorSensor.getColor();
 
-        String colorString;
+        ColorStates colorString;
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-        colorString1 = "";
 
         if (match.color == kBlueTarget) {
-            colorString = "Blue";
+            colorString = ColorStates.BLUE;
         } else if (match.color == kRedTarget) {
-            colorString = "Red";
+            colorString = ColorStates.RED;
         } else if (match.color == kGreenTarget) {
-            colorString = "Green";
+            colorString = ColorStates.GREEN;
         } else if (match.color == kYellowTarget) {
-            colorString = "Yellow";
+            colorString = ColorStates.YELLOW;
         } else {
-            colorString = "Unknown";
+            colorString = ColorStates.OTHER;
         }
 
         /**
@@ -87,51 +91,55 @@ public class ControlPanel extends SubsystemBase {
         SmartDashboard.putNumber("Green", detectedColor.green);
         SmartDashboard.putNumber("Blue", detectedColor.blue);
         SmartDashboard.putNumber("Confidence", match.confidence);
-        SmartDashboard.putString("Detected Color", colorString);
-        colorString1 = colorString;
+        SmartDashboard.putString("Detected Color", colorString.name());
+        return colorString;
 
     }
 
-    public void stageTwoRotation() {
+    // public void stageTwoRotation() {
 
-        int iRed = 0;
-        int iBlue = 0;
-        int iGreen = 0;
-        int iYellow = 0;
-        int iUnk = 0;
-        spinForwards();
+    // }
 
-        for (int i = 0; i < 100; i++) {
-            detectColor();
-            if (colorString1 == "Red") {
-                iRed++;
+    // public void stageTwoRotation() {
 
-            } else if (colorString1 == "Blue") {
-                iBlue++;
-            } else if (colorString1 == "Green") {
-                iGreen++;
-            } else if (colorString1 == "Yellow") {
-                iYellow++;
-            } else if (colorString1 == "Blue") {
-                iBlue++;
-            } else if (colorString1 == "Unknown") {
-                iUnk++;
-            }
+    // int iRed = 0;
+    // int iBlue = 0;
+    // int iGreen = 0;
+    // int iYellow = 0;
+    // int iUnk = 0;
+    // spinForwards();
 
-            if (iGreen + iRed + iUnk + iYellow + iBlue == 36) {
-                // this is 36 because that means that the wheel would have spun 4 rotations
+    // for (int i = 0; i < 100; i++) {
+    // detectColor();
+    // if (colorString1 == "Red") {
+    // iRed++;
 
-            }
+    // } else if (colorString1 == "Blue") {
+    // iBlue++;
+    // } else if (colorString1 == "Green") {
+    // iGreen++;
+    // } else if (colorString1 == "Yellow") {
+    // iYellow++;
+    // } else if (colorString1 == "Blue") {
+    // iBlue++;
+    // } else if (colorString1 == "Unknown") {
+    // iUnk++;
+    // }
 
-        }
+    // if (iGreen + iRed + iUnk + iYellow + iBlue == 36) {
+    // // this is 36 because that means that the wheel would have spun 4 rotations
+    // spinnerMotor.stopMotor();
+    // }
 
-    }
+    // }
+
+    // }
 
 };
 
 // I want to make a function that when engaged will take a reading of the color,
 // mark that in an array, then, slowly rotate the color wheel and record every
-// new color as a
+// color change as a
 // new member of the array, once the array has reached 24-40 changes (8 changes
 // per rotation, 3-5 rotations). once this number of members has been reached in
 // the array the motors stop
