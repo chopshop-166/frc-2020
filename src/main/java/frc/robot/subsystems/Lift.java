@@ -2,8 +2,9 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.Encoder;
-
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -31,6 +32,7 @@ public class Lift extends SubsystemBase {
     private Encoder leftEncoder;
     private Encoder rightEncoder;
     private SendableSpeedController elevatorMotor;
+    private Solenoid elevatorBrake;
 
     private static final double elevatorMotorSpeed = 1;
 
@@ -40,11 +42,13 @@ public class Lift extends SubsystemBase {
         leftEncoder = map.getLeftEncoder();
         rightEncoder = map.getRightEncoder();
         elevatorMotor = map.elevatorLeft();
+        elevatorBrake = map.liftBrake();
     }
 
     // TO DO Confgure encoders to actually read a position
     int getPosition = liftHeights.Bottom.value();
 
+    // TODO make these heights reflect where we actually want them to be
     public enum liftHeights {
         Top(3), Middle(2), Bottom(1);
 
@@ -59,6 +63,18 @@ public class Lift extends SubsystemBase {
         private liftHeights(int iPosition) {
             this.iPosition = iPosition;
         }
+    }
+
+    public InstantCommand engageBrake() {
+        return new InstantCommand(() -> {
+            elevatorBrake.set(true);
+        });
+    }
+
+    public InstantCommand diengageBrake() {
+        return new InstantCommand(() -> {
+            elevatorBrake.set(false);
+        });
     }
 
     public CommandBase extend() {
