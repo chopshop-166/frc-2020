@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.lang.reflect.Array;
+
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
@@ -11,14 +13,10 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
-/**
- * The intake takes in the balls from the ground and it is raised and retracted
- * by pneumatic pistons There is only one speed for the intake motor(Member:
- * Motor) The intake interacts with the Indexer It uses motors, wheels, and
- * pistons connected by belts and bands(The controller) The intake needs to make
- * sure the balls pass through it and don't get jammed(Member: Motor)
- * 
- */
+// The Intake takes in the balls from the ground and it is raised and retracted by pneumatic pistons 
+// There is only one speed for the intake motor (Member: Motor) 
+// The intake interacts with the Indexer It uses motors, wheels, and pistons connected by belts and bands(The controller) 
+// The intake needs to make sure the balls pass through it and don't get jammed(Member: Motor)
 
 public class Intake extends SubsystemBase {
     private final SendableSpeedController rollerMotor;
@@ -31,34 +29,27 @@ public class Intake extends SubsystemBase {
         super();
         rollerMotor = map.roller();
         deployPiston = map.deployPiston();
-        rollerPlacement = map.placeRoller();
+        rollerPlacement = map.deployIntake();
     }
 
-    private CommandBase runRoller(final double motorSpeed) {
+    // pneumatic pistons to raise the intake up so that balls can get underneath
+
+    public CommandBase runRoller() {
         return new StartEndCommand(() -> {
-            rollerMotor.set(motorSpeed);
+            rollerMotor.set(rollerMotorSpeed);
+            rollerPlacement.set(Value.kForward);
         }, () -> {
             rollerMotor.stopMotor();
+            rollerPlacement.set(Value.kReverse);
         }, this);
     }
 
     public CommandBase intake() {
-        return runRoller(rollerMotorSpeed);
+        return runRoller();
     }
 
     public CommandBase discharge() {
-        return runRoller(-rollerMotorSpeed);
-    }
-
-    // Infrared Proximity Sensor
-    // pneumatic pistons to raise the intake up so that balls can get underneath
-
-    public CommandBase placeRoller() {
-        return new StartEndCommand(() -> {
-            rollerPlacement.set(Value.kForward);
-        }, () -> {
-            rollerPlacement.set(Value.kReverse);
-        }, this);
+        return runRoller();
     }
 
     public InstantCommand setPiston(final Value direction) {
@@ -75,9 +66,4 @@ public class Intake extends SubsystemBase {
         return setPiston(Value.kReverse);
     }
 
-    public class DeployIntake extends ParallelCommandGroup {
-        public DeployIntake() {
-            addCommands(runRoller(rollerMotorSpeed), placeRoller());
-        }
-    };
 }
