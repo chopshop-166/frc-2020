@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
-import java.lang.reflect.Array;
-
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;

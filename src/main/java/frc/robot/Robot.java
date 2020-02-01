@@ -31,7 +31,6 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.GenericHID;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -150,7 +149,5 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
         driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
         copilotController.getButton(Button.kY).whenHeld(intake.runRoller());
-        copilotController.getButton(Button.).whenHeld(indexer.quicklyOutput());
-        copilotController.getButton(Button.).whenHeld(indexer.reverseOutput());
     }
 }
