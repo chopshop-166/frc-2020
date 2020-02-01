@@ -6,19 +6,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
 /**
- * What does it do? Starts spinning the belt after the button is toggled on.
- * 
- * What modes does it have? On and off.
- * 
- * what interactions does it have with other subsystems? Tells the indexer if the shooter is up to speed.
- * 
- * How is it triggered/OI? A Toggle Conveyer button (y).
- * 
- * Does it store any state? Spinning or not spinning.
- * 
+ * What does it do? When the A button is pressed- it shoots a ball.
+ * What modes does it have? Semi-Auto and DUMP.
+ * what interactions does it have with other subsystems? Asks the Indexer and 'vision' if it's ready to shoot.
+ * How is it triggered/OI? A semi-auto button A- or X for shoot all.
+ * Does it store any state? No.
  * Sensors? No.
  */
-
 public class Shooter extends SubsystemBase {
 
     private SendableSpeedController shooterWheelMotor;
@@ -27,6 +21,12 @@ public class Shooter extends SubsystemBase {
         super();
         shooterWheelMotor = map.shooterWheel();
     }
-
-    public 
+    
+    public spinMotor(double speed) {
+        return new StartEndCommand(() -> {
+            shooterWheelMotor.set(speed);
+        } () -> {
+            shooterWheelMotor.stopMotor();
+        },this);
+    }
 }
