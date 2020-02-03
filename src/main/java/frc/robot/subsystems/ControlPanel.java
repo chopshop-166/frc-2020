@@ -96,9 +96,48 @@ public class ControlPanel extends SubsystemBase {
 
     }
 
-    // public void stageTwoRotation() {
+    public CommandBase stageTwoRotation() {
+        return new CommandBase() {
+            int i = 0;
+            ColorStates firstColor = detectColor();
 
-    // }
+            @Override
+            public void initialize() {
+
+                ColorStates firstColor = detectColor();
+                spinForwards();
+                super.initialize();
+            }
+
+            @Override
+            public boolean isFinished() {
+
+                return 40 < i && i < 50;
+
+            }
+
+            @Override
+            public void execute() {
+
+                ColorStates secondColor = detectColor();
+                if (firstColor != secondColor) {
+
+                    i++;
+                }
+
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                // TODO Auto-generated method stub
+                spinnerMotor.stopMotor();
+                super.end(interrupted);
+
+            }
+
+        };
+
+    }
 
     // public void stageTwoRotation() {
 
