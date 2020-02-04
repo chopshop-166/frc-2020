@@ -52,7 +52,6 @@ public class Robot extends TimedRobot {
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
-    final private Indexer indexer = new Indexer(map.getIndexMap());
     final private Shooter shooter = new Shooter(map.getShooterMap());
     final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
@@ -148,6 +147,7 @@ public class Robot extends TimedRobot {
     private void configureButtonBindings() {
         driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
         driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
-        copilotController.getButton(Button.kY).whenHeld(intake.runRoller());
+        copilotController.getButton(Button.kX).whenHeld(intake.intake());
+        copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
     }
 }

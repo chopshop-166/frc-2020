@@ -16,51 +16,36 @@ import frc.robot.maps.RobotMap;
 // The intake needs to make sure the balls pass through it and don't get jammed(Member: Motor)
 
 public class Intake extends SubsystemBase {
-    private final SendableSpeedController rollerMotor;
-    private final IDSolenoid deployPiston;
+    private final SendableSpeedController intakeMotor;
     private final IDSolenoid rollerPlacement;
 
-    private static final double rollerMotorSpeed = 0.85;
+    private static final double intakeMotorSpeed = 0.85;
+    private static final double intakeDischarge = -0.85;
 
     public Intake(final RobotMap.IntakeMap map) {
         super();
-        rollerMotor = map.roller();
-        deployPiston = map.deployPiston();
+        intakeMotor = map.intake();
         rollerPlacement = map.deployIntake();
     }
 
     // pneumatic pistons to raise the intake up so that balls can get underneath
 
-    public CommandBase runRoller() {
+    public CommandBase intake() {
         return new StartEndCommand(() -> {
-            rollerMotor.set(rollerMotorSpeed);
+            intakeMotor.set(intakeMotorSpeed);
             rollerPlacement.set(Value.kForward);
         }, () -> {
-            rollerMotor.stopMotor();
+            intakeMotor.stopMotor();
             rollerPlacement.set(Value.kReverse);
         }, this);
     }
 
-    public CommandBase intake() {
-        return runRoller();
-    }
-
-    public CommandBase discharge() {
-        return runRoller();
-    }
-
-    public InstantCommand setPiston(final Value direction) {
-        return new InstantCommand(() -> {
-            deployPiston.set(direction);
+    public StartEndCommand discharge() {
+        return new StartEndCommand(() -> {
+            intakeMotor.set(intakeDischarge);
+        }, () -> {
+            intakeMotor.stopMotor();
         }, this);
-    }
-
-    public InstantCommand deployPiston() {
-        return setPiston(Value.kForward);
-    }
-
-    public InstantCommand retractPiston() {
-        return setPiston(Value.kReverse);
     }
 
 }
