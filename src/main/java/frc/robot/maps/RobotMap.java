@@ -5,6 +5,9 @@ import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
+
 public class RobotMap {
     public static class DriveMap {
         public SendableSpeedController left() {
@@ -27,6 +30,18 @@ public class RobotMap {
 
         public IDSolenoid deployIntake() {
             return new MockDSolenoid();
+        }
+
+        public AnalogInput irSenor1() {
+            return new AnalogInput(0);
+        }
+
+        public AnalogInput irSenor2() {
+            return new AnalogInput(1);
+        }
+
+        public AnalogInput irSenor3() {
+            return new AnalogInput(2);
         }
     }
 

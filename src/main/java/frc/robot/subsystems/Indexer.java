@@ -57,4 +57,37 @@ public class Indexer extends SubsystemBase {
         return indexMotor(setIndexSpeed / 2);
     }
 
+    /*
+     * Command to run the singlator motor until the IR sensor 1 (analog 0) Command
+     * to run the singulator and pierre motor until the IR senor 1 is empty and IR
+     * senor 2 is covered Command to run the pierre motor until the IR sensor is
+     * uncovered
+     */
+    public CommandBase loadOneBall() {
+        return new CommandBase() {
+
+            @Override
+            public void initialize() {
+
+                super.initialize();
+            }
+
+            @Override
+            public boolean isFinished() {
+
+            }
+
+            @Override
+            public void execute() {
+
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+
+            }
+
+        };
+
+    }
 }
