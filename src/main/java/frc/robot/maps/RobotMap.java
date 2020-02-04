@@ -32,17 +32,6 @@ public class RobotMap {
             return new MockDSolenoid();
         }
 
-        public AnalogInput irSenor1() {
-            return new AnalogInput(0);
-        }
-
-        public AnalogInput irSenor2() {
-            return new AnalogInput(1);
-        }
-
-        public AnalogInput irSenor3() {
-            return new AnalogInput(2);
-        }
     }
 
     public IntakeMap getIntakeMap() {
@@ -77,6 +66,28 @@ public class RobotMap {
 
     public LiftMap getLiftMap() {
         return new LiftMap();
+    }
+
+    public static class IndexMap {
+        public SendableSpeedController indexMotor() {
+            return new MockSpeedController();
+        }
+
+        public AnalogInput irSensor1() {
+            return new AnalogInput(0);
+        }
+
+        public AnalogInput irSensor2() {
+            return new AnalogInput(1);
+        }
+
+        public AnalogInput irSensor3() {
+            return new AnalogInput(2);
+        }
+    }
+
+    public IndexMap getIndexerMap() {
+        return new IndexMap();
     }
 
 }

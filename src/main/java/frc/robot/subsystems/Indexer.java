@@ -2,12 +2,14 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.RobotMap.IndexMap;
 
 /**
  * The indexer lines up and transports the balls to the Shooter The indexer has
@@ -24,6 +26,8 @@ import frc.robot.maps.RobotMap;
 
 public class Indexer extends SubsystemBase {
     final SendableSpeedController singulator;
+    AnalogInput irSensor;
+    double sensorVoltage = irSensor.getVoltage();
 
     private static final double indexMotorSpeed = 0.85;
     private static final double setIndexSpeed = 0.85;
@@ -31,6 +35,7 @@ public class Indexer extends SubsystemBase {
     public Indexer(final RobotMap.IndexMap map) {
         super();
         singulator = map.indexMotor();
+        irSensor = map.irSensor1();
     }
 
     private CommandBase indexMotor(final double motorSpeed) {
@@ -63,7 +68,7 @@ public class Indexer extends SubsystemBase {
      * senor 2 is covered Command to run the pierre motor until the IR sensor is
      * uncovered
      */
-    public CommandBase loadOneBall() {
+    public CommandBase singulatorPossesion() {
         return new CommandBase() {
 
             @Override
@@ -74,20 +79,24 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
+                return sensorVoltage == 1;
 
             }
 
             @Override
             public void execute() {
+                indexMotor(indexMotorSpeed);
 
             }
 
             @Override
             public void end(boolean interrupted) {
+                indexMotor(0);
 
             }
 
         };
 
     }
+
 }
