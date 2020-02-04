@@ -1,22 +1,23 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-
-import com.revrobotics.ColorSensorV3;
-import com.revrobotics.ColorMatchResult;
-import com.revrobotics.ColorMatch;
 
 public class ControlPanel extends SubsystemBase {
+
+    private String gameData;
+    private ColorStates color;
 
     private SendableSpeedController spinnerMotor;
 
@@ -35,6 +36,32 @@ public class ControlPanel extends SubsystemBase {
 
         RED, BLUE, GREEN, YELLOW, OTHER
 
+    }
+
+    public ColorStates getTargetColor() {
+        gameData = DriverStation.getInstance().getGameSpecificMessage();
+        if (gameData.length() > 0) {
+            switch (gameData.charAt(0)) {
+            case 'B':
+                color = ColorStates.BLUE;
+                break;
+            case 'G':
+                color = ColorStates.GREEN;
+                break;
+            case 'R':
+                color = ColorStates.RED;
+                break;
+            case 'Y':
+                color = ColorStates.YELLOW;
+                break;
+            default:
+                color = ColorStates.OTHER;
+                break;
+            }
+        } else {
+            // Code for no data received yet
+        }
+        return color;
     }
 
     public CommandBase spinForwards() {
