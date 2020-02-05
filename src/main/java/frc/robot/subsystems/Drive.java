@@ -47,8 +47,8 @@ public class Drive extends SubsystemBase {
     /**
      * Maps the drive axises
      * 
-     * @param forward defines the forward direction
-     * @param turn    defines the direction to turn
+     * @param forward provides the forward speed
+     * @param turn    provides the turning speed
      * @return returns a run command so drive will stay running as long as drive is
      *         being called
      */
@@ -60,11 +60,17 @@ public class Drive extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase driveFlip(DoubleSupplier forward, DoubleSupplier turn) {
+    /**
+     * Maps the drive axises
+     * 
+     * @param reverse provides the reverse speed
+     * @return returns a run command so drive will stay running as long as drive is
+     *         being called
+     */
+    public CommandBase reversedDrive(DoubleSupplier reverse) {
         return new RunCommand(() -> {
-            double yAxis = forward.getAsDouble();
-            double xAxis = turn.getAsDouble();
-            driveTrain.arcadeDrive(-yAxis, xAxis);
+            double yAxis = reverse.getAsDouble();
+            driveTrain.arcadeDrive(-yAxis, yAxis);
         }, this);
     }
 }
