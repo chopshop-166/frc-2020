@@ -5,7 +5,6 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -17,7 +16,7 @@ import frc.robot.maps.RobotMap;
 
 public class Intake extends SubsystemBase {
     private final SendableSpeedController intakeMotor;
-    private final IDSolenoid rollerPlacement;
+    private final IDSolenoid deployPiston;
 
     private static final double intakeMotorSpeed = 0.85;
     private static final double intakeDischarge = -0.85;
@@ -25,7 +24,7 @@ public class Intake extends SubsystemBase {
     public Intake(final RobotMap.IntakeMap map) {
         super();
         intakeMotor = map.intake();
-        rollerPlacement = map.deployIntake();
+        deployPiston = map.deployIntake();
     }
 
     // pneumatic pistons to raise the intake up so that balls can get underneath
@@ -33,10 +32,10 @@ public class Intake extends SubsystemBase {
     public CommandBase intake() {
         return new StartEndCommand(() -> {
             intakeMotor.set(intakeMotorSpeed);
-            rollerPlacement.set(Value.kForward);
+            deployPiston.set(Value.kForward);
         }, () -> {
             intakeMotor.stopMotor();
-            rollerPlacement.set(Value.kReverse);
+            deployPiston.set(Value.kReverse);
         }, this);
     }
 

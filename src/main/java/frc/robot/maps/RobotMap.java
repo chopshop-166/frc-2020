@@ -20,26 +20,8 @@ public class RobotMap {
         return new DriveMap();
     }
 
-    public static class IndexMap {
-        public SendableSpeedController setIndex() {
-            return new MockSpeedController();
-        }
-
-        public SendableSpeedController quicklyOutput() {
-            return new MockSpeedController();
-        }
-
-        public IndexMap getIndexMap() {
-            return new IndexMap();
-        }
-
-        public SendableSpeedController indexMotor() {
-            return null;
-        }
-    }
-
     public static class IntakeMap {
-        public SendableSpeedController roller() {
+        public SendableSpeedController intake() {
             return new MockSpeedController();
         }
 
