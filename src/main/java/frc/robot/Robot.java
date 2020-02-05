@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
@@ -53,6 +54,7 @@ public class Robot extends TimedRobot {
     final private Shooter shooter = new Shooter(map.getShooterMap());
     final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
+    final private Indexer indexer = new Indexer(map.getIndexerMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 

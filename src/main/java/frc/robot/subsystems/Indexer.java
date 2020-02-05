@@ -4,6 +4,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -42,6 +43,7 @@ public class Indexer extends SubsystemBase {
         irSensor2 = map.irSensor2();
         irSensor3 = map.irSensor3();
 
+        SendableRegistry.add(irSensor1, "IRSensor");
     }
 
     private CommandBase indexMotor(final double motorSpeed) {
@@ -86,14 +88,9 @@ public class Indexer extends SubsystemBase {
         return new CommandBase() {
 
             @Override
-            public void initialize() {
-
-                super.initialize();
-            }
-
-            @Override
             public boolean isFinished() {
-                return irSensor1.getVoltage() == 1;
+                return irSensor1.getVoltage() > 1;
+                // values of .8 when open, 1.7 when closed
 
             }
 
@@ -116,14 +113,9 @@ public class Indexer extends SubsystemBase {
         return new CommandBase() {
 
             @Override
-            public void initialize() {
-
-                super.initialize();
-            }
-
-            @Override
             public boolean isFinished() {
-                return irSensor2.getVoltage() == 1;
+                return irSensor2.getVoltage() > 1;
+                // values of .8 when open, 2.4 when closed
 
             }
 
@@ -147,14 +139,9 @@ public class Indexer extends SubsystemBase {
         return new CommandBase() {
 
             @Override
-            public void initialize() {
-
-                super.initialize();
-            }
-
-            @Override
             public boolean isFinished() {
-                return irSensor3.getVoltage() == 1;
+                return irSensor3.getVoltage() > 1;
+                // values of .8 when open, 2.4 when closed
 
             }
 
