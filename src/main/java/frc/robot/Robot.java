@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
 
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
+    final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
     final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
     final private String robotName = nameEntry.getString("Unknown");
@@ -140,10 +141,11 @@ public class Robot extends TimedRobot {
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
+
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.intake());
-        driveController.getButton(Button.kB).whenHeld(intake.discharge());
         driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
         driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
+        copilotController.getButton(Button.kX).whenHeld(intake.intake());
+        copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
     }
 }

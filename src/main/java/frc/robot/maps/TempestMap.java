@@ -29,7 +29,7 @@ public class TempestMap extends RobotMap {
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
             @Override
-            public SendableSpeedController roller() {
+            public SendableSpeedController intake() {
                 final Talon rollerMotor = new Talon(0);
                 rollerMotor.setInverted(true);
                 return SendableSpeedController.wrap(rollerMotor);
