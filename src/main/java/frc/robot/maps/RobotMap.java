@@ -68,8 +68,4 @@ public class RobotMap {
         return new LiftMap();
     }
 
-    public IndexMap getIndexMap() {
-        return null;
-    }
-
 }
