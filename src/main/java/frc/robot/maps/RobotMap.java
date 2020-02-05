@@ -28,10 +28,6 @@ public class RobotMap {
         public IDSolenoid deployIntake() {
             return new MockDSolenoid();
         }
-
-        public IDSolenoid deployPiston() {
-            return new MockDSolenoid();
-        }
     }
 
     public IntakeMap getIntakeMap() {
