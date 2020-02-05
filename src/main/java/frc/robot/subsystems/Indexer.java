@@ -26,8 +26,10 @@ import frc.robot.maps.RobotMap.IndexMap;
 
 public class Indexer extends SubsystemBase {
     final SendableSpeedController singulator;
-    AnalogInput irSensor;
-    double sensorVoltage = irSensor.getVoltage();
+    final SendableSpeedController pierreMotor1;
+    AnalogInput irSensor1;
+    AnalogInput irSensor2;
+    AnalogInput irSensor3;
 
     private static final double indexMotorSpeed = 0.85;
     private static final double setIndexSpeed = 0.85;
@@ -35,7 +37,11 @@ public class Indexer extends SubsystemBase {
     public Indexer(final RobotMap.IndexMap map) {
         super();
         singulator = map.indexMotor();
-        irSensor = map.irSensor1();
+        pierreMotor1 = map.pierreMotor();
+        irSensor1 = map.irSensor1();
+        irSensor2 = map.irSensor2();
+        irSensor3 = map.irSensor3();
+
     }
 
     private CommandBase indexMotor(final double motorSpeed) {
@@ -43,6 +49,14 @@ public class Indexer extends SubsystemBase {
             singulator.set(motorSpeed);
         }, () -> {
             singulator.set(0);
+        });
+    }
+
+    private CommandBase pierreMotor(final double motorSpeed) {
+        return new StartEndCommand(() -> {
+            pierreMotor1.set(motorSpeed);
+        }, () -> {
+            pierreMotor1.set(0);
         });
     }
 
@@ -79,19 +93,80 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return sensorVoltage == 1;
+                return irSensor1.getVoltage() == 1;
 
             }
 
             @Override
             public void execute() {
-                indexMotor(indexMotorSpeed);
+                singulator.set(indexMotorSpeed);
 
             }
 
             @Override
             public void end(boolean interrupted) {
-                indexMotor(0);
+                singulator.set(0);
+            }
+
+        };
+
+    }
+
+    public CommandBase pierrePossesion() {
+        return new CommandBase() {
+
+            @Override
+            public void initialize() {
+
+                super.initialize();
+            }
+
+            @Override
+            public boolean isFinished() {
+                return irSensor2.getVoltage() == 1;
+
+            }
+
+            @Override
+            public void execute() {
+                pierreMotor1.set(indexMotorSpeed);
+
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                pierreMotor1.set(0);
+
+            }
+
+        };
+
+    }
+
+    public CommandBase loadBallToTop() {
+        return new CommandBase() {
+
+            @Override
+            public void initialize() {
+
+                super.initialize();
+            }
+
+            @Override
+            public boolean isFinished() {
+                return irSensor3.getVoltage() == 1;
+
+            }
+
+            @Override
+            public void execute() {
+                pierreMotor1.set(indexMotorSpeed);
+
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                pierreMotor1.set(0);
 
             }
 

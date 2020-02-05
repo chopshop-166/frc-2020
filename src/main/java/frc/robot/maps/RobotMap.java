@@ -73,6 +73,10 @@ public class RobotMap {
             return new MockSpeedController();
         }
 
+        public SendableSpeedController pierreMotor() {
+            return new MockSpeedController();
+        }
+
         public AnalogInput irSensor1() {
             return new AnalogInput(0);
         }
