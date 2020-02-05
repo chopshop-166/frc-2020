@@ -18,8 +18,8 @@ public class Intake extends SubsystemBase {
     private final SendableSpeedController intakeMotor;
     private final IDSolenoid deployPiston;
 
-    private static final double intakeMotorSpeed = 0.85;
-    private static final double intakeDischarge = -0.85;
+    private static final double INTAKE_MOTOR_SPEED = 0.85;
+    private static final double INTAKE_DISCHARGE = -0.85;
 
     public Intake(final RobotMap.IntakeMap map) {
         super();
@@ -27,11 +27,9 @@ public class Intake extends SubsystemBase {
         deployPiston = map.deployIntake();
     }
 
-    // pneumatic pistons to raise the intake up so that balls can get underneath
-
     public CommandBase intake() {
         return new StartEndCommand(() -> {
-            intakeMotor.set(intakeMotorSpeed);
+            intakeMotor.set(INTAKE_MOTOR_SPEED);
             deployPiston.set(Value.kForward);
         }, () -> {
             intakeMotor.stopMotor();
@@ -41,7 +39,7 @@ public class Intake extends SubsystemBase {
 
     public StartEndCommand discharge() {
         return new StartEndCommand(() -> {
-            intakeMotor.set(intakeDischarge);
+            intakeMotor.set(INTAKE_DISCHARGE);
         }, () -> {
             intakeMotor.stopMotor();
         }, this);
