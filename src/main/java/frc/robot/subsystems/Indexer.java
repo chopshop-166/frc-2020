@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.TempestMap;
 import frc.robot.maps.RobotMap.IndexMap;
 
 /**
@@ -27,7 +28,8 @@ import frc.robot.maps.RobotMap.IndexMap;
 
 public class Indexer extends SubsystemBase {
     final SendableSpeedController singulator;
-    final SendableSpeedController pierreMotor1;
+    private SendableSpeedController pierreMotor;
+    private SendableSpeedController singulatorMotor;
     AnalogInput irSensor1;
     AnalogInput irSensor2;
     AnalogInput irSensor3;
@@ -35,13 +37,14 @@ public class Indexer extends SubsystemBase {
     private static final double indexMotorSpeed = 0.85;
     private static final double setIndexSpeed = 0.85;
 
-    public Indexer(final RobotMap.IndexMap map) {
+    public Indexer(final IndexMap map) {
         super();
-        singulator = map.indexMotor();
-        pierreMotor1 = map.pierreMotor();
+        singulator = map.singulator();
         irSensor1 = map.irSensor1();
         irSensor2 = map.irSensor2();
         irSensor3 = map.irSensor3();
+        pierreMotor = map.pierreMotor();
+        // singulatorMotor = map.singulator();
 
         SendableRegistry.add(irSensor1, "IRSensor");
     }
@@ -54,13 +57,21 @@ public class Indexer extends SubsystemBase {
         });
     }
 
-    private CommandBase pierreMotor(final double motorSpeed) {
+    public CommandBase runPierre() {
         return new StartEndCommand(() -> {
-            pierreMotor1.set(motorSpeed);
+            pierreMotor.set(.75);
         }, () -> {
-            pierreMotor1.set(0);
-        });
+            pierreMotor.stopMotor();
+        }, this);
     }
+
+    // private CommandBase pierreMotor(final double motorSpeed) {
+    // return new StartEndCommand(() -> {
+    // pierreMotor1.set(motorSpeed);
+    // }, () -> {
+    // pierreMotor1.set(0);
+    // });
+    // }
 
     public CommandBase quicklyPush() {
         return indexMotor(indexMotorSpeed);
@@ -121,13 +132,13 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                pierreMotor1.set(indexMotorSpeed);
+                pierreMotor.set(indexMotorSpeed);
 
             }
 
             @Override
             public void end(boolean interrupted) {
-                pierreMotor1.set(0);
+                pierreMotor.set(0);
 
             }
 
@@ -147,13 +158,13 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                pierreMotor1.set(indexMotorSpeed);
+                pierreMotor.set(indexMotorSpeed);
 
             }
 
             @Override
             public void end(boolean interrupted) {
-                pierreMotor1.set(0);
+                pierreMotor.set(0);
 
             }
 

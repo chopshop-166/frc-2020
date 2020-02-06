@@ -81,7 +81,7 @@ public class RobotMap {
     }
 
     public static class IndexMap {
-        public SendableSpeedController indexMotor() {
+        public SendableSpeedController singulator() {
             return new MockSpeedController();
         }
 

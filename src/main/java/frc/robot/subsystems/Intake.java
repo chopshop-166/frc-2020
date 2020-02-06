@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase {
         super();
         intakeMotor = map.intake();
         singulatorMotor = map.singulator();
-        pierreMotor = map.pierre();
+
     }
 
     public CommandBase runRoller() {
@@ -41,14 +41,6 @@ public class Intake extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase runPierre() {
-        return new StartEndCommand(() -> {
-            pierreMotor.set(.75);
-        }, () -> {
-            pierreMotor.stopMotor();
-        }, this);
-    }
-
     public CommandBase runIntakeReverse() {
         return new StartEndCommand(() -> {
             intakeMotor.set(-motorSpeed);
@@ -57,4 +49,5 @@ public class Intake extends SubsystemBase {
 
         }, this);
     }
+
 }

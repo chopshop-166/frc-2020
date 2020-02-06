@@ -1,9 +1,11 @@
 package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
@@ -35,6 +37,14 @@ public class TempestMap extends RobotMap {
                 return SendableSpeedController.wrap(intakeMotor);
             }
 
+        };
+
+    }
+
+    @Override
+    public IndexMap getIndexerMap() {
+        return new IndexMap() {
+
             @Override
             public SendableSpeedController singulator() {
                 final Victor indexingMotor = new Victor(4);
@@ -42,10 +52,29 @@ public class TempestMap extends RobotMap {
             }
 
             @Override
-            public SendableSpeedController pierre() {
+            public SendableSpeedController pierreMotor() {
                 final Victor pierreMotor = new Victor(5);
                 return SendableSpeedController.wrap(pierreMotor);
             }
+
+            @Override
+
+            public AnalogInput irSensor1() {
+                return new AnalogInput(0);
+            }
+
+            @Override
+
+            public AnalogInput irSensor2() {
+                return new AnalogInput(1);
+            }
+
+            @Override
+
+            public AnalogInput irSensor3() {
+                return new AnalogInput(2);
+            }
+
         };
     }
 
