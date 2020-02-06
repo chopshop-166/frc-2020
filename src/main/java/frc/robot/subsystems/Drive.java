@@ -37,7 +37,7 @@ public class Drive extends SubsystemBase {
      * 
      * @param map represents the drive map
      */
-    public Drive(DifferentialDriveMap map) {
+    public Drive(final DifferentialDriveMap map) {
         super();
         rightMotorGroup = map.getRight();
         leftMotorGroup = map.getLeft();
@@ -52,25 +52,11 @@ public class Drive extends SubsystemBase {
      * @return returns a run command so drive will stay running as long as drive is
      *         being called
      */
-    public CommandBase drive(DoubleSupplier forward, DoubleSupplier turn) {
+    public CommandBase drive(final DoubleSupplier forward, final DoubleSupplier turn) {
         return new RunCommand(() -> {
-            double yAxis = forward.getAsDouble();
-            double xAxis = turn.getAsDouble();
+            final double yAxis = forward.getAsDouble();
+            final double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
-        }, this);
-    }
-
-    /**
-     * Maps the drive axises
-     * 
-     * @param reverse provides the reverse speed
-     * @return returns a run command so drive will stay running as long as drive is
-     *         being called
-     */
-    public CommandBase reversedDrive(DoubleSupplier reverse) {
-        return new RunCommand(() -> {
-            double yAxis = reverse.getAsDouble();
-            driveTrain.arcadeDrive(-yAxis, yAxis);
         }, this);
     }
 }
