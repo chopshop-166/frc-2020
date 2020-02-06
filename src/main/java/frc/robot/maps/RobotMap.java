@@ -28,6 +28,14 @@ public class RobotMap {
             return new MockSpeedController();
         }
 
+        public SendableSpeedController singulator() {
+            return new MockSpeedController();
+        }
+
+        public SendableSpeedController pierre() {
+            return new MockSpeedController();
+        }
+
         public IDSolenoid deployIntake() {
             return new MockDSolenoid();
         }
@@ -39,7 +47,11 @@ public class RobotMap {
     }
 
     public static class ShooterMap {
-        public SendableSpeedController shooterWheel() {
+        public SendableSpeedController shooterWheel1() {
+            return new MockSpeedController();
+        }
+
+        public SendableSpeedController shooterWheel2() {
             return new MockSpeedController();
         }
     }

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
@@ -48,7 +49,7 @@ public class Robot extends TimedRobot {
     final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
     final private String robotName = nameEntry.getString("Unknown");
 
-    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
+    final private RobotMap map = new TempestMap();
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
@@ -149,9 +150,10 @@ public class Robot extends TimedRobot {
      */
 
     private void configureButtonBindings() {
-        driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
-        driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
-        copilotController.getButton(Button.kX).whenHeld(intake.intake());
-        copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
+        driveController.getButton(Button.kA).whenHeld(intake.runRoller());
+        driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinMotor());
+        driveController.getButton(Button.kBumperLeft).whenHeld(shooter.stopMotor());
+        driveController.getButton(Button.kX).whenHeld(intake.runPierre());
+        driveController.getButton(Button.kB).whenHeld(intake.runIntakeReverse());
     }
 }

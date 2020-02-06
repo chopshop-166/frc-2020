@@ -16,34 +16,45 @@ import frc.robot.maps.RobotMap;
 // The intake needs to make sure the balls pass through it and don't get jammed(Member: Motor)
 
 public class Intake extends SubsystemBase {
-    private final SendableSpeedController intakeMotor;
-    private final IDSolenoid deployPiston;
+    private SendableSpeedController intakeMotor;
+    private SendableSpeedController singulatorMotor;
+    private SendableSpeedController pierreMotor;
 
-    private static final double INTAKE_MOTOR_SPEED = 0.85;
-    private static final double INTAKE_DISCHARGE = -0.85;
+    private static final double motorSpeed = 0.5;
 
     public Intake(final RobotMap.IntakeMap map) {
         super();
         intakeMotor = map.intake();
-        deployPiston = map.deployIntake();
+        singulatorMotor = map.singulator();
+        pierreMotor = map.pierre();
     }
 
-    public CommandBase intake() {
+    public CommandBase runRoller() {
         return new StartEndCommand(() -> {
-            intakeMotor.set(INTAKE_MOTOR_SPEED);
-            deployPiston.set(Value.kForward);
+            intakeMotor.set(motorSpeed);
+            singulatorMotor.set(motorSpeed);
+            pierreMotor.set(.75);
         }, () -> {
             intakeMotor.stopMotor();
-            deployPiston.set(Value.kReverse);
+            singulatorMotor.stopMotor();
+            pierreMotor.stopMotor();
         }, this);
     }
 
-    public StartEndCommand discharge() {
+    public CommandBase runPierre() {
         return new StartEndCommand(() -> {
-            intakeMotor.set(INTAKE_DISCHARGE);
+            pierreMotor.set(.75);
         }, () -> {
-            intakeMotor.stopMotor();
+            pierreMotor.stopMotor();
         }, this);
     }
 
+    public CommandBase runIntakeReverse() {
+        return new StartEndCommand(() -> {
+            intakeMotor.set(-motorSpeed);
+        }, () -> {
+            intakeMotor.stopMotor();
+
+        }, this);
+    }
 }
