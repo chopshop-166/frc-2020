@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -69,6 +70,9 @@ public class Robot extends TimedRobot {
         nameEntry.setPersistent();
         nameEntry.setDefaultString("Unknown");
         Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
+        SmartDashboard.putData("singulator", indexer.singulatorPossesion());
+        SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
+        SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
 

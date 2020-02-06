@@ -89,7 +89,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return irSensor1.getVoltage() > 1;
+                return irSensor1.getVoltage() > 1.5;
                 // values of .8 when open, 1.7 when closed
 
             }
@@ -114,7 +114,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return irSensor2.getVoltage() > 1;
+                return irSensor2.getVoltage() > 2.0;
                 // values of .8 when open, 2.4 when closed
 
             }
@@ -140,7 +140,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return irSensor3.getVoltage() > 1;
+                return irSensor3.getVoltage() > 2.0;
                 // values of .8 when open, 2.4 when closed
 
             }
