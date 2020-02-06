@@ -95,11 +95,11 @@ public class RobotMap {
             return new Encoder(8, 9);
         }
 
-        default public Encoder getLeftEncoder() {
+        public Encoder getLeftEncoder() {
             return new Encoder(6, 7);
         }
 
-        default public Encoder getRightEncoder() {
+        public Encoder getRightEncoder() {
             return new Encoder(8, 9);
         }
     }
