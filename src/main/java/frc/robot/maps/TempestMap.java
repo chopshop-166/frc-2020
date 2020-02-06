@@ -16,14 +16,14 @@ public class TempestMap extends RobotMap {
 
             @Override
             public EncodedSpeedController getRight() {
-                SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
+                final SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
                         new WPI_TalonSRX(3));
                 return EncodedSpeedController.join(rightGroup, new MockEncoder());
             }
 
             @Override
             public EncodedSpeedController getLeft() {
-                SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
+                final SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
                         new WPI_TalonSRX(4));
                 return EncodedSpeedController.join(leftGroup, new MockEncoder());
             }
@@ -32,7 +32,7 @@ public class TempestMap extends RobotMap {
 
     @Override
     public IntakeMap getIntakeMap() {
-        // TODO Auto-generated method stub
-        return null;
+        return new IntakeMap() {
+        };
     }
 }
