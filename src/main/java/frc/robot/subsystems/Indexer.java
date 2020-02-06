@@ -3,14 +3,11 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.maps.RobotMap;
-import frc.robot.maps.TempestMap;
+
 import frc.robot.maps.RobotMap.IndexMap;
 
 /**
@@ -29,7 +26,6 @@ import frc.robot.maps.RobotMap.IndexMap;
 public class Indexer extends SubsystemBase {
     final SendableSpeedController singulator;
     private SendableSpeedController pierreMotor;
-    private SendableSpeedController singulatorMotor;
     AnalogInput irSensor1;
     AnalogInput irSensor2;
     AnalogInput irSensor3;

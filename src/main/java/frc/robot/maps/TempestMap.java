@@ -1,7 +1,6 @@
 package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
-import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
