@@ -1,14 +1,14 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-
-public class HyperionMap implements RobotMap {
+@RobotMapFor("Hyperion")
+public class HyperionMap extends RobotMap {
 
     public DifferentialDriveMap getDriveMap() {
         return new DifferentialDriveMap() {
@@ -28,30 +28,5 @@ public class HyperionMap implements RobotMap {
             }
         };
 
-    }
-
-    @Override
-    public IntakeMap getIntakeMap() {
-        return new IntakeMap() {
-        };
-
-    }
-
-    @Override
-    public ShooterMap getShooterMap() {
-        return new ShooterMap() {
-        };
-    }
-
-    @Override
-    public ControlPanelMap getControlPanelMap() {
-        return new ControlPanelMap() {
-        };
-    }
-
-    @Override
-    public LiftMap getLiftMap() {
-        return new LiftMap() {
-        };
     }
 }

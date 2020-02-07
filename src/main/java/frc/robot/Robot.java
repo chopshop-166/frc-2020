@@ -7,28 +7,23 @@
 
 package frc.robot;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
+import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.google.common.io.Resources;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.maps.RobotMap;
-import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
@@ -45,9 +40,13 @@ import frc.robot.subsystems.Shooter;
 public class Robot extends TimedRobot {
 
     private Command autonomousCommand;
-    private ButtonXboxController driveController = new ButtonXboxController(1);
+    final private ButtonXboxController driveController = new ButtonXboxController(1);
+    final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
-    RobotMap map = new TempestMap();
+    final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
+    final private String robotName = nameEntry.getString("Unknown");
+
+    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
@@ -56,7 +55,6 @@ public class Robot extends TimedRobot {
     final private Lift lift = new Lift(map.getLiftMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
-    final private static String UNKNOWN_VALUE = "???";
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -66,26 +64,13 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         configureButtonBindings();
 
+        nameEntry.setPersistent();
+        nameEntry.setDefaultString("Unknown");
+        Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
+
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
 
-        final ShuffleboardTab tab = Shuffleboard.getTab("BuildData");
-
-        try {
-            final URL manifestURL = Resources.getResource("META-INF/MANIFEST.MF");
-            final Manifest manifest = new Manifest(manifestURL.openStream());
-            final Attributes attrs = manifest.getMainAttributes();
-
-            tab.add("Git Hash", attrs.getValue("Git-Hash")).withPosition(0, 0);
-            tab.add("Git Branch", attrs.getValue("Git-Branch")).withPosition(3, 0);
-            tab.add("Build Time", attrs.getValue("Build-Time")).withPosition(1, 0).withSize(2, 1);
-            tab.add("Git Files", attrs.getValue("Git-Files")).withPosition(0, 1).withSize(4, 1);
-        } catch (IOException ex) {
-            // Could not read the manifest, just send dummy values
-            tab.add("Git Hash", UNKNOWN_VALUE).withPosition(0, 0);
-            tab.add("Git Branch", UNKNOWN_VALUE).withPosition(0, 1);
-            tab.add("Git Files", UNKNOWN_VALUE).withPosition(1, 0);
-            tab.add("Build Time", UNKNOWN_VALUE).withPosition(1, 1);
-        }
+        DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
     }
@@ -156,11 +141,13 @@ public class Robot extends TimedRobot {
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
+
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.intake());
-        driveController.getButton(Button.kB).whenHeld(intake.discharge());
         driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
         driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
-
+        copilotController.getButton(Button.kX).whenHeld(intake.intake());
+        copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
+        driveController.getButton(Button.kA).toggleWhenActive(
+                drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
     }
 }

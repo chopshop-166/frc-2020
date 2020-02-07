@@ -59,12 +59,7 @@ public class Drive extends SubsystemBase {
             driveTrain.arcadeDrive(yAxis, xAxis);
         }, this);
     }
-
-    public CommandBase driveFlip(DoubleSupplier forward, DoubleSupplier turn) {
-        return new RunCommand(() -> {
-            double yAxis = forward.getAsDouble();
-            double xAxis = turn.getAsDouble();
-            driveTrain.arcadeDrive(-yAxis, xAxis);
-        }, this);
-    }
 }
+
+
+    
