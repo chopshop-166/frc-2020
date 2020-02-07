@@ -1,12 +1,31 @@
 package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
 public interface RobotMap {
 
-    public DifferentialDriveMap getDriveMap();
+    default public DifferentialDriveMap getDriveMap() {
+        return new DifferentialDriveMap() {
+
+            @Override
+            public EncodedSpeedController getRight() {
+                return getMock();
+            }
+
+            @Override
+            public EncodedSpeedController getLeft() {
+                return getMock();
+            }
+
+            private EncodedSpeedController getMock() {
+                return EncodedSpeedController.join(new MockSpeedController(), new MockEncoder());
+            }
+        };
+    }
 
     public interface IntakeMap {
         default public SendableSpeedController roller() {

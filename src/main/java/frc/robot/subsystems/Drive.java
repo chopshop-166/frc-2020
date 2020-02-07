@@ -32,8 +32,8 @@ public class Drive extends SubsystemBase {
     private final DifferentialDrive driveTrain;
 
     /**
-     * Defines the left and right motor(s) and then puts them into a differential
-     * drive
+     * Gets the left and right motor(s) from robot map and then puts them into a
+     * differential drive
      * 
      * @param map represents the drive map
      */
