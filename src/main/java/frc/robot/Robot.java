@@ -156,6 +156,6 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinMotor());
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.stopMotor());
         driveController.getButton(Button.kX).whenHeld(indexer.runPierre());
-        driveController.getButton(Button.kB).whenHeld(intakeToPierre());
+        // driveController.getButton(Button.kB).whenHeld(intakeToPierre());
     }
 }

@@ -45,10 +45,8 @@ public class Indexer extends SubsystemBase {
     }
 
     public SequentialCommandGroup intakeToPierre() {
-        return new SequentialCommandGroup(singulatorPossesion(), pierrePossesion(), runToClear());
+        return new SequentialCommandGroup(pierrePossesion(), runToClear());
     }
-   
-
 
     public CommandBase indexMotor(final double motorSpeed) {
         return new StartEndCommand(() -> {
@@ -98,6 +96,10 @@ public class Indexer extends SubsystemBase {
      */
     public CommandBase singulatorPossesion() {
         return new CommandBase() {
+            {
+                addRequirements(Indexer.this);
+            }
+
 
             @Override
             public boolean isFinished() {
@@ -108,7 +110,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                singulator.set(singulatorMotorSpeed);
+               // singulator.set(singulatorMotorSpeed);
 
             }
 
@@ -124,7 +126,15 @@ public class Indexer extends SubsystemBase {
     public CommandBase pierrePossesion() {
         return new CommandBase() {
 
-            @Override
+                @Override
+                public void initialize() {
+                if (irSensor1.getVoltage() > 1.5) {
+                    pierreMotor.set(pierreIndexSpeed);
+                    singulator.set(singulatorMotorSpeed);
+                }
+            }
+             
+
             public boolean isFinished() {
                 return irSensor2.getVoltage() > 2.0;
                 // values of .8 when open, 2.4 when closed
@@ -133,8 +143,8 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                pierreMotor.set(pierreIndexSpeed);
-                singulator.set(singulatorMotorSpeed);
+                 pierreMotor.set(.85);
+                singulator.set(.85);
 
             }
 
@@ -142,7 +152,6 @@ public class Indexer extends SubsystemBase {
             public void end(boolean interrupted) {
                 pierreMotor.set(0);
                 singulator.set(0);
-
             }
 
         };
@@ -151,6 +160,10 @@ public class Indexer extends SubsystemBase {
 
     public CommandBase loadBallToTop() {
         return new CommandBase() {
+
+            {
+                addRequirements(Indexer.this);
+            }
 
             @Override
             public boolean isFinished() {
@@ -168,7 +181,6 @@ public class Indexer extends SubsystemBase {
             @Override
             public void end(boolean interrupted) {
                 pierreMotor.set(0);
-
             }
 
         };
@@ -177,6 +189,10 @@ public class Indexer extends SubsystemBase {
 
     public CommandBase runToClear() {
         return new CommandBase() {
+
+            {
+                addRequirements(Indexer.this);
+            }
 
             @Override
             public void initialize() {
