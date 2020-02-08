@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
@@ -81,6 +82,7 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
+        indexer.setDefaultCommand(indexer.intakeToPierre());
     }
 
     /**
@@ -149,12 +151,11 @@ public class Robot extends TimedRobot {
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.runRoller());
         driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinMotor());
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.stopMotor());
         driveController.getButton(Button.kX).whenHeld(indexer.runPierre());
-        driveController.getButton(Button.kB).whenHeld(intake.runIntakeReverse());
+        driveController.getButton(Button.kB).whenHeld(intakeToPierre());
     }
 }

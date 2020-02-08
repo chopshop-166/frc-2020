@@ -5,6 +5,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -41,11 +42,15 @@ public class Indexer extends SubsystemBase {
         irSensor3 = map.irSensor3();
         pierreMotor = map.pierreMotor();
         // singulatorMotor = map.singulator();
-
-        SendableRegistry.add(irSensor1, "IRSensor");
     }
 
-    private CommandBase indexMotor(final double motorSpeed) {
+    public SequentialCommandGroup intakeToPierre() {
+        return new SequentialCommandGroup(singulatorPossesion(), pierrePossesion(), runToClear());
+    }
+   
+
+
+    public CommandBase indexMotor(final double motorSpeed) {
         return new StartEndCommand(() -> {
             singulator.set(motorSpeed);
         }, () -> {
