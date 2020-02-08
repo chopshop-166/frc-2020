@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 @RobotMapFor("Hyperion")
 public class HyperionMap extends RobotMap {
 
+    @Override
     public DifferentialDriveMap getDriveMap() {
         return new DifferentialDriveMap() {
 
