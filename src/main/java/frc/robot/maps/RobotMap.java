@@ -71,27 +71,27 @@ public class RobotMap {
             return new MockSpeedController();
         }
 
-        default public SendableSpeedController elevatorRight() {
+        public SendableSpeedController elevatorRight() {
             return new MockSpeedController();
         }
 
-        default public Solenoid liftBrake() {
+        public Solenoid liftBrake() {
             return new Solenoid(0);
         }
 
-        default public InvertDigitalInput upperLiftLimit() {
+        public InvertDigitalInput upperLiftLimit() {
             return new InvertDigitalInput(0);
         }
 
-        default public InvertDigitalInput lowerLiftLimit() {
+        public InvertDigitalInput lowerLiftLimit() {
             return new InvertDigitalInput(0);
         }
 
-        default public Encoder getLeftEncoder() {
+        public Encoder getLeftEncoder() {
             return new Encoder(6, 7);
         }
 
-        default public Encoder getRightEncoder() {
+        public Encoder getRightEncoder() {
             return new Encoder(8, 9);
         }
 
