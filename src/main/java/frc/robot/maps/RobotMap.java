@@ -9,10 +9,6 @@ import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 
-public interface RobotMap {
-    public interface DriveMap {
-        public SendableSpeedController left();
-
 public class RobotMap {
     public static class DriveMap {
         public SendableSpeedController left() {
@@ -64,36 +60,38 @@ public class RobotMap {
 
     // TODO replace these values once true ports are determined
 
-    public interface LiftMap {
-        default public SendableSpeedController elevatorLeft() {
+    public static class LiftMap {
+        public SendableSpeedController elevatorLeft() {
             return new MockSpeedController();
         }
 
-        default public SendableSpeedController elevatorRight() {
+        public SendableSpeedController elevatorRight() {
             return new MockSpeedController();
         }
 
-        default public Solenoid liftBrake() {
+        public Solenoid liftBrake() {
             return new Solenoid(0);
         }
 
-        default public InvertDigitalInput upperLiftLimit() {
+        public InvertDigitalInput upperLiftLimit() {
             return new InvertDigitalInput(0);
         }
 
-        default public InvertDigitalInput lowerLiftLimit() {
+        public InvertDigitalInput lowerLiftLimit() {
             return new InvertDigitalInput(0);
         }
 
-        default public Encoder getLeftEncoder() {
+        public Encoder getLeftEncoder() {
             return new Encoder(6, 7);
         }
 
-        default public Encoder getRightEncoder() {
+        public Encoder getRightEncoder() {
             return new Encoder(8, 9);
         }
     }
 
-    public LiftMap getLiftMap();
+    public LiftMap getLiftMap() {
+        return new LiftMap();
+    }
 
 }
