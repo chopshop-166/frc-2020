@@ -30,8 +30,8 @@ public class Indexer extends SubsystemBase {
     AnalogInput irSensor2;
     AnalogInput irSensor3;
 
-    private static final double indexMotorSpeed = 0.85;
-    private static final double setIndexSpeed = 0.85;
+    private static final double singulatorMotorSpeed = 0.85;
+    private static final double pierreIndexSpeed = 0.85;
 
     public Indexer(final IndexMap map) {
         super();
@@ -70,19 +70,19 @@ public class Indexer extends SubsystemBase {
     // }
 
     public CommandBase quicklyPush() {
-        return indexMotor(indexMotorSpeed);
+        return indexMotor(singulatorMotorSpeed);
     }
 
     public CommandBase reversePush() {
-        return indexMotor(indexMotorSpeed / 2);
+        return indexMotor(singulatorMotorSpeed / 2);
     }
 
     public CommandBase quicklyOutput() {
-        return indexMotor(setIndexSpeed);
+        return indexMotor(pierreIndexSpeed);
     }
 
     public CommandBase reverseOutput() {
-        return indexMotor(setIndexSpeed / 2);
+        return indexMotor(pierreIndexSpeed / 2);
     }
 
     /*
@@ -103,7 +103,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                singulator.set(indexMotorSpeed);
+                singulator.set(singulatorMotorSpeed);
 
             }
 
@@ -128,13 +128,15 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                pierreMotor.set(indexMotorSpeed);
+                pierreMotor.set(pierreIndexSpeed);
+                singulator.set(singulatorMotorSpeed);
 
             }
 
             @Override
             public void end(boolean interrupted) {
                 pierreMotor.set(0);
+                singulator.set(0);
 
             }
 
@@ -154,7 +156,40 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                pierreMotor.set(indexMotorSpeed);
+                pierreMotor.set(pierreIndexSpeed);
+
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                pierreMotor.set(0);
+
+            }
+
+        };
+
+    }
+
+    public CommandBase runToClear() {
+        return new CommandBase() {
+
+            @Override
+            public void initialize() {
+                if (irSensor2.getVoltage() > 2.0) {
+                    pierreMotor.set(pierreIndexSpeed);
+                }
+            }
+
+            @Override
+            public boolean isFinished() {
+                return irSensor2.getVoltage() < 2.0;
+                // values of .8 when open, 2.4 when closed
+
+            }
+
+            @Override
+            public void execute() {
+                // pierreMotor.set(0);
 
             }
 

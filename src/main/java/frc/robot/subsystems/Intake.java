@@ -14,27 +14,23 @@ import frc.robot.maps.RobotMap;
 
 public class Intake extends SubsystemBase {
     private SendableSpeedController intakeMotor;
-    private SendableSpeedController singulatorMotor;
-    private SendableSpeedController pierreMotor;
 
-    private static final double motorSpeed = 0.5;
+    private static final double motorSpeed = 0.85;
+    private static final double motorStop = 0;
 
     public Intake(final RobotMap.IntakeMap map) {
         super();
         intakeMotor = map.intake();
-        singulatorMotor = map.singulator();
 
     }
 
     public CommandBase runRoller() {
         return new StartEndCommand(() -> {
             intakeMotor.set(motorSpeed);
-            singulatorMotor.set(motorSpeed);
-            pierreMotor.set(.75);
+
         }, () -> {
-            intakeMotor.stopMotor();
-            singulatorMotor.stopMotor();
-            pierreMotor.stopMotor();
+            intakeMotor.set(motorStop);
+
         }, this);
     }
 
@@ -42,7 +38,7 @@ public class Intake extends SubsystemBase {
         return new StartEndCommand(() -> {
             intakeMotor.set(-motorSpeed);
         }, () -> {
-            intakeMotor.stopMotor();
+            intakeMotor.set(motorStop);
 
         }, this);
     }
