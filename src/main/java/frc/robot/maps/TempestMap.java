@@ -1,12 +1,14 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 
-public class TempestMap implements RobotMap {
+@RobotMapFor("Tempest")
+public class TempestMap extends RobotMap {
 
     @Override
     public DriveMap getDriveMap() {
@@ -27,30 +29,12 @@ public class TempestMap implements RobotMap {
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
             @Override
-            public SendableSpeedController roller() {
+            public SendableSpeedController intake() {
                 final Talon rollerMotor = new Talon(0);
                 rollerMotor.setInverted(true);
                 return SendableSpeedController.wrap(rollerMotor);
             }
         };
-
     }
 
-    @Override
-    public ShooterMap getShooterMap() {
-        return new ShooterMap() {
-        };
-    }
-
-    @Override
-    public ControlPanelMap getControlPanelMap() {
-        return new ControlPanelMap() {
-        };
-    }
-
-    @Override
-    public LiftMap getLiftMap() {
-        return new LiftMap() {
-        };
-    }
 }

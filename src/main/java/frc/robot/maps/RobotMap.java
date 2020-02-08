@@ -1,5 +1,7 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.outputs.IDSolenoid;
+import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
@@ -11,34 +13,54 @@ public interface RobotMap {
     public interface DriveMap {
         public SendableSpeedController left();
 
-        public SendableSpeedController right();
-    }
+public class RobotMap {
+    public static class DriveMap {
+        public SendableSpeedController left() {
+            return new MockSpeedController();
+        }
 
-    public DriveMap getDriveMap();
-
-    public interface IntakeMap {
-        default public SendableSpeedController roller() {
+        public SendableSpeedController right() {
             return new MockSpeedController();
         }
     }
 
-    public IntakeMap getIntakeMap();
+    public DriveMap getDriveMap() {
+        return new DriveMap();
+    }
 
-    public interface ShooterMap {
-        default public SendableSpeedController shooterWheel() {
+    public static class IntakeMap {
+        public SendableSpeedController intake() {
+            return new MockSpeedController();
+        }
+
+        public IDSolenoid deployIntake() {
+            return new MockDSolenoid();
+        }
+    }
+
+    public IntakeMap getIntakeMap() {
+        return new IntakeMap();
+    }
+
+    public static class ShooterMap {
+        public SendableSpeedController shooterWheel() {
             return new MockSpeedController();
         }
     }
 
-    public ShooterMap getShooterMap();
+    public ShooterMap getShooterMap() {
+        return new ShooterMap();
+    }
 
-    public interface ControlPanelMap {
-        default public SendableSpeedController spinner() {
+    public static class ControlPanelMap {
+        public SendableSpeedController spinner() {
             return new MockSpeedController();
         }
     }
 
-    public ControlPanelMap getControlPanelMap();
+    public ControlPanelMap getControlPanelMap() {
+        return new ControlPanelMap();
+    }
 
     // TODO replace these values once true ports are determined
 

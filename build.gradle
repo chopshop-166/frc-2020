@@ -48,6 +48,10 @@ repositories {
     mavenCentral()
 }
 
+chopshop {
+    version = "2020.2.0"
+}
+
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
