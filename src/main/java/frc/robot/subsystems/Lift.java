@@ -39,6 +39,8 @@ public class Lift extends SubsystemBase {
 
     private static final double elevatorMotorSpeed = 1;
 
+    boolean isBraked = elevatorBrake.get();
+
     // TO DO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
         super();
@@ -83,6 +85,16 @@ public class Lift extends SubsystemBase {
     public InstantCommand diengageBrake() {
         return new InstantCommand(() -> {
             elevatorBrake.set(false);
+        });
+    }
+
+    public InstantCommand toggleBrake() {
+        return new InstantCommand(() -> {
+            if (isBraked == false) {
+                elevatorBrake.set(true);
+            } else
+                elevatorBrake.set(false);
+
         });
     }
 
