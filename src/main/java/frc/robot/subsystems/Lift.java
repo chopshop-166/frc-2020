@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -66,9 +68,9 @@ public class Lift extends SubsystemBase {
         }
     }
 
-    public CommandBase manuel(double rTrig, double lTrig) {
+    public CommandBase manualLift(DoubleSupplier speed) {
         return new RunCommand(() -> {
-            elevatorMotor.set(rTrig - lTrig);
+            elevatorMotor.set(speed.getAsDouble());
         }, this);
     }
 
