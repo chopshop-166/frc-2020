@@ -7,6 +7,7 @@ import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
+import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -66,6 +67,8 @@ public class RobotMap {
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap();
     }
+
+    // TODO replace these values once true ports are determined
 
     public static class LiftMap {
         public SendableSpeedController elevatorLeft() {
