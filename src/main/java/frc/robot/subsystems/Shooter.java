@@ -32,7 +32,6 @@ public class Shooter extends SubsystemBase {
         y = 98.25;
         speed = SmartDashboard.getNumber("YeetSpeed", speed);
         shooterWheelMotor = map.shooterWheel();
-        System.out.println(calculateVelocity(200));
     }
 
     public CommandBase spinUp() {
@@ -50,21 +49,23 @@ public class Shooter extends SubsystemBase {
     /**
      * Finds the needed velocity to hit target (inches) (x,y) with a given launch
      * angle (theta).
-     * 
-     * NOTE: xtanθ has to be greater than y- if it isn't then it is impossible to
-     * reach that point with given launch angle. Eg. trying to hit a target at (1,
-     * 100) with a launch angle of 1 degree.
-     * 
-     * P.S. To change from freedom units, change gravity to fit your unit and it
-     * should work.
      */
 
     public static double calculateVelocity(double x) {
-        double gravitySide = gravity * x * x;
-        double tanSide = x * Math.tan(Math.toRadians(theta)) - y;
-        double cosSide = Math.cos(Math.toRadians(theta)) * Math.cos(Math.toRadians(theta));
+        /**
+         * xtanθ has to be greater than y- if it isn't then it is impossible to reach
+         * that point with given launch angle. Eg. trying to hit a target at (1, 100)
+         * with a launch angle of 1 degree.
+         */
+        if (x * Math.tan(Math.toRadians(theta)) >= y) {
+            double gravitySide = gravity * x * x;
+            double tanSide = x * Math.tan(Math.toRadians(theta)) - y;
+            double cosSide = Math.cos(Math.toRadians(theta)) * Math.cos(Math.toRadians(theta));
 
-        double velocity = Math.sqrt(gravitySide / tanSide / cosSide / 2);
-        return velocity;
+            double velocity = Math.sqrt(gravitySide / tanSide / cosSide / 2);
+            return velocity;
+        } else {
+            return 0;
+        }
     }
 }
