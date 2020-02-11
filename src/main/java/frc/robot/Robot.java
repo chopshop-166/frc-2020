@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.TempestMap;
@@ -145,6 +146,12 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
+    public ParallelCommandGroup singulatorAndIntake(){
+
+        return new ParallelCommandGroup(intake.runRoller(), indexer.indexMotor(.85)) ;
+    }
+    
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -152,10 +159,11 @@ public class Robot extends TimedRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.runRoller());
+        driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
         driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinMotor());
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.stopMotor());
         driveController.getButton(Button.kX).whenHeld(indexer.runPierre());
-        // driveController.getButton(Button.kB).whenHeld(intakeToPierre());
+       // driveController.getButton(Button.kB).whenHeld(indexer.intakeToPierre());
+
     }
 }

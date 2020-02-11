@@ -5,6 +5,8 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,26 +28,39 @@ import frc.robot.maps.RobotMap.IndexMap;
 
 public class Indexer extends SubsystemBase {
     final SendableSpeedController singulator;
-    private SendableSpeedController pierreMotor;
-    AnalogInput irSensor1;
-    AnalogInput irSensor2;
-    AnalogInput irSensor3;
+    private final SendableSpeedController pierreMotor;
+    AnalogInput frontIntakeIR;
+    AnalogInput bottomPierreIR;
+    AnalogInput topPierreIR;
+    AnalogInput backIntakeIR;
 
-    private static final double singulatorMotorSpeed = 0.85;
+    private static final double singulatorMotorSpeed = 0.95;
     private static final double pierreIndexSpeed = 0.85;
+    private static final double irSensorVoltage  = 1.5;
 
     public Indexer(final IndexMap map) {
         super();
         singulator = map.singulator();
-        irSensor1 = map.irSensor1();
-        irSensor2 = map.irSensor2();
-        irSensor3 = map.irSensor3();
+        frontIntakeIR = map.frontIntakeIR();
+        bottomPierreIR = map.bottomPierreIR();
+        topPierreIR = map.topPierreIR();
+        backIntakeIR = map.backIntakeIR();
         pierreMotor = map.pierreMotor();
         // singulatorMotor = map.singulator();
     }
 
     public SequentialCommandGroup intakeToPierre() {
         return new SequentialCommandGroup(pierrePossesion(), runToClear());
+    }
+
+    public ParallelDeadlineGroup topSensorTriggered(){
+        ParallelDeadlineGroup topIRStop = new ParallelDeadlineGroup(intakeToPierre(), pierrePossesion(), singulatorPossesion(),
+                loadBallToTop(), runToClear());
+
+
+         topIRStop.setDeadline(stopWhenBallsAtTop());
+
+         return topIRStop;
     }
 
     public CommandBase indexMotor(final double motorSpeed) {
@@ -103,7 +118,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return irSensor1.getVoltage() > 1.5;
+                return frontIntakeIR.getVoltage() > irSensorVoltage;
                 // values of .8 when open, 1.7 when closed
 
             }
@@ -115,7 +130,7 @@ public class Indexer extends SubsystemBase {
             }
 
             @Override
-            public void end(boolean interrupted) {
+            public void end(final boolean interrupted) {
                 singulator.set(0);
             }
 
@@ -128,7 +143,11 @@ public class Indexer extends SubsystemBase {
 
                 @Override
                 public void initialize() {
-                if (irSensor1.getVoltage() > 1.5) {
+                if (frontIntakeIR.getVoltage() > irSensorVoltage) {
+                    
+                    singulator.set(singulatorMotorSpeed);
+                }
+                if (backIntakeIR.getVoltage() > irSensorVoltage) {
                     pierreMotor.set(pierreIndexSpeed);
                     singulator.set(singulatorMotorSpeed);
                 }
@@ -136,20 +155,25 @@ public class Indexer extends SubsystemBase {
              
 
             public boolean isFinished() {
-                return irSensor2.getVoltage() > 2.0;
+                return bottomPierreIR.getVoltage() > irSensorVoltage;
                 // values of .8 when open, 2.4 when closed
 
             }
 
             @Override
             public void execute() {
-                 pierreMotor.set(.85);
-                singulator.set(.85);
-
+                if (frontIntakeIR.getVoltage() > irSensorVoltage) {
+                  
+                    singulator.set(singulatorMotorSpeed);
+                }
+                if (backIntakeIR.getVoltage() > irSensorVoltage) {
+                    pierreMotor.set(pierreIndexSpeed);
+                    singulator.set(singulatorMotorSpeed);
+                }
             }
 
             @Override
-            public void end(boolean interrupted) {
+            public void end(final boolean interrupted) {
                 pierreMotor.set(0);
                 singulator.set(0);
             }
@@ -167,7 +191,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return irSensor3.getVoltage() > 2.0;
+                return topPierreIR.getVoltage() > irSensorVoltage;
                 // values of .8 when open, 2.4 when closed
 
             }
@@ -179,7 +203,7 @@ public class Indexer extends SubsystemBase {
             }
 
             @Override
-            public void end(boolean interrupted) {
+            public void end(final boolean interrupted) {
                 pierreMotor.set(0);
             }
 
@@ -196,14 +220,14 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void initialize() {
-                if (irSensor2.getVoltage() > 2.0) {
+                if (bottomPierreIR.getVoltage() > irSensorVoltage) {
                     pierreMotor.set(pierreIndexSpeed);
                 }
             }
 
             @Override
             public boolean isFinished() {
-                return irSensor2.getVoltage() < 2.0;
+                return bottomPierreIR.getVoltage() < irSensorVoltage;
                 // values of .8 when open, 2.4 when closed
 
             }
@@ -215,7 +239,7 @@ public class Indexer extends SubsystemBase {
             }
 
             @Override
-            public void end(boolean interrupted) {
+            public void end(final boolean interrupted) {
                 pierreMotor.set(0);
 
             }
@@ -223,5 +247,41 @@ public class Indexer extends SubsystemBase {
         };
 
     }
+
+    public CommandBase stopWhenBallsAtTop() {
+        return new CommandBase() {
+
+
+            @Override
+            public void initialize() {
+
+            }
+
+            @Override
+            public boolean isFinished() {
+                return topPierreIR.getVoltage() > irSensorVoltage;
+                // values of .8 when open, 2.4 when closed
+
+            }
+
+            @Override
+            public void execute() {
+                // pierreMotor.set(0);
+
+            }
+
+            @Override
+            public void end(final boolean interrupted) {
+                pierreMotor.set(0);
+                singulator.set(0);
+                
+
+            }
+
+        };
+
+    }
+    
+
 
 }

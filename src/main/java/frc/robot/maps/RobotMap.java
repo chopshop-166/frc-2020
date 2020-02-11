@@ -88,16 +88,20 @@ public class RobotMap {
             return new MockSpeedController();
         }
 
-        public AnalogInput irSensor1() {
+        public AnalogInput frontIntakeIR() {
             return new AnalogInput(0);
         }
 
-        public AnalogInput irSensor2() {
+        public AnalogInput bottomPierreIR() {
             return new AnalogInput(1);
         }
 
-        public AnalogInput irSensor3() {
+        public AnalogInput topPierreIR() {
             return new AnalogInput(2);
+        }
+        
+        public AnalogInput backIntakeIR() {
+            return new AnalogInput(3);
         }
     }
 

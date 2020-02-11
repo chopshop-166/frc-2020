@@ -58,20 +58,24 @@ public class TempestMap extends RobotMap {
 
             @Override
 
-            public AnalogInput irSensor1() {
+            public AnalogInput frontIntakeIR() {
                 return new AnalogInput(0);
             }
 
             @Override
 
-            public AnalogInput irSensor2() {
+            public AnalogInput bottomPierreIR() {
                 return new AnalogInput(1);
             }
 
             @Override
 
-            public AnalogInput irSensor3() {
+            public AnalogInput topPierreIR() {
                 return new AnalogInput(2);
+            }
+            
+            public AnalogInput backIntakeIR() {
+                return new AnalogInput(3);
             }
 
         };
