@@ -1,16 +1,16 @@
 Subsystem and Command | Controller and Button mapping
 ------------ | -------------
-Intake: Intake | Copilot Controller: X
-Intake: Discharge | Copilot Controller: Right Bumper
-Lift: Lift Top | Copilot Controller: Y
-Lift: Lift Middle | Copilot Controller: B
-Lift: Lift Bottom | Copilot Controller: A
+Intake: Intake | Copilot Controller: A
+Intake: Discharge | Copilot Controller: B
+Lift: Lift Top | Copilot Controller: ?
+Lift: Lift Middle | Copilot Controller: ?
+Lift: Lift Bottom | Copilot Controller: ?
 Lift: Elevator Up | Copilot Controller: Right Trigger
 Lift: Elevator Down | Copilot Controller: Left Trigger
-Control Panel: Spin Forwards | Drive Controller: X
-Control Panel: Spin Backwards | Drive Controller: Y
+Control Panel: Spin Forwards | Copilot Controller: Right Bumper
+Control Panel: Spin Backwards | Copilot Controller: Left Bumper
 Shooter: Spin Motor | Drive Controller: A
 Shooter: Stop Motor | Drive Controller: B
-Drive: Drive | Drive Controller: ?
-Drive: Drive Flip | Drive Controller: ?
+Drive: Drive | Drive Controller: Arcade Drive (Triggers for speed; left joystick    for turning)
+Drive: Drive Flip | Drive Controller: Y
 Indexer: | ? Controller: ?
