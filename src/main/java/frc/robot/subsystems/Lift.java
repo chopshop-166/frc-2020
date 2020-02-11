@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -63,6 +64,12 @@ public class Lift extends SubsystemBase {
         private liftHeights(int iPosition) {
             this.iPosition = iPosition;
         }
+    }
+
+    public CommandBase manuel(double rTrig, double lTrig) {
+        return new RunCommand(() -> {
+            elevatorMotor.set(rTrig - lTrig);
+        }, this);
     }
 
     public InstantCommand engageBrake() {

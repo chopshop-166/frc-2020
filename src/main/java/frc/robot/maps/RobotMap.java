@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 public class RobotMap {
     public static class DriveMap {
