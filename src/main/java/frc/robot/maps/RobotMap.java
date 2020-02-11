@@ -99,17 +99,9 @@ public class RobotMap {
             return new Encoder(8, 9);
         }
 
-        public Encoder getLeftEncoder() {
-            return new Encoder(6, 7);
-        }
-
-        public Encoder getRightEncoder() {
-            return new Encoder(8, 9);
-        }
     }
 
     public LiftMap getLiftMap() {
         return new LiftMap();
     }
-
 }
