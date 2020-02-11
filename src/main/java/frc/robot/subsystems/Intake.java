@@ -21,6 +21,7 @@ public class Intake extends SubsystemBase {
     private final IDSolenoid deployPiston;
 
     @Log
+    public String tabName = "Constants";
     private static final double INTAKE_MOTOR_SPEED = 0.85;
     private static final double INTAKE_DISCHARGE = -0.85;
 
