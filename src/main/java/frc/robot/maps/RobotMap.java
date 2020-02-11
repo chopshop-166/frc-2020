@@ -32,10 +32,15 @@ public class RobotMap {
         public SendableSpeedController shooterWheel() {
             return new MockSpeedController();
         }
+
+        public double shooterHeight() {
+            return 45;
+        }
     }
 
     public ShooterMap getShooterMap() {
         return new ShooterMap();
+
     }
 
     public static class ControlPanelMap {
