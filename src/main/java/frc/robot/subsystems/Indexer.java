@@ -4,6 +4,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -33,6 +34,7 @@ public class Indexer extends SubsystemBase {
     AnalogInput bottomPierreIR;
     AnalogInput topPierreIR;
     AnalogInput backIntakeIR;
+    public double ballCounting;
 
     private static final double singulatorMotorSpeed = 0.95;
     private static final double pierreIndexSpeed = 0.85;
@@ -176,6 +178,8 @@ public class Indexer extends SubsystemBase {
             public void end(final boolean interrupted) {
                 pierreMotor.set(0);
                 singulator.set(0);
+                SmartDashboard.putNumber("Ball Count", ballCounting);
+
             }
 
         };
@@ -205,6 +209,39 @@ public class Indexer extends SubsystemBase {
             @Override
             public void end(final boolean interrupted) {
                 pierreMotor.set(0);
+               
+            }
+
+        };
+
+    }
+    
+    public CommandBase unLoadBall() {
+        return new CommandBase() {
+
+            {
+                addRequirements(Indexer.this);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return topPierreIR.getVoltage() < irSensorVoltage;
+                // values of .8 when open, 2.4 when closed
+
+            }
+
+            @Override
+            public void execute() {
+                pierreMotor.set(pierreIndexSpeed);
+
+            }
+
+            @Override
+            public void end(final boolean interrupted) {
+                pierreMotor.set(0);
+                ballCounting--;
+                SmartDashboard.putNumber("Ball Count", ballCounting);
+
             }
 
         };
@@ -241,6 +278,8 @@ public class Indexer extends SubsystemBase {
             @Override
             public void end(final boolean interrupted) {
                 pierreMotor.set(0);
+                ballCounting++;
+                SmartDashboard.putNumber("Ball Count", ballCounting);
 
             }
 

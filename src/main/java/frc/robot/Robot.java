@@ -61,6 +61,7 @@ public class Robot extends TimedRobot {
     final private Indexer indexer = new Indexer(map.getIndexerMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
+    //public double ballCounting;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -77,6 +78,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("runtoclear", indexer.runToClear());
+        // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
 
@@ -163,7 +165,8 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinMotor());
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.stopMotor());
         driveController.getButton(Button.kX).whenHeld(indexer.runPierre());
-       // driveController.getButton(Button.kB).whenHeld(indexer.intakeToPierre());
+        driveController.getButton(Button.kB).whenPressed(indexer.unLoadBall());
+        driveController.getButton(Button.kY).whenPressed(indexer.loadBallToTop());
 
     }
 }
