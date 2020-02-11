@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import io.github.oblarg.oblog.annotations.Log;
 
 // The Intake takes in the balls from the ground and it is raised and retracted by pneumatic pistons 
 // There is only one speed for the intake motor (Member: Motor) 
@@ -19,6 +20,7 @@ public class Intake extends SubsystemBase {
     private final SendableSpeedController intakeMotor;
     private final IDSolenoid deployPiston;
 
+    @Log
     private static final double INTAKE_MOTOR_SPEED = 0.85;
     private static final double INTAKE_DISCHARGE = -0.85;
 
