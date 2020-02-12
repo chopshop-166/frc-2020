@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-@RobotMapFor("Tempest")
+@RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
 
     @Override
