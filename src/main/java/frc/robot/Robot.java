@@ -61,7 +61,6 @@ public class Robot extends TimedRobot {
     final private Indexer indexer = new Indexer(map.getIndexerMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
-    //public double ballCounting;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -130,7 +129,8 @@ public class Robot extends TimedRobot {
             autonomousCommand.schedule();
         }
     }
-
+    
+ 
     @Override
     public void teleopInit() {
         // This makes sure that the autonomous stops running when
@@ -153,6 +153,12 @@ public class Robot extends TimedRobot {
         return new ParallelCommandGroup(intake.runRoller(), indexer.indexMotor(.85)) ;
     }
     
+    public ParallelCommandGroup cancelCommand() {
+
+        return new ParallelCommandGroup(intake.runIntakeReverse(), indexer.reversePush());
+    }
+
+    
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
@@ -164,9 +170,9 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
         driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinMotor());
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.stopMotor());
-        driveController.getButton(Button.kX).whenHeld(indexer.runPierre());
+        driveController.getButton(Button.kX).whenHeld(cancelCommand());
         driveController.getButton(Button.kB).whenPressed(indexer.unLoadBall());
-        driveController.getButton(Button.kY).whenPressed(indexer.loadBallToTop());
+        driveController.getButton(Button.kY).whenPressed(indexer.shootOneBall());
 
     }
 }

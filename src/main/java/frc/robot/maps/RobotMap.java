@@ -1,11 +1,15 @@
 package frc.robot.maps;
 
+import java.util.function.BooleanSupplier;
+
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.MockAnalogInput;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogTrigger;
 
 public class RobotMap {
     public static class DriveMap {
@@ -88,21 +92,27 @@ public class RobotMap {
             return new MockSpeedController();
         }
 
-        public AnalogInput frontIntakeIR() {
-            return new AnalogInput(0);
+        public BooleanSupplier frontIntakeIR(){
+            return ()-> false;
         }
 
-        public AnalogInput bottomPierreIR() {
-            return new AnalogInput(1);
-        }
-
-        public AnalogInput topPierreIR() {
-            return new AnalogInput(2);
+        public BooleanSupplier bottomPierreIR() {
+            return () -> false;
         }
         
-        public AnalogInput backIntakeIR() {
-            return new AnalogInput(3);
+        public BooleanSupplier topPierreIR() {
+            return () -> false;
         }
+
+        public BooleanSupplier backIntakeIR() {
+            return () -> false;
+        }
+
+
+        // AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
+        // AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
+        // AnalogTrigger topPierreIR = new AnalogTrigger(2);
+        // AnalogTrigger backIntakeIR = new AnalogTrigger(3);
     }
 
     public IndexMap getIndexerMap() {

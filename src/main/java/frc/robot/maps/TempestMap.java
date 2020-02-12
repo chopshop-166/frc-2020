@@ -1,10 +1,13 @@
 package frc.robot.maps;
 
+import java.util.function.BooleanSupplier;
+
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
@@ -55,28 +58,35 @@ public class TempestMap extends RobotMap {
                 final Victor pierreMotor = new Victor(5);
                 return SendableSpeedController.wrap(pierreMotor);
             }
-
-            @Override
-
-            public AnalogInput frontIntakeIR() {
-                return new AnalogInput(0);
-            }
-
-            @Override
-
-            public AnalogInput bottomPierreIR() {
-                return new AnalogInput(1);
-            }
-
-            @Override
-
-            public AnalogInput topPierreIR() {
-                return new AnalogInput(2);
-            }
             
-            public AnalogInput backIntakeIR() {
-                return new AnalogInput(3);
+            public BooleanSupplier frontIntakeIR() {
+                AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
+                frontIntakeIR.setLimitsVoltage(1.2,1.4);
+                return frontIntakeIR::getTriggerState;
             }
+
+            public BooleanSupplier bottomPierreIR() {
+                AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
+                bottomPierreIR.setLimitsVoltage(1.2, 1.4);
+                return bottomPierreIR::getTriggerState;            }
+
+            public BooleanSupplier topPierreIR() {
+                AnalogTrigger topPierreIR = new AnalogTrigger(2);
+                topPierreIR.setLimitsVoltage(1.2, 1.4);
+                return topPierreIR::getTriggerState;            }
+
+            public BooleanSupplier backIntakeIR() {
+                AnalogTrigger backIntakeIR = new AnalogTrigger(3);
+                backIntakeIR.setLimitsVoltage(1.2, 1.4);
+                return backIntakeIR::getTriggerState;
+            }
+
+
+    
+            // AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
+            // AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
+            // AnalogTrigger topPierreIR = new AnalogTrigger(2);
+            // AnalogTrigger backIntakeIR = new AnalogTrigger(3);
 
         };
     }
