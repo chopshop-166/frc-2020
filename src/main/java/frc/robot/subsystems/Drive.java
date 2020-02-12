@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 
+import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -27,8 +29,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class Drive extends SubsystemBase {
 
-    private final SendableSpeedController rightMotorGroup;
-    private final SendableSpeedController leftMotorGroup;
+    private final EncodedSpeedController rightMotorGroup;
+    private final EncodedSpeedController leftMotorGroup;
+    private final GyroBase gyro;
     private final DifferentialDrive driveTrain;
 
     /**
@@ -41,6 +44,7 @@ public class Drive extends SubsystemBase {
         super();
         rightMotorGroup = map.getRight();
         leftMotorGroup = map.getLeft();
+        gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
     }
 
@@ -59,7 +63,31 @@ public class Drive extends SubsystemBase {
             driveTrain.arcadeDrive(yAxis, xAxis);
         }, this);
     }
+
+    public CommandBase driveDistance(double distance, double speed) {
+        return new FunctionalCommand(() -> {
+            leftMotorGroup.reset();
+            rightMotorGroup.reset();
+        }, () -> {
+            driveTrain.arcadeDrive(speed, 0);
+        }, (interrupted) -> {
+            leftMotorGroup.stopMotor();
+            rightMotorGroup.stopMotor();
+        }, () -> {
+            return (leftMotorGroup.getDistance() >= distance && rightMotorGroup.getDistance() >= distance);
+        }, this);
+    }
+
+    public CommandBase turnDegrees(double degrees, double speed) {
+        return new FunctionalCommand(() -> {
+            gyro.reset();
+        }, () -> {
+            driveTrain.arcadeDrive(0, speed);
+        }, (interrupted) -> {
+            leftMotorGroup.stopMotor();
+            rightMotorGroup.stopMotor();
+        }, () -> {
+            return gyro.getAngle() >= degrees;
+        }, this);
+    }
 }
-
-
-    
