@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
@@ -68,7 +69,7 @@ public class Robot extends TimedRobot {
         nameEntry.setDefaultString("Unknown");
         Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
 
-        autoChooser.setDefaultOption("Nothing", new InstantCommand());
+        autoChooser.setDefaultOption("12Ticks", autoSequence());
 
         DashboardUtils.logTelemetry();
 
@@ -133,6 +134,10 @@ public class Robot extends TimedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+    }
+
+    public SequentialCommandGroup autoSequence() {
+        return new SequentialCommandGroup(drive.driveDistance(12, .2));
     }
 
     /**

@@ -4,7 +4,7 @@ import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.sensors.MockEncoder;
+import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 @RobotMapFor("Tempest")
@@ -18,14 +18,14 @@ public class TempestMap extends RobotMap {
             public EncodedSpeedController getRight() {
                 final SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
                         new WPI_TalonSRX(3));
-                return EncodedSpeedController.join(rightGroup, new MockEncoder());
+                return EncodedSpeedController.join(rightGroup, new WEncoder(0, 1));
             }
 
             @Override
             public EncodedSpeedController getLeft() {
                 final SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
                         new WPI_TalonSRX(4));
-                return EncodedSpeedController.join(leftGroup, new MockEncoder());
+                return EncodedSpeedController.join(leftGroup, new WEncoder(2, 3));
             }
         };
     }
