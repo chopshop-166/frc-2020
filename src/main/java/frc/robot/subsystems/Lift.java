@@ -2,14 +2,19 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.maps.RobotMap;
 
 /*
@@ -32,10 +37,10 @@ import frc.robot.maps.RobotMap;
 
 public class Lift extends SubsystemBase {
 
-    private Encoder leftEncoder;
-    private Encoder rightEncoder;
+    private IEncoder leftEncoder;
+    private IEncoder rightEncoder;
     private SendableSpeedController elevatorMotor;
-    private Solenoid elevatorBrake;
+    private ISolenoid elevatorBrake;
 
     private static final double elevatorMotorSpeed = 1;
 
@@ -70,10 +75,34 @@ public class Lift extends SubsystemBase {
         }
     }
 
-    public CommandBase manualLift(DoubleSupplier speed) {
-        return new RunCommand(() -> {
-            elevatorMotor.set(speed.getAsDouble());
-        }, this);
+    public CommandBase moveLift(DoubleSupplier speed) {
+        // The command is named "Move Lift" and requires this subsystem.
+        return new CommandBase() {
+
+            @Override
+            public void initialize() {
+                disengageBrake();
+
+            }
+
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            public void execute() {
+                elevatorMotor.set(speed.getAsDouble());
+
+            }
+
+            @Override
+            public void end(final boolean interrupted) {
+                engageBrake();
+
+            }
+
+        };
     }
 
     public InstantCommand engageBrake() {
@@ -82,7 +111,7 @@ public class Lift extends SubsystemBase {
         });
     }
 
-    public InstantCommand diengageBrake() {
+    public InstantCommand disengageBrake() {
         return new InstantCommand(() -> {
             elevatorBrake.set(false);
         });
@@ -98,25 +127,15 @@ public class Lift extends SubsystemBase {
         });
     }
 
-    public CommandBase extend() {
-        return new StartEndCommand(() -> {
-            elevatorMotor.set(-elevatorMotorSpeed);
-        }, () -> {
-            elevatorMotor.stopMotor();
-        }, this);
-    }
-
-    public CommandBase retract() {
-        return new StartEndCommand(() -> {
-            elevatorMotor.set(elevatorMotorSpeed);
-        }, () -> {
-            elevatorMotor.stopMotor();
-        }, this);
-    }
-
-    public CommandBase goToPoint(liftHeights iPoint) {
+    public CommandBase goToHeight(liftHeights iPoint) {
 
         return new CommandBase() {
+            @Override
+            public void initialize() {
+                disengageBrake();
+
+            }
+
             @Override
             public boolean isFinished() {
                 return getPosition == iPoint.value();
@@ -134,6 +153,7 @@ public class Lift extends SubsystemBase {
             @Override
             public void end(boolean interrupted) {
                 elevatorMotor.set(0);
+                engageBrake();
             }
         };
     }

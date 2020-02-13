@@ -1,12 +1,17 @@
 package frc.robot.maps;
 
+import java.util.function.BooleanSupplier;
+
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
+import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
+import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -71,6 +76,10 @@ public class RobotMap {
     // TODO replace these values once true ports are determined
 
     public static class LiftMap {
+
+        InvertDigitalInput topLimit = new InvertDigitalInput(1);
+        InvertDigitalInput bottomLimit = new InvertDigitalInput(0);
+
         public SendableSpeedController elevatorLeft() {
             return new MockSpeedController();
         }
@@ -79,24 +88,26 @@ public class RobotMap {
             return new MockSpeedController();
         }
 
-        public Solenoid liftBrake() {
-            return new Solenoid(0);
+        public ISolenoid liftBrake() {
+            return new MockSolenoid();
         }
 
-        public InvertDigitalInput upperLiftLimit() {
-            return new InvertDigitalInput(0);
+        public BooleanSupplier upperLiftLimit() {
+
+            return topLimit::get;
         }
 
-        public InvertDigitalInput lowerLiftLimit() {
-            return new InvertDigitalInput(0);
+        public BooleanSupplier lowerLiftLimit() {
+
+            return bottomLimit::get;
         }
 
-        public Encoder getLeftEncoder() {
-            return new Encoder(6, 7);
+        public IEncoder getLeftEncoder() {
+            return new MockEncoder();
         }
 
-        public Encoder getRightEncoder() {
-            return new Encoder(8, 9);
+        public IEncoder getRightEncoder() {
+            return new MockEncoder();
         }
 
     }

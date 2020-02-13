@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
@@ -40,8 +42,8 @@ import frc.robot.subsystems.Shooter;
 public class Robot extends TimedRobot {
 
     private Command autonomousCommand;
-    private ButtonXboxController driveController = new ButtonXboxController(1);
-    private ButtonXboxController copilotController = new ButtonXboxController(5);
+    final public ButtonXboxController driveController = new ButtonXboxController(1);
+    final public ButtonXboxController copilotController = new ButtonXboxController(5);
 
     final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
     final private String robotName = nameEntry.getString("Unknown");
@@ -73,7 +75,7 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
-        lift.setDefaultCommand(lift.manualLift(copilotController::getTriggers));
+        lift.setDefaultCommand(lift.moveLift(copilotController::getTriggers));
     }
 
     /**
