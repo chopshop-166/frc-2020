@@ -18,14 +18,20 @@ public class TempestMap extends RobotMap {
             public EncodedSpeedController getRight() {
                 final SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
                         new WPI_TalonSRX(3));
-                return EncodedSpeedController.join(rightGroup, new WEncoder(0, 1));
+                final WEncoder encoder = new WEncoder(0, 1);
+                final double distancePerPulse = (1 / 1024) * (1 / 8) * (6 * Math.PI);
+                encoder.setDistancePerPulse(distancePerPulse);
+                return EncodedSpeedController.join(rightGroup, encoder);
             }
 
             @Override
             public EncodedSpeedController getLeft() {
                 final SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
                         new WPI_TalonSRX(4));
-                return EncodedSpeedController.join(leftGroup, new WEncoder(2, 3));
+                final WEncoder encoder = new WEncoder(2, 3);
+                final double distancePerPulse = (1 / 1024) * (1 / 8) * (6 * Math.PI);
+                encoder.setDistancePerPulse(distancePerPulse);
+                return EncodedSpeedController.join(leftGroup, encoder);
             }
         };
     }

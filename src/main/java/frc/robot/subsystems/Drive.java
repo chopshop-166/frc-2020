@@ -72,8 +72,7 @@ public class Drive extends SubsystemBase {
         }, () -> {
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
-            leftMotorGroup.stopMotor();
-            rightMotorGroup.stopMotor();
+            driveTrain.stopMotor();
         }, () -> {
             return (leftMotorGroup.getDistance() >= distance && rightMotorGroup.getDistance() >= distance);
         }, this);
@@ -85,8 +84,7 @@ public class Drive extends SubsystemBase {
         }, () -> {
             driveTrain.arcadeDrive(0, speed);
         }, (interrupted) -> {
-            leftMotorGroup.stopMotor();
-            rightMotorGroup.stopMotor();
+            driveTrain.stopMotor();
         }, () -> {
             return gyro.getAngle() >= degrees;
         }, this);

@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
@@ -67,7 +66,7 @@ public class Robot extends TimedRobot {
 
         nameEntry.setPersistent();
         nameEntry.setDefaultString("Unknown");
-        Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
+        Shuffleboard.getTab("RobotData").add("RobotName", nameEntry);
 
         autoChooser.setDefaultOption("12Ticks", autoSequence());
 
