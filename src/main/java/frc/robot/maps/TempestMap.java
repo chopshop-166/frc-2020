@@ -3,7 +3,10 @@ package frc.robot.maps;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -16,31 +19,26 @@ import edu.wpi.first.wpilibj.Victor;
 public class TempestMap extends RobotMap {
 
     @Override
-    public DriveMap getDriveMap() {
-        return new DriveMap() {
+    public DifferentialDriveMap getDriveMap() {
+        return new DifferentialDriveMap() {
             @Override
-            public SendableSpeedController left() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1)));
+            public EncodedSpeedController getLeft() {
+
+                SendableSpeedController motors =  SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1)));
+                return EncodedSpeedController.join(motors,new MockEncoder());
+
+
             }
 
             @Override
-            public SendableSpeedController right() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3)));
+            public EncodedSpeedController getRight() {
+                SendableSpeedController motors = SendableSpeedController
+                        .wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3)));
+
+                return EncodedSpeedController.join(motors,
+                        new MockEncoder());
             }
         };
-    }
-
-    @Override
-    public IntakeMap getIntakeMap() {
-        return new IntakeMap() {
-            @Override
-            public SendableSpeedController intake() {
-                final Victor intakeMotor = new Victor(3);
-                return SendableSpeedController.wrap(intakeMotor);
-            }
-
-        };
-
     }
 
     @Override
@@ -106,5 +104,18 @@ public class TempestMap extends RobotMap {
                 return SendableSpeedController.wrap(rollerMotor);
             }
         };
+    }
+    
+    @Override
+    public IntakeMap getIntakeMap() {
+        return new IntakeMap() {
+            @Override
+            public SendableSpeedController intake() {
+                final Victor intakeMotor = new Victor(3);
+                return SendableSpeedController.wrap(intakeMotor);
+            }
+
+        };
+
     }
 }
