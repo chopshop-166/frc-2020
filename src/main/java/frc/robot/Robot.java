@@ -43,7 +43,8 @@ public class Robot extends TimedRobot {
     final private ButtonXboxController driveController = new ButtonXboxController(1);
     final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
-    final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
+    final private NetworkTableEntry nameEntry = Shuffleboard.getTab("RobotData").addPersistent("RobotName", "Unknown")
+            .getEntry();
     final private String robotName = nameEntry.getString("Unknown");
 
     final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
@@ -64,11 +65,8 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         configureButtonBindings();
 
-        nameEntry.setPersistent();
-        nameEntry.setDefaultString("Unknown");
-        Shuffleboard.getTab("RobotData").add("RobotName", nameEntry);
-
-        autoChooser.setDefaultOption("12Ticks", autoSequence());
+        autoChooser.setDefaultOption("Nothing", new InstantCommand());
+        autoChooser.addOption("12Ticks", autoSequence());
 
         DashboardUtils.logTelemetry();
 
