@@ -67,17 +67,13 @@ public class Drive extends SubsystemBase {
 
     public CommandBase driveDistance(double distance, double speed) {
         return new FunctionalCommand(() -> {
-            System.out.println("isInit");
             leftMotorGroup.reset();
             rightMotorGroup.reset();
         }, () -> {
-            System.out.println("isRun");
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
-            System.out.println("isFinished");
             driveTrain.stopMotor();
         }, () -> {
-            System.out.println("isFinished");
             return (leftMotorGroup.getDistance() >= distance && rightMotorGroup.getDistance() >= distance);
 
         }, this);

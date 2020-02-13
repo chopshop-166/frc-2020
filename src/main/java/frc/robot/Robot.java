@@ -137,7 +137,7 @@ public class Robot extends TimedRobot {
     }
 
     public SequentialCommandGroup autoSequence() {
-        return new SequentialCommandGroup(new PrintCommand("Start"), drive.driveDistance(12, 1),
+        return new SequentialCommandGroup(new PrintCommand("Start"), drive.driveDistance(12, .5),
                 new PrintCommand("End"));
     }
 
