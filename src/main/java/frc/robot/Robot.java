@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
     /**
      *
      */
-    private static final String CONSTANTS = "Constants";
+    private static final String CONFIGURABLEVALUE = "Configurable Values";
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
     final private ButtonXboxController copilotController = new ButtonXboxController(5);

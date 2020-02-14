@@ -13,7 +13,7 @@ public class Lift extends SubsystemBase {
     private SendableSpeedController elevatorMotor;
 
     @Log
-    public String tabName = "Constants";
+    public String tabName = "Configurable Variable";
     private static final double elevatorMotorSpeed = 1;
 
     public Lift(RobotMap.LiftMap map) {

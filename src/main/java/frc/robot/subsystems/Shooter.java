@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * What does it do? When the A button is pressed- it shoots a ball. What modes
