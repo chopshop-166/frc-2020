@@ -37,11 +37,9 @@ import frc.robot.maps.RobotMap;
 
 public class Lift extends SubsystemBase {
 
-    private IEncoder leftEncoder;
-    private IEncoder rightEncoder;
     private SendableSpeedController elevatorMotor;
     private ISolenoid elevatorBrake;
-
+    private IEncoder liftEncoder;
     private static final double elevatorMotorSpeed = 1;
 
     boolean isBraked = elevatorBrake.get();
@@ -49,9 +47,7 @@ public class Lift extends SubsystemBase {
     // TO DO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
         super();
-        leftEncoder = map.getLeftEncoder();
-        rightEncoder = map.getRightEncoder();
-        elevatorMotor = map.elevatorLeft();
+        liftEncoder = map.getEncoder();
         elevatorBrake = map.liftBrake();
     }
 
