@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
 
 /**
@@ -24,9 +25,11 @@ public class Shooter extends SubsystemBase {
     public final static double GRAVITY = 386.09;
     public final static double THETA = 37;
     public final static double TARGET_HEIGHT = 98.25;
+    public static double distanceToTarget;
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
+        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 0);
         shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
