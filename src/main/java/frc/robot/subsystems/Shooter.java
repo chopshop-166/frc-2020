@@ -34,7 +34,7 @@ public class Shooter extends SubsystemBase {
 
     public CommandBase spinUp() {
         return new InstantCommand(() -> {
-            shooterWheelMotor.set(8.5); // Make a calculateRPM() function or something to get the speed
+            shooterWheelMotor.set(.85); // Make a calculateRPM() function or something to get the speed
         }, this);
     }
 
@@ -45,22 +45,18 @@ public class Shooter extends SubsystemBase {
     }
 
     /**
-     * Finds the needed velocity to hit target (inches) (x,y) with a given launch
-     * angle (THETA).
+     * Finds the needed velocity to reach a target (x, y) or (distanceToTarget,
+     * verticalDistance). The formula takes takes theta or launch angle, target and
+     * gravity.
      */
 
     public static double calculateVelocity(final double distanceToTarget) {
-        /**
-         * xtanθ has to be greater than y- if it isn't then it is impossible to reach
-         * that point with given launch angle. Eg. trying to hit a target at (1, 100)
-         * with a launch angle of 1 degree.
-         */
         if (distanceToTarget * Math.tan(Math.toRadians(THETA)) >= verticalDistance) {
-            final double GRAVITY_SIDE = GRAVITY * distanceToTarget * distanceToTarget;
-            final double TAN_SIDE = distanceToTarget * Math.tan(Math.toRadians(THETA)) - verticalDistance;
-            final double COS_SIDE = Math.cos(Math.toRadians(THETA)) * Math.cos(Math.toRadians(THETA));
+            final double gravitySide = GRAVITY * distanceToTarget * distanceToTarget;
+            final double tanSide = distanceToTarget * Math.tan(Math.toRadians(THETA)) - verticalDistance;
+            final double cosSide = Math.cos(Math.toRadians(THETA)) * Math.cos(Math.toRadians(THETA));
 
-            final double velocity = Math.sqrt(GRAVITY_SIDE / TAN_SIDE / COS_SIDE / 2);
+            final double velocity = Math.sqrt(gravitySide / tanSide / cosSide / 2);
             return velocity;
         } else {
             return 0;
