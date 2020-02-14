@@ -35,7 +35,7 @@ public class TempestMap extends RobotMap {
         return new ShooterMap() {
             @Override
             public double shooterHeight() {
-                return 0;
+                return 46.5;
             }
         };
     }
