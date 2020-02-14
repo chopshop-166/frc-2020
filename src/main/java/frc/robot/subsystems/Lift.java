@@ -3,8 +3,10 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
+import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -37,7 +39,7 @@ import frc.robot.maps.RobotMap;
 
 public class Lift extends SubsystemBase {
 
-    private SendableSpeedController elevatorMotor;
+    private PIDSpeedController elevatorMotor;
     private ISolenoid elevatorBrake;
     private IEncoder liftEncoder;
     private static final double elevatorMotorSpeed = 1;
@@ -47,7 +49,8 @@ public class Lift extends SubsystemBase {
     // TO DO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
         super();
-        liftEncoder = map.getEncoder();
+        elevatorMotor = map.elevator();
+        liftEncoder = map.getLiftEncoder();
         elevatorBrake = map.liftBrake();
     }
 

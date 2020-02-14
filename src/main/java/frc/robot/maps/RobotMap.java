@@ -9,9 +9,11 @@ import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
+import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
+import com.revrobotics.CANPIDController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 
@@ -82,7 +84,7 @@ public class RobotMap {
         InvertDigitalInput topLimit = new InvertDigitalInput(1);
         InvertDigitalInput bottomLimit = new InvertDigitalInput(0);
 
-        public SendableSpeedController elevator() {
+        public PIDSpeedController elevator() {
             return new PIDSpeedController() {
 
                 @Override
@@ -173,7 +175,8 @@ public class RobotMap {
             return bottomLimit::get;
         }
 
-        public IEncoder getEncoder() {
+        // this will be the left lift encoder (kinda gross but for now it works?)
+        public IEncoder getLiftEncoder() {
             return new MockEncoder();
         }
 
