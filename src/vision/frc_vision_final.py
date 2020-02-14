@@ -127,6 +127,7 @@ while True:
                     Y_AVG += Y_VALS[i]
                 X_AVG /= POINT_SAMPLES
                 Y_AVG /= POINT_SAMPLES
+                sd.putBoolean("seesTarget", True)
 
                 cv2.circle(FILTERED_LINE_IMG, (int(X_AVG), int(Y_AVG)), 5, [255, 255, 255], -1)
                 dist_to_target = depth_frame.get_distance(X_AVG, Y_AVG)
