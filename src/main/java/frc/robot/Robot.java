@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
         configureButtonBindings();
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
-        autoChooser.addOption("12Ticks", autoSequence());
+        autoChooser.addOption("Pass the Line", passLine());
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
@@ -136,9 +136,8 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public SequentialCommandGroup autoSequence() {
-        return new SequentialCommandGroup(new PrintCommand("Start"), drive.driveDistance(12, .5),
-                new PrintCommand("End"));
+    public SequentialCommandGroup passLine() {
+        return new SequentialCommandGroup(drive.driveDistance(40, .5));
     }
 
     /**
