@@ -62,6 +62,7 @@ while True:
 
     frames = rs2.composite_frame(pipe.wait_for_frames())
     frame = rs2.video_frame(frames.get_color_frame())
+    depth = rs2.depth_frame(frames.get_depth_frame())
     if not frame:
         continue
 
@@ -128,6 +129,7 @@ while True:
                 Y_AVG /= POINT_SAMPLES
 
                 cv2.circle(FILTERED_LINE_IMG, (int(X_AVG), int(Y_AVG)), 5, [255, 255, 255], -1)
+                dist_to_target = depth_frame.get_distance(X_AVG, Y_AVG)
             else:
                 X_VALS.append(int(X_TOTAL/(2*NUM_LINES)))
                 Y_VALS.append(int(Y_TOTAL/(2*NUM_LINES)))
@@ -135,6 +137,8 @@ while True:
         for LINE in LINES:
             x1, y1, x2, y2 = LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
+        
+    sd.putNumber("Distance To Target", dist_to_target)
     end_time = time.time()
 
     cv2.imshow("og lines", LINE_IMG)
