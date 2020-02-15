@@ -86,7 +86,7 @@ public class Drive extends SubsystemBase {
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            return gyro.getAngle() >= degrees;
+            return Math.abs(gyro.getAngle()) >= Math.abs(degrees);
         }, this);
     }
 }
