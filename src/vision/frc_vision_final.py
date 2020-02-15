@@ -124,11 +124,11 @@ while True:
 
             # Checks if we have verified lines, and makes a new line based on that.
             if FILTERED_LINES:
-                if (new_slope in range(-ANGLETHRESHOLD, ANGLETHRESHOLD) and unequal(new_slope, FILTERED_LINES):
+                if (new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD and unequal(new_slope, FILTERED_LINES):
                     X_TOTAL, Y_TOTAL=newLine(
                         FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2)
-            elif(new_slope in range(-ANGLETHRESHOLD, ANGLETHRESHOLD)):
-                newLine(FILTERED_LINES, NEW_LINE,
+                elif new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD:
+                    newLine(FILTERED_LINES, NEW_LINE,
                         FILTERED_LINE_IMG, x1, y1, x2, y2)
 
         NUM_LINES=len(FILTERED_LINES)
