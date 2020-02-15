@@ -67,7 +67,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         Logger.configureLoggingAndConfig(this, false);
-        Logger.updateEntries();
         configureButtonBindings();
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
@@ -102,6 +101,7 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+          Logger.updateEntries();
     }
 
     /**

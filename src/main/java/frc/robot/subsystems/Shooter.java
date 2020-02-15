@@ -74,8 +74,7 @@ public class Shooter extends SubsystemBase {
             final double cosSide = Math.cos(THETA) * Math.cos(THETA);
 
             return Math.sqrt(gravitySide / tanSide / cosSide / 2);
-        } else {
-            return 0;
         }
+        return 0;
     }
 }
