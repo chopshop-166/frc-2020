@@ -22,28 +22,31 @@ public class FrancoisMap extends RobotMap {
     public DifferentialDriveMap getDriveMap() {
         final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
+            CANSparkMax rightLeader = new CANSparkMax(20, MotorType.kBrushless);
+            CANSparkMax rightFollower = new CANSparkMax(21, MotorType.kBrushless);
+
+            CANSparkMax leftLeader = new CANSparkMax(22, MotorType.kBrushless);
+            CANSparkMax leftFollower = new CANSparkMax(23, MotorType.kBrushless);
 
             @Override
             public EncodedSpeedController getRight() {
-                CANSparkMax leader = new CANSparkMax(20, MotorType.kBrushless);
-                CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
-                CANEncoder leadEncoder = new CANEncoder(leader, EncoderType.kQuadrature, 42);
-                follower.follow(leader);
+
+                CANEncoder leadEncoder = new CANEncoder(rightLeader, EncoderType.kQuadrature, 42);
+                rightFollower.follow(rightLeader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
 
-                return EncodedSpeedController.wrap(leader);
+                return EncodedSpeedController.wrap(rightLeader);
             }
 
             @Override
             public EncodedSpeedController getLeft() {
-                CANSparkMax leader = new CANSparkMax(22, MotorType.kBrushless);
-                CANSparkMax follower = new CANSparkMax(23, MotorType.kBrushless);
-                CANEncoder leadEncoder = new CANEncoder(leader, EncoderType.kQuadrature, 42);
-                follower.follow(leader);
+                CANEncoder leadEncoder = new CANEncoder(leftLeader, EncoderType.kQuadrature, 42);
+                leftFollower.follow(leftLeader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
-                return EncodedSpeedController.wrap(leader);
+
+                return EncodedSpeedController.wrap(leftLeader);
             }
 
             @Override
@@ -102,10 +105,11 @@ public class FrancoisMap extends RobotMap {
     @Override
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
+            CANSparkMax leader = new CANSparkMax(25, MotorType.kBrushless);
+            CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
+
             @Override
             public PIDSparkMax shooterWheel() {
-                CANSparkMax leader = new CANSparkMax(25, MotorType.kBrushless);
-                CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
