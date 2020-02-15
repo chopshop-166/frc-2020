@@ -4,7 +4,9 @@ import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -45,4 +47,9 @@ public class Intake extends SubsystemBase {
         }, this);
     }
 
+    public CommandBase deployIntake() {
+        return new InstantCommand(() -> {
+            deployPiston.set(Value.kForward);
+        }, this);
+    }
 }
