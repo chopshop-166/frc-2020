@@ -7,16 +7,20 @@ import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.EncoderType;
+
+import edu.wpi.first.wpilibj.GyroBase;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
 
     @Override
     public DifferentialDriveMap getDriveMap() {
+        final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
 
             @Override
@@ -26,7 +30,6 @@ public class FrancoisMap extends RobotMap {
                 CANEncoder leadEncoder = new CANEncoder(leader, EncoderType.kQuadrature, 42);
                 follower.follow(leader);
 
-                final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
                 return EncodedSpeedController.wrap(leader);
             }
@@ -38,9 +41,44 @@ public class FrancoisMap extends RobotMap {
                 CANEncoder leadEncoder = new CANEncoder(leader, EncoderType.kQuadrature, 42);
                 follower.follow(leader);
 
-                final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
                 return EncodedSpeedController.wrap(leader);
+            }
+
+            @Override
+            public GyroBase getGyro() {
+                PigeonIMU gyro = new PigeonIMU(new WPI_TalonSRX(42));
+                return new GyroBase() {
+
+                    @Override
+                    public void close() throws Exception {
+                        // NoOp
+
+                    }
+
+                    @Override
+                    public void reset() {
+                        gyro.setFusedHeading(0);
+
+                    }
+
+                    @Override
+                    public double getRate() {
+                        double[] xyz = new double[3];
+                        gyro.getRawGyro(xyz);
+                        return xyz[2];
+                    }
+
+                    @Override
+                    public double getAngle() {
+                        return gyro.getFusedHeading();
+                    }
+
+                    @Override
+                    public void calibrate() {
+                        // NoOp
+                    }
+                };
             }
         };
     }
