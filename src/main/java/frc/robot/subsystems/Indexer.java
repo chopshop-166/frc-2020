@@ -196,77 +196,49 @@ public class Indexer extends SubsystemBase {
 
     }
 
-    // this will bring the ball to the top
     public CommandBase unLoadBall() {
-        return new CommandBase() {
+        return new FunctionalCommand(() -> {
 
-            {
-                addRequirements(Indexer.this);
-            }
+        }, () -> {
 
-            @Override
-            public boolean isFinished() {
-                return !topPierreIR.getAsBoolean();
-                // values of .8 when open, 2.4 when closed
+            pierreMotor.set(pierreIndexSpeed);
 
-            }
+        }, (interrupted) -> {
 
-            @Override
-            public void execute() {
-                pierreMotor.set(pierreIndexSpeed);
+            pierreMotor.set(0);
+            ballCounting--;
+            SmartDashboard.putNumber("Ball Count", ballCounting);
 
-            }
+        }, () -> {
 
-            @Override
-            public void end(final boolean interrupted) {
-                pierreMotor.set(0);
-                ballCounting--;
-                SmartDashboard.putNumber("Ball Count", ballCounting);
+            return !topPierreIR.getAsBoolean();
 
-            }
-
-        };
+        }, this);
 
     }
     // this will bring the ball to the shooter, it must already be at the top
 
     public CommandBase runToClearBottomSensor() {
-        return new CommandBase() {
-
-            {
-                addRequirements(Indexer.this);
+        return new FunctionalCommand(() -> {
+            if (bottomPierreIR.getAsBoolean()) {
+                pierreMotor.set(pierreIndexSpeed);
             }
 
-            @Override
-            public void initialize() {
-                if (bottomPierreIR.getAsBoolean()) {
-                    pierreMotor.set(pierreIndexSpeed);
-                }
+        }, () -> {
+
+        }, (interrupted) -> {
+
+            pierreMotor.set(0);
+            if (interrupted == false) {
+                ballCounting++;
             }
+            SmartDashboard.putNumber("Ball Count", ballCounting);
 
-            @Override
-            public boolean isFinished() {
-                return !bottomPierreIR.getAsBoolean();
-                // values of .8 when open, 2.4 when closed
+        }, () -> {
 
-            }
+            return !bottomPierreIR.getAsBoolean();
 
-            @Override
-            public void execute() {
-
-            }
-
-            @Override
-            public void end(final boolean interrupted) {
-                pierreMotor.set(0);
-                if (interrupted == false) {
-                    ballCounting++;
-                }
-                SmartDashboard.putNumber("Ball Count", ballCounting);
-
-            }
-
-        };
+        }, this);
 
     }
 
