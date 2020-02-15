@@ -43,10 +43,4 @@ public class Intake extends SubsystemBase {
 
         }, this);
     }
-
-    public CommandBase deployIntake() {
-        return new InstantCommand(() -> {
-            deployPiston.set(Value.kForward);
-        }, this);
-    }
 }

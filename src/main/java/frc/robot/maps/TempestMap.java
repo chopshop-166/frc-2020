@@ -1,17 +1,21 @@
 package frc.robot.maps;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
+import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SwPIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
@@ -85,15 +89,19 @@ public class TempestMap extends RobotMap {
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
             @Override
-            public SendableSpeedController shooterWheel() {
+            public PIDSpeedController shooterWheel() {
                 final Talon rollerMotor = new Talon(0);
-                return SendableSpeedController.wrap(rollerMotor);
+                final PIDController pid = new PIDController(0, 0, 0);
+                final DoubleSupplier measurement = new MockEncoder()::getRate;
+                return new SwPIDSpeedController(rollerMotor, pid, measurement);
             }
 
             @Override
-            public SendableSpeedController shooterWheel2() {
+            public PIDSpeedController shooterWheel2() {
                 final Talon rollerMotor = new Talon(1);
-                return SendableSpeedController.wrap(rollerMotor);
+                final PIDController pid = new PIDController(0, 0, 0);
+                final DoubleSupplier measurement = new MockEncoder()::getRate;
+                return new SwPIDSpeedController(rollerMotor, pid, measurement);
             }
         };
     }
