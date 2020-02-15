@@ -1,11 +1,13 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.lang.Math;
 
 /**
  * What does it do? When the A button is pressed- it shoots a ball. What modes
@@ -14,30 +16,65 @@ import frc.robot.maps.RobotMap;
  * triggered/OI? A semi-auto button A- or X for shoot all. Does it store any
  * state? No. Sensors? No.
  */
+
 public class Shooter extends SubsystemBase {
 
-    private SendableSpeedController shooterWheelMotor;
-    private SendableSpeedController shooterWheelMotor2;
+    private final double MAX_RPM = 5200;
+    private final PIDSpeedController shooterWheelMotor;
+    public static double distanceToTarget;
+    public final double shooterHeight;
+    public static double verticalDistance;
 
-    private double speed = -.85;
+    // inches/second
+    public final static double GRAVITY = 386.2205;
+    // inches
+    public final static double TARGET_HEIGHT = 98.25;
+    public final static double THETA = Math.toRadians(37);
+    public final static double DIAMETER = 4;
+    public final static double CIRCUMFERENCE = DIAMETER * Math.PI * Math.PI;
 
-    public Shooter(RobotMap.ShooterMap map) {
+    public Shooter(final RobotMap.ShooterMap map) {
         super();
+        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 0);
+        shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
-        shooterWheelMotor2 = map.shooterWheel2();
+        verticalDistance = TARGET_HEIGHT - shooterHeight;
     }
 
-    public CommandBase spinMotor() {
+    public CommandBase spinUp() {
         return new InstantCommand(() -> {
-            shooterWheelMotor.set(speed);
-            shooterWheelMotor2.set(speed);
+            shooterWheelMotor.set(calculateRPM() / MAX_RPM);
         }, this);
     }
 
-    public CommandBase stopMotor() {
-        return new InstantCommand(() -> {
-            shooterWheelMotor.stopMotor();
-            shooterWheelMotor2.stopMotor();
-        }, this);
+    public CommandBase spinDown() {
+        return new InstantCommand(shooterWheelMotor::stopMotor, this);
+    }
+
+    /*
+     * Calculates RPM -> velocity / circumference is how many rotation needed in a
+     * second, so times 60 gives us how many RPM we need. (returns inches/second)
+     * Also applies a 20% loss.
+     */
+    public static double calculateRPM() {
+        return 60 * calculateVelocity() / CIRCUMFERENCE * 0.8;
+    }
+
+    /*
+     * Finds the needed velocity to reach a target (x, y) or (distanceToTarget,
+     * verticalDistance). The formula takes takes theta or launch angle, target and
+     * gravity.
+     */
+
+    public static double calculateVelocity() {
+        if (distanceToTarget * Math.tan(THETA) >= verticalDistance) {
+            final double gravitySide = GRAVITY * distanceToTarget * distanceToTarget;
+            final double tanSide = distanceToTarget * Math.tan(THETA) - verticalDistance;
+            final double cosSide = Math.cos(THETA) * Math.cos(THETA);
+
+            return Math.sqrt(gravitySide / tanSide / cosSide / 2);
+        } else {
+            return 0;
+        }
     }
 }
