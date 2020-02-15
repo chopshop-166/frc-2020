@@ -1,10 +1,15 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+
+import org.checkerframework.checker.units.qual.Speed;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,19 +39,40 @@ public class Lift extends SubsystemBase {
     private PIDSpeedController elevatorMotor;
     private ISolenoid elevatorBrake;
     private IEncoder liftEncoder;
+    private BooleanSupplier upperLimitSwitch;
+    private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
 
     boolean isBraked = elevatorBrake.get();
 
-    // TO DO Find a way to sync the elevatorLeft and elevatorRight motors
+    // TODO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
         super();
         elevatorMotor = map.elevator();
         liftEncoder = map.getLiftEncoder();
         elevatorBrake = map.liftBrake();
+        upperLimitSwitch = map.upperLiftLimit();
+        lowerLimitSwitch = map.lowerLiftLimit();
     }
 
-    // TO DO Confgure encoders to actually read a position
+    public void liftSpeed(double speed) {
+        if (speed > 0) {
+            isBraked = false;
+            if (upperLimitSwitch.getAsBoolean()) {
+                speed = 0;
+            }
+        } else if (speed <= 0) {
+            isBraked = true;
+            if (lowerLimitSwitch.getAsBoolean()) {
+                speed = 0;
+            }
+        }
+        elevatorBrake.set(isBraked);
+        elevatorMotor.set(speed);
+
+    }
+
+    // TODO Confgure encoders to actually read a position
     int getPosition = liftHeights.Bottom.value();
 
     // TODO make these heights reflect where we actually want them to be
@@ -72,7 +98,7 @@ public class Lift extends SubsystemBase {
             elevatorBrake.set(false);
             isBraked = false;
         }, () -> {
-            elevatorMotor.set(speed.getAsDouble());
+            liftSpeed(speed.getAsDouble());
         }, (Boolean interrupted) -> {
             elevatorBrake.set(true);
             isBraked = true;
@@ -106,12 +132,12 @@ public class Lift extends SubsystemBase {
             elevatorBrake.set(false);
         }, () -> {
             if (getPosition > 2) {
-                elevatorMotor.set(elevatorMotorSpeed);
+                liftSpeed(elevatorMotorSpeed);
             } else {
-                elevatorMotor.set(-elevatorMotorSpeed);
+                liftSpeed(-elevatorMotorSpeed);
             }
         }, (Boolean interrupted) -> {
-            elevatorMotor.set(0);
+            liftSpeed(0);
             elevatorBrake.set(true);
             isBraked = true;
         }, () -> {
