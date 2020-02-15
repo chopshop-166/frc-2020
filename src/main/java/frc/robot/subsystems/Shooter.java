@@ -19,6 +19,7 @@ import java.lang.Math;
 
 public class Shooter extends SubsystemBase {
 
+    private final double MAX_RPM = 5200;
     private final PIDSpeedController shooterWheelMotor;
     public static double distanceToTarget;
     public final double shooterHeight;
@@ -42,7 +43,7 @@ public class Shooter extends SubsystemBase {
 
     public CommandBase spinUp() {
         return new InstantCommand(() -> {
-            shooterWheelMotor.set(calculateRPM() / 5800);
+            shooterWheelMotor.set(calculateRPM() / MAX_RPM);
         }, this);
     }
 
