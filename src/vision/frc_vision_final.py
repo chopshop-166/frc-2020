@@ -13,7 +13,7 @@ import numpy as np
 import time
 from networktables import NetworkTables
 
-angleThreshold = 40
+ANGLETHRESHOLD = 40
 
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
 
@@ -70,7 +70,7 @@ s.set_option(rs2.option.white_balance, 2800)
 X_VALS = []
 Y_VALS = []
 
-pointer = 0
+POINTER = 0
 
 while True:
     start_time = time.time()
@@ -124,37 +124,37 @@ while True:
 
             # Checks if we have verified lines, and makes a new line based on that.
             if FILTERED_LINES:
-                if (new_slope < -angleThreshold or new_slope > angleThreshold) and unequal(new_slope, FILTERED_LINES):
-                    X_TOTAL, Y_TOTAL = newLine(
+                if (new_slope in range(-ANGLETHRESHOLD, ANGLETHRESHOLD) and unequal(new_slope, FILTERED_LINES):
+                    X_TOTAL, Y_TOTAL=newLine(
                         FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2)
             else:
-                if new_slope < -angleThreshold or new_slope > angleThreshold:
+                if new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD:
                     newLine(FILTERED_LINES, NEW_LINE,
                             FILTERED_LINE_IMG, x1, y1, x2, y2)
 
-        NUM_LINES = len(FILTERED_LINES)
+        NUM_LINES=len(FILTERED_LINES)
         if FILTERED_LINES:
-            X_AVG = 0
-            Y_AVG = 0
+            X_AVG=0
+            Y_AVG=0
 
             if len(X_VALS) == POINT_SAMPLES:
-                X_VALS[pointer] = X_TOTAL/(2*NUM_LINES)
-                Y_VALS[pointer] = Y_TOTAL/(2*NUM_LINES)
+                X_VALS[POINTER]=X_TOTAL/(2*NUM_LINES)
+                Y_VALS[POINTER]=Y_TOTAL/(2*NUM_LINES)
 
                 for i in range(len(X_VALS)):
                     X_AVG += X_VALS[i]
                     Y_AVG += Y_VALS[i]
 
-                X_AVG = int(X_AVG / POINT_SAMPLES)
-                Y_AVG = int(Y_AVG / POINT_SAMPLES)
+                X_AVG=int(X_AVG / POINT_SAMPLES)
+                Y_AVG=int(Y_AVG / POINT_SAMPLES)
 
-                offset = 2 * (X_AVG - (WIDTH/2)) / WIDTH
+                offset=2 * (X_AVG - (WIDTH/2)) / WIDTH
                 cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG),
                            5, [255, 255, 255], -1)
-                dist_to_target = depth.get_distance(X_AVG, Y_AVG)
+                dist_to_target=depth.get_distance(X_AVG, Y_AVG)
 
                 # Smart Dashboard variables
-                sd.putBoolean("seesTarget", True)
+                sd.putBoolean("Sees Target", True)
                 sd.putNumber("Target Offset", offset)
                 sd.putNumber("Angle Offset", PIXEL_ANGLE * X_AVG)
                 sd.putNumber("Distance To Target", dist_to_target)
@@ -164,7 +164,7 @@ while True:
                 Y_VALS.append(Y_TOTAL/(2*NUM_LINES))
 
         for LINE in LINES:
-            x1, y1, x2, y2 = LINE[0]
+            x1, y1, x2, y2=LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
     cv2.imshow("og lines", LINE_IMG)
@@ -177,14 +177,14 @@ while True:
     cv2.imshow('med', MED_EDGES)
     cv2.imshow('Mask Edges', MASK_EDGES)
 
-    if pointer == POINT_SAMPLES - 1:
-        pointer = 0
+    if POINTER == POINT_SAMPLES - 1:
+        POINTER=0
     else:
-        pointer += 1
+        POINTER += 1
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-    end_time = time.time()
+    end_time=time.time()
     # print(end_time - start_time)
 
 cv2.destroyAllWindows()
