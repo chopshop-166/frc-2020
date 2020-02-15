@@ -12,8 +12,7 @@ public class ControlPanel extends SubsystemBase {
 
     private final SendableSpeedController spinnerMotor;
 
-    @Log
-    public String tabName = "Configurable Values";
+    @Log(tabName = "Configurable Values")
     private static final double spinnerMotorSpeed = 1;
 
     public ControlPanel(final RobotMap.ControlPanelMap map) {
