@@ -13,6 +13,8 @@ import numpy as np
 import time
 from networktables import NetworkTables
 
+angleThreshold = 40
+
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
 
 
@@ -28,19 +30,28 @@ def unequal(new, old_list):
     return True
 
 
+def newLine(filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2):
+    filtered_lines.append(new_line)
+    cv2.line(filtered_line_img, (x1, y1), (x2, y2), (0, 255, 0), 1)
+    return x1 + x2, y1, y2
+
+
 NetworkTables.initialize(server='roborio-166-frc.local')
 
 sd = NetworkTables.getTable('SmartDashboard')
 # sd.putNumber('someNumber', 1234)
 # otherNumber = sd.getNumber('otherNumber')
 
+# Resolution
 WIDTH = 640
 HEIGHT = 480
 POINT_SAMPLES = 5
+# Angle value of each pixel
 FOV_ANGLE = 82.5
 PIXEL_ANGLE = FOV_ANGLE/WIDTH
 
-pipe = rs2.pipeline()  # The camera's API sucks, but at least I can guarantee setings
+# Camera settings
+pipe = rs2.pipeline()
 config = rs2.config()
 config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
 config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
@@ -61,19 +72,20 @@ Y_VALS = []
 
 pointer = 0
 
-
 while True:
     start_time = time.time()
 
+    # Waits to get frames, and gets information about the frame.
     frames = rs2.composite_frame(pipe.wait_for_frames())
     frame = rs2.video_frame(frames.get_color_frame())
     depth = rs2.depth_frame(frames.get_depth_frame())
+
     if not frame:
         continue
 
     IMG = np.asanyarray(frame.get_data())
 
-    # Convert from RGB to HSV, helps with filltering
+    # Convert from RGB to HSV, helps with filtering
     HSV = cv2.cvtColor(IMG, cv2.COLOR_BGR2HSV)
 
     # Define upper and lower bounds for HSV variables
@@ -83,7 +95,7 @@ while True:
     # Create mask within hsv range
     MASK = cv2.inRange(HSV, LOWER_COLOR, UPPER_COLOR)
 
-    # Various blur method testings
+    # Various blur method testings (buffer for pixel imperfections)
     BLUR = cv2.GaussianBlur(MASK, (3, 3), 0)
     MEDIAN = cv2.medianBlur(MASK, 3)
 
@@ -99,49 +111,52 @@ while True:
     # Find lines in selected image
     LINES = cv2.HoughLinesP(MASK_EDGES, 1, radians(.5), 25, maxLineGap=25)
 
+    # If there are lines:
     if LINES is not None:
         NUM_LINES = len(LINES)
         FILTERED_LINES = []
         X_TOTAL = 0
         Y_TOTAL = 0
+
         for NEW_LINE in LINES:
             x1, y1, x2, y2 = NEW_LINE[0]
             new_slope = degrees(np.arctan((y2 - y1)/(x2 - x1)))
+
+            # Checks if we have verified lines, and makes a new line based on that.
             if FILTERED_LINES:
-                if (new_slope < -40 or new_slope > 40) and unequal(new_slope, FILTERED_LINES):
-                    FILTERED_LINES.append(NEW_LINE)
-                    cv2.line(FILTERED_LINE_IMG, (x1, y1),
-                             (x2, y2), (0, 255, 0), 1)
-                    X_TOTAL += x1 + x2
-                    Y_TOTAL += y1 + y2
+                if (new_slope < -angleThreshold or new_slope > angleThreshold) and unequal(new_slope, FILTERED_LINES):
+                    X_TOTAL, Y_TOTAL = newLine(
+                        FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2)
             else:
-                if new_slope < -40 or new_slope > 40:
-                    FILTERED_LINES.append(NEW_LINE)
-                    cv2.line(FILTERED_LINE_IMG, (x1, y1),
-                             (x2, y2), (0, 255, 0), 1)
-                    X_TOTAL += x1 + x2
-                    Y_TOTAL += y1 + y2
+                if new_slope < -angleThreshold or new_slope > angleThreshold:
+                    newLine(FILTERED_LINES, NEW_LINE,
+                            FILTERED_LINE_IMG, x1, y1, x2, y2)
 
         NUM_LINES = len(FILTERED_LINES)
         if FILTERED_LINES:
             X_AVG = 0
             Y_AVG = 0
+
             if len(X_VALS) == POINT_SAMPLES:
                 X_VALS[pointer] = X_TOTAL/(2*NUM_LINES)
                 Y_VALS[pointer] = Y_TOTAL/(2*NUM_LINES)
+
                 for i in range(len(X_VALS)):
                     X_AVG += X_VALS[i]
                     Y_AVG += Y_VALS[i]
+
                 X_AVG = int(X_AVG / POINT_SAMPLES)
                 Y_AVG = int(Y_AVG / POINT_SAMPLES)
-                sd.putBoolean("seesTarget", True)
 
                 offset = 2 * (X_AVG - (WIDTH/2)) / WIDTH
+                cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG),
+                           5, [255, 255, 255], -1)
+                dist_to_target = depth.get_distance(X_AVG, Y_AVG)
+
+                # Smart Dashboard variables
+                sd.putBoolean("seesTarget", True)
                 sd.putNumber("Target Offset", offset)
                 sd.putNumber("Angle Offset", PIXEL_ANGLE * X_AVG)
-
-                cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
-                dist_to_target = depth.get_distance(X_AVG, Y_AVG)
                 sd.putNumber("Distance To Target", dist_to_target)
 
             else:
