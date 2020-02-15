@@ -72,8 +72,6 @@ public class Robot extends TimedRobot {
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
-        Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
-
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
