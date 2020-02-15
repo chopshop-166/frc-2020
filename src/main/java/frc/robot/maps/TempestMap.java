@@ -12,6 +12,7 @@ public class TempestMap extends RobotMap {
 
     @Override
     public DifferentialDriveMap getDriveMap() {
+        final double distancePerPulse = (1.0 / 256.0) * (4.0 * Math.PI);
         return new DifferentialDriveMap() {
 
             @Override
@@ -19,7 +20,7 @@ public class TempestMap extends RobotMap {
                 final SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
                         new WPI_TalonSRX(3));
                 final WEncoder encoder = new WEncoder(1, 0);
-                final double distancePerPulse = (1.0 / 360.0) * (4.0 * Math.PI);
+
                 encoder.setDistancePerPulse(distancePerPulse);
                 return EncodedSpeedController.join(rightGroup, encoder);
             }
@@ -29,7 +30,7 @@ public class TempestMap extends RobotMap {
                 final SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
                         new WPI_TalonSRX(4));
                 final WEncoder encoder = new WEncoder(3, 2);
-                final double distancePerPulse = (1.0 / 360.0) * (4.0 * Math.PI);
+
                 encoder.setDistancePerPulse(distancePerPulse);
                 return EncodedSpeedController.join(leftGroup, encoder);
             }
