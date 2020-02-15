@@ -4,7 +4,8 @@ import cv2
 import numpy as np
 
 
-def equal(x, y, parallel):  # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
+def equal(x, y, parallel):
+    # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
     # Tests if slopes are within 5 degrees of each other
     variance = 5
     # Come to think of it that's probably way too small
@@ -12,7 +13,8 @@ def equal(x, y, parallel):  # Takes in slopes x and y, tests if they are equal t
     Min = x - variance
     # Please just trust me this thing somehow works
     if parallel:
-        for i in parallel:                                              # Compare to previously verified lines
+        for i in parallel:
+            # Compare to previously verified lines
             X1, Y1, X2, Y2 = i[0]
             pSlope = degrees(np.arctan((Y2 - Y1)/(X2 - X1)))
             # If the line's too similar with its partner or any previous line, fails test
@@ -61,8 +63,8 @@ res_edges = cv2.Canny(res, 100, 200)
 
 # Create empty image for lines (testing)
 lineImg = np.zeros((height, width, 3), np.uint8)
-lines = cv2.HoughLinesP(med_edges, 1, radians(.5), 15,
-                        maxLineGap=20)   # Find all lines in image
+lines = cv2.HoughLinesP(med_edges, 1, radians(.5), 15, maxLineGap=20)
+# Find all lines in image
 
 
 # Make sure lines exist (crashes otherwise)
@@ -74,7 +76,8 @@ if lines is not None:
         X1, Y1, X2, Y2 = line[0]
         # Calculate slope as degrees for ease of use
         deg_slope = degrees(np.arctan((Y2 - Y1)/(X2 - X1)))
-        if deg_slope < -40 or deg_slope > 40:                           # Narrow slope range lines are found in
+        if deg_slope < -40 or deg_slope > 40:
+            # Narrow slope range lines are found in
             # Add to list of verified lined
             filtered_lines.append(line)
 
@@ -100,7 +103,8 @@ if lines is not None:
                 # could be moved to equals function???
                 jSlope = degrees(np.arctan((Y4 - Y3)/(X4 - X3)))
 
-                if equal(iSlope, jSlope, parallel):                     # Send to magic equals box
+                if equal(iSlope, jSlope, parallel):
+                    # Send to magic equals box
                     # If verified, add *ONE* to final list (TODO: rename parallel, doesn't make sense)
                     parallel.append(filtered_lines[i])
                     # Draws lines on the empty line image, probably irrelevant, can use data points
@@ -131,6 +135,7 @@ cv2.imshow('med', med_edges)
 cv2.imshow('res', res_edges)
 cv2.imshow('Mask Edges', mask_edges)
 
-cv2.waitKey(0)                          # Press any key to continue...
-
-cv2.destroyAllWindows()                 # Leave without a trace
+cv2.waitKey(0)
+# Press any key to continue...
+cv2.destroyAllWindows()
+# Leave without a trace
