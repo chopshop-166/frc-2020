@@ -4,19 +4,11 @@ import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.revrobotics.CANPIDController;
-
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.maps.RobotMap;
 
 /*
@@ -76,84 +68,54 @@ public class Lift extends SubsystemBase {
 
     public CommandBase moveLift(DoubleSupplier speed) {
         // The command is named "Move Lift" and requires this subsystem.
-        return new CommandBase() {
-
-            @Override
-            public void initialize() {
-                disengageBrake();
-
-            }
-
-            @Override
-            public boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            public void execute() {
-                elevatorMotor.set(speed.getAsDouble());
-
-            }
-
-            @Override
-            public void end(final boolean interrupted) {
-                engageBrake();
-
-            }
-
-        };
+        return new FunctionalCommand(() -> {
+            elevatorBrake.set(false);
+            isBraked = false;
+        }, () -> {
+            elevatorMotor.set(speed.getAsDouble());
+        }, (Boolean interrupted) -> {
+            elevatorBrake.set(true);
+            isBraked = true;
+        }, () -> {
+            return false;
+        }, this);
     }
 
     public InstantCommand engageBrake() {
         return new InstantCommand(() -> {
             elevatorBrake.set(true);
-        });
+            isBraked = true;
+        }, this);
     }
 
     public InstantCommand disengageBrake() {
         return new InstantCommand(() -> {
             elevatorBrake.set(false);
-        });
+            isBraked = false;
+        }, this);
     }
 
     public InstantCommand toggleBrake() {
         return new InstantCommand(() -> {
-            if (isBraked == false) {
-                elevatorBrake.set(true);
-            } else
-                elevatorBrake.set(false);
-
-        });
+            elevatorBrake.set(!isBraked);
+        }, this);
     }
 
     public CommandBase goToHeight(liftHeights iPoint) {
-
-        return new CommandBase() {
-            @Override
-            public void initialize() {
-                disengageBrake();
-
+        return new FunctionalCommand(() -> {
+            elevatorBrake.set(false);
+        }, () -> {
+            if (getPosition > 2) {
+                elevatorMotor.set(elevatorMotorSpeed);
+            } else {
+                elevatorMotor.set(-elevatorMotorSpeed);
             }
-
-            @Override
-            public boolean isFinished() {
-                return getPosition == iPoint.value();
-            }
-
-            @Override
-            public void execute() {
-                if (getPosition > 2) {
-                    elevatorMotor.set(elevatorMotorSpeed);
-                } else {
-                    elevatorMotor.set(-elevatorMotorSpeed);
-                }
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                elevatorMotor.set(0);
-                engageBrake();
-            }
-        };
+        }, (Boolean interrupted) -> {
+            elevatorMotor.set(0);
+            elevatorBrake.set(true);
+            isBraked = true;
+        }, () -> {
+            return getPosition == iPoint.value();
+        }, this);
     }
 }

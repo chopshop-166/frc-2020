@@ -171,7 +171,7 @@ public class RobotMap {
 
         public BooleanSupplier lowerLiftLimit() {
 
-            return bottomLimit::get;
+            return () -> false;
         }
 
         // this will be the left lift encoder (kinda gross but for now it works?)

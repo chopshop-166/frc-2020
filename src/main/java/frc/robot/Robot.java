@@ -42,8 +42,8 @@ import frc.robot.subsystems.Shooter;
 public class Robot extends TimedRobot {
 
     private Command autonomousCommand;
-    final public ButtonXboxController driveController = new ButtonXboxController(1);
-    final public ButtonXboxController copilotController = new ButtonXboxController(5);
+    final private ButtonXboxController driveController = new ButtonXboxController(1);
+    final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
     final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
     final private String robotName = nameEntry.getString("Unknown");
