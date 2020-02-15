@@ -25,6 +25,7 @@ def unequal(new, old_list):
             return False
     return True
 
+
 NetworkTables.initialize(server='roborio-166-frc.local')
 
 sd = NetworkTables.getTable('SmartDashboard')
@@ -37,8 +38,8 @@ POINT_SAMPLES = 5
 
 pipe = rs2.pipeline()               # The camera's API sucks, but at least I can guarantee setings
 config = rs2.config()
-config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 60)
-config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 60)
+config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
+config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
 profile = pipe.start(config)
 s = profile.get_device().query_sensors()[1]
 s.set_option(rs2.option.brightness, 0)
@@ -125,22 +126,24 @@ while True:
                 for i in range(len(X_VALS)):
                     X_AVG += X_VALS[i]
                     Y_AVG += Y_VALS[i]
-                X_AVG /= POINT_SAMPLES
-                Y_AVG /= POINT_SAMPLES
+                X_AVG = int(X_AVG / POINT_SAMPLES)
+                Y_AVG = int(Y_AVG / POINT_SAMPLES)
                 sd.putBoolean("seesTarget", True)
 
-                cv2.circle(FILTERED_LINE_IMG, (int(X_AVG), int(Y_AVG)), 5, [255, 255, 255], -1)
-                dist_to_target = depth_frame.get_distance(X_AVG, Y_AVG)
+                offset = 2 * (X_AVG - (WIDTH/2)) / WIDTH
+                sd.putNumber("Target Offset", offset)
+
+                cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
+                dist_to_target = depth.get_distance(X_AVG, Y_AVG)
+                sd.putNumber("Distance To Target", dist_to_target)
             else:
-                X_VALS.append(int(X_TOTAL/(2*NUM_LINES)))
-                Y_VALS.append(int(Y_TOTAL/(2*NUM_LINES)))
+                X_VALS.append(X_TOTAL/(2*NUM_LINES))
+                Y_VALS.append(Y_TOTAL/(2*NUM_LINES))
 
         for LINE in LINES:
             x1, y1, x2, y2 = LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
-        
-    sd.putNumber("Distance To Target", dist_to_target)
-    end_time = time.time()
+
 
     cv2.imshow("og lines", LINE_IMG)
     cv2.imshow("lines", FILTERED_LINE_IMG)
@@ -160,7 +163,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     end_time = time.time()
-    print(end_time - start_time)
+    # print(end_time - start_time)
 
 cv2.destroyAllWindows()
 pipe.stop()
