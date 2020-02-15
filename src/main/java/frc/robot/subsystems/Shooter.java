@@ -53,9 +53,10 @@ public class Shooter extends SubsystemBase {
     /*
      * Calculates RPM -> velocity / circumference is how many rotation needed in a
      * second, so times 60 gives us how many RPM we need. (returns inches/second)
+     * Also applies a 20% loss.
      */
     public static double calculateRPM() {
-        return 60 * calculateVelocity() / CIRCUMFERENCE;
+        return 60 * calculateVelocity() / CIRCUMFERENCE * 0.8;
     }
 
     /*
