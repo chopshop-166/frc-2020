@@ -13,6 +13,7 @@ import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.AnalogTrigger;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
@@ -89,9 +90,10 @@ public class TempestMap extends RobotMap {
             public PIDSpeedController shooterWheel() {
                 final Talon rollerMotor = new Talon(0);
                 final Talon rollerMotor2 = new Talon(1);
+                final SpeedControllerGroup bothRollers = new SpeedControllerGroup(rollerMotor, rollerMotor2);
                 final PIDController pid = new PIDController(0, 0, 0);
                 final DoubleSupplier measurement = new MockEncoder()::getRate;
-                return new SwPIDSpeedController(rollerMotor, pid, measurement);
+                return new SwPIDSpeedController(bothRollers, pid, measurement);
             }
         };
     }
