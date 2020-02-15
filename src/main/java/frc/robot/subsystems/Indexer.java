@@ -6,6 +6,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -177,35 +178,25 @@ public class Indexer extends SubsystemBase {
     // at the bottom
 
     public CommandBase loadBallToTop() {
-        return new CommandBase() {
+        return new FunctionalCommand(() -> {
 
-            {
-                addRequirements(Indexer.this);
-            }
+        }, () -> {
 
-            @Override
-            public boolean isFinished() {
-                return topPierreIR.getAsBoolean();
-                // values of .8 when open, 2.4 when closed
+            pierreMotor.set(pierreIndexSpeed);
 
-            }
+        }, (interrupted) -> {
 
-            @Override
-            public void execute() {
-                pierreMotor.set(pierreIndexSpeed);
-            }
+            pierreMotor.set(0);
 
-            @Override
-            public void end(final boolean interrupted) {
-                pierreMotor.set(0);
+        }, () -> {
 
-            }
+            return topPierreIR.getAsBoolean();
 
-        };
+        }, this);
 
     }
-    // this will bring the ball to the top
 
+    // this will bring the ball to the top
     public CommandBase unLoadBall() {
         return new CommandBase() {
 
