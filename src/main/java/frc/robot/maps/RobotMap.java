@@ -117,12 +117,6 @@ public class RobotMap {
         public BooleanSupplier backIntakeIR() {
             return () -> false;
         }
-
-
-        // AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
-        // AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
-        // AnalogTrigger topPierreIR = new AnalogTrigger(2);
-        // AnalogTrigger backIntakeIR = new AnalogTrigger(3);
     }
 
     public IndexMap getIndexerMap() {

@@ -76,7 +76,9 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("singulator", indexer.singulatorPossesion());
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
-        SmartDashboard.putData("runtoclear", indexer.runToClear());
+        SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
+        SmartDashboard.putData("ball at top", indexer.stopWhenBallsAtTop());
+
         // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());

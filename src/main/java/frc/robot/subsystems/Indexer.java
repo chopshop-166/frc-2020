@@ -47,16 +47,12 @@ public class Indexer extends SubsystemBase {
         bottomPierreIR = map.bottomPierreIR();
         topPierreIR = map.topPierreIR();
         backIntakeIR = map.backIntakeIR();
-
-        // bottomPierreIR = map.bottomPierreIR();
-        // topPierreIR = map.topPierreIR();
-        // backIntakeIR = map.backIntakeIR();
         pierreMotor = map.pierreMotor();
         
     }
 
     public SequentialCommandGroup intakeToPierre() {
-        return new SequentialCommandGroup(pierrePossesion(), runToClear());
+        return new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
     }
     
     public SequentialCommandGroup shootOneBall() {
@@ -64,13 +60,8 @@ public class Indexer extends SubsystemBase {
     }
 
     public ParallelDeadlineGroup topSensorTriggered(){
-        final ParallelDeadlineGroup topIRStop = new ParallelDeadlineGroup(intakeToPierre(), pierrePossesion(),
-                singulatorPossesion(),
-                loadBallToTop(), runToClear());
-
-
+        final ParallelDeadlineGroup topIRStop = new ParallelDeadlineGroup(new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor()));
          topIRStop.setDeadline(stopWhenBallsAtTop());
-
          return topIRStop;
     }
     //This will stop all commands when the top IR sensor on Pierre is triggered
@@ -125,10 +116,6 @@ public class Indexer extends SubsystemBase {
             @Override
             public boolean isFinished() {
                 return frontIntakeIR.getAsBoolean();
-                
-                //frontIntakeIR.getVoltage() > irSensorVoltage;
-                // values of .8 when open, 1.7 when closed
-
             }
 
             @Override
@@ -210,7 +197,6 @@ public class Indexer extends SubsystemBase {
             @Override
             public void execute() {
                 pierreMotor.set(pierreIndexSpeed);
-
             }
 
             @Override
@@ -255,9 +241,10 @@ public class Indexer extends SubsystemBase {
         };
 
     }
-    //this will bring the ball to the shooter
+    //this will bring the ball to the shooter, it must already be at the top
 
-    public CommandBase runToClear() {
+
+    public CommandBase runToClearBottomSensor() {
         return new CommandBase() {
 
             {
@@ -280,14 +267,15 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public void execute() {
-                // pierreMotor.set(0);
 
             }
 
             @Override
             public void end(final boolean interrupted) {
                 pierreMotor.set(0);
-                ballCounting++;
+                if (interrupted == false){
+                    ballCounting++;
+                }
                 SmartDashboard.putNumber("Ball Count", ballCounting);
 
             }
@@ -298,38 +286,11 @@ public class Indexer extends SubsystemBase {
     // this will make space for another ball
     public CommandBase stopWhenBallsAtTop() {
         return new CommandBase() {
-
-
-            @Override
-            public void initialize() {
-
-            }
-
             @Override
             public boolean isFinished() {
                 return topPierreIR.getAsBoolean();
-                // values of .8 when open, 2.4 when closed
-
             }
-
-            @Override
-            public void execute() {
-
-            }
-
-            @Override
-            public void end(final boolean interrupted) {
-                pierreMotor.set(0);
-                singulator.set(0);
-                
-
-            }
-
         };
-
     }
     //The balls will not go past the top sensor unless called by the specific function
-    
-
-
 }
