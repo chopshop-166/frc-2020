@@ -10,13 +10,13 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class ControlPanel extends SubsystemBase {
 
-    private SendableSpeedController spinnerMotor;
+    private final SendableSpeedController spinnerMotor;
 
     @Log
     public String tabName = "Configurable Values";
     private static final double spinnerMotorSpeed = 1;
 
-    public ControlPanel(RobotMap.ControlPanelMap map) {
+    public ControlPanel(final RobotMap.ControlPanelMap map) {
         super();
         spinnerMotor = map.spinner();
     }

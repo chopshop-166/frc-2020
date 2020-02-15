@@ -31,13 +31,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
 import io.github.oblarg.oblog.Logger;
-import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.Joystick;
-// import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -47,12 +41,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * project.
  */
 public class Robot extends TimedRobot {
-    private Joystick m_stick;
-    private static final int deviceID = 1;
-    private CANSparkMax m_motor;
-    /**
-     *
-     */
     private static final String CONFIGURABLEVALUE = "Configurable Values";
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
@@ -78,9 +66,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-    if(m_motor.setIdleMode(IdleMode.kCoast) != CANError.kOk){
-      SmartDashboard.putString("Idle Mode", "Error");
-
         Logger.configureLoggingAndConfig(this, false);
         Logger.updateEntries();
         configureButtonBindings();
@@ -93,9 +78,8 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
- 
-    }
 
+    }
 
     /**
      * This function is called every robot packet, no matter the mode. Use this for
@@ -107,7 +91,9 @@ public class Robot extends TimedRobot {
      * and SmartDashboard integrated updating.
      */
     @Override
-    public void robotPeriodic(); {
+    public void robotPeriodic()
+
+    {
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled
         // commands, running already-scheduled commands, removing finished or
@@ -122,7 +108,9 @@ public class Robot extends TimedRobot {
      * This function is called once each time the robot enters Disabled mode.
      */
     @Override
-    public void disabledInit() {
+    public void disabledInit()
+
+    {
         RobotUtils.resetAll(this);
         CommandScheduler.getInstance().cancelAll();
     }
@@ -132,7 +120,9 @@ public class Robot extends TimedRobot {
      * {@link RobotContainer} class.
      */
     @Override
-    public void autonomousInit() {
+    public void autonomousInit()
+
+    {
         autonomousCommand = autoChooser.getSelected();
 
         // schedule the autonomous command (example)
@@ -142,7 +132,9 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopInit() {
+    public void teleopInit()
+
+    {
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
@@ -153,7 +145,9 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testInit() {
+    public void testInit()
+
+    {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
     }
@@ -168,35 +162,6 @@ public class Robot extends TimedRobot {
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    
-     if(m_motor.getIdleMode() == IdleMode.kCoast) {
-      SmartDashboard.putString("Idle Mode", "Coast");
-    } else {
-      SmartDashboard.putString("Idle Mode", "Brake");
-    }
-
-    // Set ramp rate to 0
-    if(m_motor.setOpenLoopRampRate(0) != CANError.kOk) {
-      SmartDashboard.putString("Ramp Rate", "Error");
-    }
-
-    // read back ramp rate value
-    SmartDashboard.putNumber("Ramp Rate", m_motor.getOpenLoopRampRate());
-
-    m_stick = new Joystick(0);
-  }
-
-    @Override
-    public void teleopPeriodic() {
-        // Set motor output to joystick value
-        m_motor.set(m_stick.getY());
-
-        // periodically read voltage, temperature, and applied output and publish to
-        // SmartDashboard
-        SmartDashboard.putNumber("Voltage", m_motor.getBusVoltage());
-        SmartDashboard.putNumber("Temperature", m_motor.getMotorTemperature());
-        SmartDashboard.putNumber("Output", m_motor.getAppliedOutput());
-    }
 
     private void configureButtonBindings() {
         driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
