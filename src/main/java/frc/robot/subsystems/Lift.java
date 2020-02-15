@@ -72,22 +72,21 @@ public class Lift extends SubsystemBase {
 
     }
 
-    // TODO Confgure encoders to actually read a position
-    int getPosition = liftHeights.Bottom.value();
-
     // TODO make these heights reflect where we actually want them to be
     public enum liftHeights {
-        Top(3), Middle(2), Bottom(1);
+        Top(52.25), Middle(63), Bottom(78.125);
 
-        private int iPosition;
+        private double iPosition;
 
-        // Returning an interger to compare whether we're in the right place or not
-        private int value() {
-            return this.iPosition;
+        private double minLiftHeight = 51;
+
+        // Returning an double to compare whether we're in the right place or not
+        public double value() {
+            return this.iPosition - minLiftHeight;
         }
 
         // Returning the level the lift is at (top middle or bottom)
-        private liftHeights(int iPosition) {
+        private liftHeights(double iPosition) {
             this.iPosition = iPosition;
         }
     }
@@ -95,13 +94,11 @@ public class Lift extends SubsystemBase {
     public CommandBase moveLift(DoubleSupplier speed) {
         // The command is named "Move Lift" and requires this subsystem.
         return new FunctionalCommand(() -> {
-            elevatorBrake.set(false);
-            isBraked = false;
+            liftSpeed(0);
         }, () -> {
             liftSpeed(speed.getAsDouble());
         }, (Boolean interrupted) -> {
-            elevatorBrake.set(true);
-            isBraked = true;
+            liftSpeed(0);
         }, () -> {
             return false;
         }, this);
@@ -131,7 +128,8 @@ public class Lift extends SubsystemBase {
         return new FunctionalCommand(() -> {
             elevatorBrake.set(false);
         }, () -> {
-            if (getPosition > 2) {
+            double getPosition = liftEncoder.getDistance();
+            if (getPosition > iPoint.value()) {
                 liftSpeed(elevatorMotorSpeed);
             } else {
                 liftSpeed(-elevatorMotorSpeed);
@@ -141,6 +139,7 @@ public class Lift extends SubsystemBase {
             elevatorBrake.set(true);
             isBraked = true;
         }, () -> {
+            double getPosition = liftEncoder.getDistance();
             return getPosition == iPoint.value();
         }, this);
     }
