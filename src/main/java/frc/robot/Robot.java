@@ -12,7 +12,6 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -24,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
@@ -48,7 +48,8 @@ public class Robot extends TimedRobot {
     final private ButtonXboxController driveController = new ButtonXboxController(1);
     final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
-    final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
+    final private NetworkTableEntry nameEntry = Shuffleboard.getTab("RobotData").addPersistent("RobotName", "Unknown")
+            .getEntry();
     final private String robotName = nameEntry.getString("Unknown");
 
     final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
@@ -82,6 +83,9 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
+        autoChooser.addOption("Pass the Line", passLine());
+
+        Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
         DashboardUtils.logTelemetry();
 
@@ -116,6 +120,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         RobotUtils.resetAll(this);
+        CommandScheduler.getInstance().cancelAll();
     }
 
     /**
@@ -157,6 +162,10 @@ public class Robot extends TimedRobot {
     public ParallelCommandGroup cancelCommand() {
 
         return new ParallelCommandGroup(intake.runIntakeReverse(), indexer.reversePush());
+    }
+
+    public SequentialCommandGroup passLine() {
+        return new SequentialCommandGroup(drive.driveDistance(40, .5));
     }
 
     /**
