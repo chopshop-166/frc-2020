@@ -22,11 +22,11 @@ public class FrancoisMap extends RobotMap {
     public DifferentialDriveMap getDriveMap() {
         final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
-            CANSparkMax rightLeader = new CANSparkMax(20, MotorType.kBrushless);
-            CANSparkMax rightFollower = new CANSparkMax(21, MotorType.kBrushless);
+            CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
+            CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
 
-            CANSparkMax leftLeader = new CANSparkMax(22, MotorType.kBrushless);
-            CANSparkMax leftFollower = new CANSparkMax(23, MotorType.kBrushless);
+            CANSparkMax leftLeader = new CANSparkMax(29, MotorType.kBrushless);
+            CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
 
             @Override
             public EncodedSpeedController getRight() {
@@ -105,7 +105,7 @@ public class FrancoisMap extends RobotMap {
     @Override
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
-            CANSparkMax leader = new CANSparkMax(25, MotorType.kBrushless);
+            CANSparkMax leader = new CANSparkMax(23, MotorType.kBrushless);
             CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
 
             @Override
@@ -132,7 +132,7 @@ public class FrancoisMap extends RobotMap {
         return new LiftMap() {
             @Override
             public PIDSparkMax elevator() {
-                CANSparkMax leader = new CANSparkMax(27, MotorType.kBrushless);
+                CANSparkMax leader = new CANSparkMax(21, MotorType.kBrushless);
                 CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
                 follower.follow(leader);
 
