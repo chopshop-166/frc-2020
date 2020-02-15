@@ -14,6 +14,8 @@ import time
 from networktables import NetworkTables
 
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
+
+
 def unequal(new, old_list):
     variance = 5
     for i in old_list:
@@ -35,8 +37,10 @@ sd = NetworkTables.getTable('SmartDashboard')
 WIDTH = 640
 HEIGHT = 480
 POINT_SAMPLES = 5
+FOV_ANGLE = 82.5
+PIXEL_ANGLE = FOV_ANGLE/WIDTH
 
-pipe = rs2.pipeline()               # The camera's API sucks, but at least I can guarantee setings
+pipe = rs2.pipeline()  # The camera's API sucks, but at least I can guarantee setings
 config = rs2.config()
 config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
 config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
@@ -106,13 +110,15 @@ while True:
             if FILTERED_LINES:
                 if (new_slope < -40 or new_slope > 40) and unequal(new_slope, FILTERED_LINES):
                     FILTERED_LINES.append(NEW_LINE)
-                    cv2.line(FILTERED_LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
+                    cv2.line(FILTERED_LINE_IMG, (x1, y1),
+                             (x2, y2), (0, 255, 0), 1)
                     X_TOTAL += x1 + x2
                     Y_TOTAL += y1 + y2
             else:
                 if new_slope < -40 or new_slope > 40:
                     FILTERED_LINES.append(NEW_LINE)
-                    cv2.line(FILTERED_LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
+                    cv2.line(FILTERED_LINE_IMG, (x1, y1),
+                             (x2, y2), (0, 255, 0), 1)
                     X_TOTAL += x1 + x2
                     Y_TOTAL += y1 + y2
 
@@ -143,11 +149,15 @@ while True:
         for LINE in LINES:
             x1, y1, x2, y2 = LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
+        
+    sd.putNumber("Distance To Target", dist_to_target)
+    end_time = time.time()
 
 
     cv2.imshow("og lines", LINE_IMG)
     cv2.imshow("lines", FILTERED_LINE_IMG)
-    cv2.imshow('OG', IMG)                   # Open the gallery of all my filtered works
+    # Open the gallery of all my filtered works
+    cv2.imshow('OG', IMG)
     cv2.imshow('Mask', MASK)
     cv2.imshow('blur', BLUR_EDGES)
     cv2.imshow('median', MEDIAN)
@@ -158,7 +168,6 @@ while True:
         pointer = 0
     else:
         pointer += 1
-
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
