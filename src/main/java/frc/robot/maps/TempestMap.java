@@ -24,9 +24,9 @@ public class TempestMap extends RobotMap {
             @Override
             public EncodedSpeedController getLeft() {
 
-                SendableSpeedController motors =  SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1)));
-                return EncodedSpeedController.join(motors,new MockEncoder());
-
+                SendableSpeedController motors = SendableSpeedController
+                        .group(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1)));
+                return EncodedSpeedController.join(motors, new MockEncoder());
 
             }
 
@@ -35,8 +35,7 @@ public class TempestMap extends RobotMap {
                 SendableSpeedController motors = SendableSpeedController
                         .wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3)));
 
-                return EncodedSpeedController.join(motors,
-                        new MockEncoder());
+                return EncodedSpeedController.join(motors, new MockEncoder());
             }
         };
     }
@@ -56,22 +55,24 @@ public class TempestMap extends RobotMap {
                 final Victor pierreMotor = new Victor(5);
                 return SendableSpeedController.wrap(pierreMotor);
             }
-            
+
             public BooleanSupplier frontIntakeIR() {
                 AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
-                frontIntakeIR.setLimitsVoltage(1.2,1.4);
+                frontIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return frontIntakeIR::getTriggerState;
             }
 
             public BooleanSupplier bottomPierreIR() {
                 AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
                 bottomPierreIR.setLimitsVoltage(1.2, 1.4);
-                return bottomPierreIR::getTriggerState;            }
+                return bottomPierreIR::getTriggerState;
+            }
 
             public BooleanSupplier topPierreIR() {
                 AnalogTrigger topPierreIR = new AnalogTrigger(2);
                 topPierreIR.setLimitsVoltage(1.8, 2.4);
-                return topPierreIR::getTriggerState;            }
+                return topPierreIR::getTriggerState;
+            }
 
             public BooleanSupplier backIntakeIR() {
                 AnalogTrigger backIntakeIR = new AnalogTrigger(3);
@@ -98,7 +99,7 @@ public class TempestMap extends RobotMap {
             }
         };
     }
-    
+
     @Override
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {

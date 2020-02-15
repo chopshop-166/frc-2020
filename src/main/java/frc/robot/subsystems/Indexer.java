@@ -38,8 +38,6 @@ public class Indexer extends SubsystemBase {
     private static final double singulatorMotorSpeed = 0.95;
     private static final double pierreIndexSpeed = 0.85;
 
-
-
     public Indexer(final IndexMap map) {
         super();
         singulator = map.singulator();
@@ -48,30 +46,31 @@ public class Indexer extends SubsystemBase {
         topPierreIR = map.topPierreIR();
         backIntakeIR = map.backIntakeIR();
         pierreMotor = map.pierreMotor();
-        
+
     }
 
     public SequentialCommandGroup intakeToPierre() {
         return new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
     }
-    
+
     public SequentialCommandGroup shootOneBall() {
         return new SequentialCommandGroup(loadBallToTop(), unLoadBall());
     }
 
-    public ParallelDeadlineGroup topSensorTriggered(){
-        final ParallelDeadlineGroup topIRStop = new ParallelDeadlineGroup(new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor()));
-         topIRStop.setDeadline(stopWhenBallsAtTop());
-         return topIRStop;
+    public ParallelDeadlineGroup topSensorTriggered() {
+        final ParallelDeadlineGroup topIRStop = new ParallelDeadlineGroup(
+                new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor()));
+        topIRStop.setDeadline(stopWhenBallsAtTop());
+        return topIRStop;
     }
-    //This will stop all commands when the top IR sensor on Pierre is triggered
+    // This will stop all commands when the top IR sensor on Pierre is triggered
 
     public CommandBase indexMotor(final double motorSpeed) {
         return new StartEndCommand(() -> {
             singulator.set(motorSpeed);
         }, () -> {
             singulator.set(0);
-        });
+        }, this);
     }
 
     public CommandBase runPierre() {
@@ -81,8 +80,6 @@ public class Indexer extends SubsystemBase {
             pierreMotor.stopMotor();
         }, this);
     }
-
-
 
     public CommandBase quicklyPush() {
         return indexMotor(singulatorMotorSpeed);
@@ -112,7 +109,6 @@ public class Indexer extends SubsystemBase {
                 addRequirements(Indexer.this);
             }
 
-
             @Override
             public boolean isFinished() {
                 return frontIntakeIR.getAsBoolean();
@@ -131,15 +127,15 @@ public class Indexer extends SubsystemBase {
         };
 
     }
-    //This command will make sure that the singulator has possesion of the ball
+    // This command will make sure that the singulator has possesion of the ball
 
     public CommandBase pierrePossesion() {
         return new CommandBase() {
 
-                @Override
-                public void initialize() {
+            @Override
+            public void initialize() {
                 if (frontIntakeIR.getAsBoolean()) {
-                    
+
                     singulator.set(singulatorMotorSpeed);
                 }
                 if (backIntakeIR.getAsBoolean()) {
@@ -147,7 +143,6 @@ public class Indexer extends SubsystemBase {
                     singulator.set(singulatorMotorSpeed);
                 }
             }
-             
 
             public boolean isFinished() {
                 return bottomPierreIR.getAsBoolean();
@@ -158,7 +153,7 @@ public class Indexer extends SubsystemBase {
             @Override
             public void execute() {
                 if (frontIntakeIR.getAsBoolean()) {
-                  
+
                     singulator.set(singulatorMotorSpeed);
                 }
                 if (backIntakeIR.getAsBoolean()) {
@@ -178,7 +173,8 @@ public class Indexer extends SubsystemBase {
         };
 
     }
-    // This command will make sure that pierre has possesion of the ball. It will be at the bottom
+    // This command will make sure that pierre has possesion of the ball. It will be
+    // at the bottom
 
     public CommandBase loadBallToTop() {
         return new CommandBase() {
@@ -202,14 +198,14 @@ public class Indexer extends SubsystemBase {
             @Override
             public void end(final boolean interrupted) {
                 pierreMotor.set(0);
-               
+
             }
 
         };
 
     }
-    //this will bring the ball to the top
-    
+    // this will bring the ball to the top
+
     public CommandBase unLoadBall() {
         return new CommandBase() {
 
@@ -241,8 +237,7 @@ public class Indexer extends SubsystemBase {
         };
 
     }
-    //this will bring the ball to the shooter, it must already be at the top
-
+    // this will bring the ball to the shooter, it must already be at the top
 
     public CommandBase runToClearBottomSensor() {
         return new CommandBase() {
@@ -273,7 +268,7 @@ public class Indexer extends SubsystemBase {
             @Override
             public void end(final boolean interrupted) {
                 pierreMotor.set(0);
-                if (interrupted == false){
+                if (interrupted == false) {
                     ballCounting++;
                 }
                 SmartDashboard.putNumber("Ball Count", ballCounting);
@@ -283,6 +278,7 @@ public class Indexer extends SubsystemBase {
         };
 
     }
+
     // this will make space for another ball
     public CommandBase stopWhenBallsAtTop() {
         return new CommandBase() {
@@ -292,5 +288,6 @@ public class Indexer extends SubsystemBase {
             }
         };
     }
-    //The balls will not go past the top sensor unless called by the specific function
+    // The balls will not go past the top sensor unless called by the specific
+    // function
 }

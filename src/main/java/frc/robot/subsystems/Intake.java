@@ -29,7 +29,7 @@ public class Intake extends SubsystemBase {
             intakeMotor.set(motorSpeed);
 
         }, () -> {
-            intakeMotor.set(motorStop);
+            intakeMotor.stopMotor();
 
         }, this);
     }
@@ -38,9 +38,9 @@ public class Intake extends SubsystemBase {
         return new StartEndCommand(() -> {
             intakeMotor.set(-motorSpeed);
         }, () -> {
-            intakeMotor.set(motorStop);
+            intakeMotor.stopMotor();
 
         }, this);
     }
 
-    }
+}
