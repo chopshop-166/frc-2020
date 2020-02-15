@@ -19,12 +19,13 @@ import java.lang.Math;
 
 public class Shooter extends SubsystemBase {
 
+    // Measured in m/s
     private final SendableSpeedController shooterWheelMotor;
     public final double shooterHeight;
     public static double verticalDistance;
-    public final static double GRAVITY = 386.09;
+    public final static double GRAVITY = 9.81;
     public final static double THETA = Math.toRadians(37);
-    public final static double TARGET_HEIGHT = 98.25;
+    public final static double TARGET_HEIGHT = 2.49555;
     public static double distanceToTarget;
 
     public Shooter(final RobotMap.ShooterMap map) {
