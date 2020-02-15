@@ -70,7 +70,7 @@ public class TempestMap extends RobotMap {
 
             public BooleanSupplier topPierreIR() {
                 AnalogTrigger topPierreIR = new AnalogTrigger(2);
-                topPierreIR.setLimitsVoltage(1.2, 2.4);
+                topPierreIR.setLimitsVoltage(1.8, 2.4);
                 return topPierreIR::getTriggerState;            }
 
             public BooleanSupplier backIntakeIR() {
