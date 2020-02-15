@@ -74,8 +74,8 @@ public class Drive extends SubsystemBase {
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            return (leftMotorGroup.getDistance() >= distance && rightMotorGroup.getDistance() >= distance);
-
+            double avg = (leftMotorGroup.getDistance() + rightMotorGroup.getDistance()) / 2;
+            return (avg >= distance);
         }, this);
     }
 
