@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.EncoderType;
 
+
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
 
@@ -28,6 +29,7 @@ public class FrancoisMap extends RobotMap {
 
                 final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
+
                 return EncodedSpeedController.wrap(leader);
             }
 
