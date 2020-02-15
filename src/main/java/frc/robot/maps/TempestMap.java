@@ -49,16 +49,6 @@ public class TempestMap extends RobotMap {
         return new IndexMap() {
 
             @Override
-            public EncodedSpeedController getLeft() {
-                final SendableSpeedController leftGroup = SendableSpeedController.group(new WPI_TalonSRX(1),
-                        new WPI_TalonSRX(4));
-                final WEncoder encoder = new WEncoder(3, 2);
-
-                encoder.setDistancePerPulse(distancePerPulse);
-                return EncodedSpeedController.join(leftGroup, encoder);
-            }
-
-            @Override
             public SendableSpeedController pierreMotor() {
                 final Victor pierreMotor = new Victor(5);
                 return SendableSpeedController.wrap(pierreMotor);

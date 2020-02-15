@@ -98,7 +98,7 @@ public class Indexer extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return frontIntakeIR.getAsBoolean();
+                return frontIntakeIR.getAsBoolean() || topPierreIR.getAsBoolean();
             }
 
             @Override
@@ -127,7 +127,7 @@ public class Indexer extends SubsystemBase {
             }
 
             public boolean isFinished() {
-                return bottomPierreIR.getAsBoolean();
+                return bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
                 // values of .8 when open, 2.4 when closed
 
             }
@@ -217,7 +217,7 @@ public class Indexer extends SubsystemBase {
 
         }, () -> {
 
-            return !bottomPierreIR.getAsBoolean();
+            return !bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
 
         }, this);
 
