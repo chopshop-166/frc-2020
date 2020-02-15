@@ -130,10 +130,11 @@ public class FrancoisMap extends RobotMap {
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
+            CANSparkMax leader = new CANSparkMax(21, MotorType.kBrushless);
+            CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
+
             @Override
             public PIDSparkMax elevator() {
-                CANSparkMax leader = new CANSparkMax(21, MotorType.kBrushless);
-                CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
