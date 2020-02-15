@@ -1,20 +1,24 @@
 # Exists solely for me to reorganize this code and test stuff out
 
-from math import radians, degrees   # PyLint please stop yelling at me I did nothing wrong...
+# PyLint please stop yelling at me I did nothing wrong...
+from math import radians, degrees
 import cv2
 import numpy as np
 
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
+
+
 def unequal(new, old_list):
-    variance = 5 
+    variance = 5
     for i in old_list:
         x3, y3, x4, y4 = i[0]
         old_slope = degrees(np.arctan((y4 - y3)/(x4 - x3)))
         min_val = old_slope - variance
         max_val = old_slope + variance
-        if min_val < new < max_val:
+        if abs(new - old) < variance:
             return False
     return True
+
 
 WIDTH = 640
 HEIGHT = 480
@@ -75,12 +79,15 @@ if LINES is not None:
 
 
 cv2.imshow("lines", LINE_IMG)
-cv2.imshow('OG', IMG)                   # Open the gallery of all my filtered works
+# Open the gallery of all my filtered works
+cv2.imshow('OG', IMG)
 cv2.imshow('Mask', MASK)
 cv2.imshow('blur', BLUR_EDGES)
 cv2.imshow('median', MEDIAN)
 cv2.imshow('med', MED_EDGES)
 cv2.imshow('Mask Edges', MASK_EDGES)
 
-cv2.waitKey(0)                          # Press any key to continue...
-cv2.destroyAllWindows()                 # Leave without a trace
+# Press any key to continue...
+cv2.waitKey(0)
+# Leave without a trace
+cv2.destroyAllWindows()

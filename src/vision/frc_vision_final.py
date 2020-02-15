@@ -127,7 +127,7 @@ while True:
                 if (new_slope in range(-ANGLETHRESHOLD, ANGLETHRESHOLD) and unequal(new_slope, FILTERED_LINES):
                     X_TOTAL, Y_TOTAL=newLine(
                         FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2)
-            else:
+            elif:
                 if new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD:
                     newLine(FILTERED_LINES, NEW_LINE,
                             FILTERED_LINE_IMG, x1, y1, x2, y2)
