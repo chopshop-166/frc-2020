@@ -168,7 +168,7 @@ public class RobotMap {
 
         // this will be the left lift encoder (kinda gross but for now it works?)
         public IEncoder getLiftEncoder() {
-            return new SparkMaxEncoder(null);
+            return new MockEncoder();
         }
 
     }
