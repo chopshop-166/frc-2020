@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -19,14 +20,14 @@ import java.lang.Math;
 
 public class Shooter extends SubsystemBase {
 
-    private final SendableSpeedController shooterWheelMotor;
+    private final PIDSpeedController shooterWheelMotor;
     public static double distanceToTarget;
     public final double shooterHeight;
     public static double verticalDistance;
 
     // inches/second
     public final static double GRAVITY = 386.2205;
-    // icnhes
+    // inches
     public final static double TARGET_HEIGHT = 98.25;
     public final static double THETA = Math.toRadians(37);
     public final static double DIAMETER = 4;
