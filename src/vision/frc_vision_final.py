@@ -138,10 +138,12 @@ while True:
 
                 offset = 2 * (X_AVG - (WIDTH/2)) / WIDTH
                 sd.putNumber("Target Offset", offset)
+                sd.putNumber("Angle Offset", PIXEL_ANGLE * X_AVG)
 
                 cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
                 dist_to_target = depth.get_distance(X_AVG, Y_AVG)
                 sd.putNumber("Distance To Target", dist_to_target)
+
             else:
                 X_VALS.append(X_TOTAL/(2*NUM_LINES))
                 Y_VALS.append(Y_TOTAL/(2*NUM_LINES))
@@ -149,10 +151,6 @@ while True:
         for LINE in LINES:
             x1, y1, x2, y2 = LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
-        
-    sd.putNumber("Distance To Target", dist_to_target)
-    end_time = time.time()
-
 
     cv2.imshow("og lines", LINE_IMG)
     cv2.imshow("lines", FILTERED_LINE_IMG)
