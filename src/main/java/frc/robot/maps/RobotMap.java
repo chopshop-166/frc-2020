@@ -14,9 +14,12 @@ import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.revrobotics.CANPIDController;
+import com.chopshop166.chopshoplib.sensors.DigitalInputSource;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -80,9 +83,6 @@ public class RobotMap {
     // TODO replace these values once true ports are determined
 
     public static class LiftMap {
-
-        InvertDigitalInput topLimit = new InvertDigitalInput(1);
-        InvertDigitalInput bottomLimit = new InvertDigitalInput(0);
 
         public PIDSpeedController elevator() {
             return new PIDSpeedController() {
@@ -166,8 +166,7 @@ public class RobotMap {
         }
 
         public BooleanSupplier upperLiftLimit() {
-
-            return topLimit::get;
+            return () -> false;
         }
 
         public BooleanSupplier lowerLiftLimit() {

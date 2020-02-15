@@ -1,14 +1,23 @@
 package frc.robot.maps;
 
+import java.util.function.BooleanSupplier;
+
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
+import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
+import com.chopshop166.chopshoplib.outputs.WSolenoid;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.Solenoid;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
@@ -87,6 +96,38 @@ public class FrancoisMap extends RobotMap {
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
+            }
+
+            @Override
+            public ISolenoid liftBrake() {
+                // TODO Change this to a real Channel
+                WSolenoid brake = new WSolenoid(3);
+
+                return brake;
+            }
+
+            @Override
+            public BooleanSupplier upperLiftLimit() {
+                // TODO Change this to a real Channel
+                InvertDigitalInput upperLimit = new InvertDigitalInput(0);
+
+                return upperLimit::get;
+            }
+
+            @Override
+            public BooleanSupplier lowerLiftLimit() {
+                // TODO Change this to a real Channel
+                InvertDigitalInput lowerLimit = new InvertDigitalInput(1);
+
+                return lowerLimit::get;
+            }
+
+            @Override
+            public IEncoder getLiftEncoder() {
+                // TODO Change this to a real Channel
+                WEncoder getEncoder = new WEncoder(4, 5);
+
+                return getEncoder;
             }
         };
     }
