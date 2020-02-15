@@ -60,6 +60,8 @@ public class FrancoisMap extends RobotMap {
             public PIDSparkMax shooterWheel() {
                 CANSparkMax leader = new CANSparkMax(25, MotorType.kBrushless);
                 CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
+                leader.setInverted(true);
+                follower.setInverted(true);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);

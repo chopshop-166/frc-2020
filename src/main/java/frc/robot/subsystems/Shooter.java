@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -43,7 +42,7 @@ public class Shooter extends SubsystemBase {
 
     public CommandBase spinUp() {
         return new InstantCommand(() -> {
-            shooterWheelMotor.set(calculateRPM()); // TODO change RPM to 0 - 1
+            shooterWheelMotor.set(calculateRPM() / 5800);
         }, this);
     }
 
