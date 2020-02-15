@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -71,6 +72,8 @@ public class Robot extends TimedRobot {
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
+        Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
+
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
@@ -103,6 +106,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         RobotUtils.resetAll(this);
+        CommandScheduler.getInstance().cancelAll();
     }
 
     /**
