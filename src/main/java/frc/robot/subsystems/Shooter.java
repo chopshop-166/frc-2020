@@ -23,7 +23,7 @@ public class Shooter extends SubsystemBase {
     public final double shooterHeight;
     public static double verticalDistance;
     public final static double GRAVITY = 386.09;
-    public final static double THETA = 37;
+    public final static double THETA = Math.toRadians(37);
     public final static double TARGET_HEIGHT = 98.25;
     public static double distanceToTarget;
 
@@ -42,9 +42,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public CommandBase spinDown() {
-        return new InstantCommand(() -> {
-            shooterWheelMotor.stopMotor();
-        }, this);
+        return new InstantCommand(shooterWheelMotor::stopMotor, this);
     }
 
     /**
@@ -54,13 +52,12 @@ public class Shooter extends SubsystemBase {
      */
 
     public static double calculateVelocity(final double distanceToTarget) {
-        if (distanceToTarget * Math.tan(Math.toRadians(THETA)) >= verticalDistance) {
+        if (distanceToTarget * Math.tan(THETA) >= verticalDistance) {
             final double gravitySide = GRAVITY * distanceToTarget * distanceToTarget;
-            final double tanSide = distanceToTarget * Math.tan(Math.toRadians(THETA)) - verticalDistance;
-            final double cosSide = Math.cos(Math.toRadians(THETA)) * Math.cos(Math.toRadians(THETA));
+            final double tanSide = distanceToTarget * Math.tan(THETA) - verticalDistance;
+            final double cosSide = Math.cos(THETA) * Math.cos(THETA);
 
-            final double velocity = Math.sqrt(gravitySide / tanSide / cosSide / 2);
-            return velocity;
+            return Math.sqrt(gravitySide / tanSide / cosSide / 2);
         } else {
             return 0;
         }
