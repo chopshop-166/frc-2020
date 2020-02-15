@@ -1,20 +1,16 @@
 package frc.robot.maps;
 
-import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
-import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import java.util.function.BooleanSupplier;
+
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockPIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.sensors.MockAnalogInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.AnalogTrigger;
 
 public class RobotMap {
 

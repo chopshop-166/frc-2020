@@ -12,11 +12,8 @@ import com.chopshop166.chopshoplib.outputs.SwPIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 
