@@ -20,14 +20,17 @@ import java.lang.Math;
 public class Shooter extends SubsystemBase {
 
     private final SendableSpeedController shooterWheelMotor;
+    public static double distanceToTarget;
     public final double shooterHeight;
     public static double verticalDistance;
-    // meters/second
-    public final static double GRAVITY = 9.81;
+
+    // inches/second
+    public final static double GRAVITY = 386.2205;
+    // icnhes
+    public final static double TARGET_HEIGHT = 98.25;
     public final static double THETA = Math.toRadians(37);
-    // meters/second
-    public final static double TARGET_HEIGHT = 2.49555;
-    public static double distanceToTarget;
+    public final static double DIAMETER = 4;
+    public final static double CIRCUMFERENCE = DIAMETER * Math.PI * Math.PI;
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
@@ -39,7 +42,7 @@ public class Shooter extends SubsystemBase {
 
     public CommandBase spinUp() {
         return new InstantCommand(() -> {
-            shooterWheelMotor.set(.85); // Make a calculateRPM() function or something to get the speed
+            shooterWheelMotor.set(calculateRPM()); // TODO change RPM to 0 - 1
         }, this);
     }
 
@@ -47,13 +50,21 @@ public class Shooter extends SubsystemBase {
         return new InstantCommand(shooterWheelMotor::stopMotor, this);
     }
 
-    /**
+    /*
+     * Calculates RPM -> velocity / circumference is how many rotation needed in a
+     * second, so times 60 gives us how many RPM we need. (returns inches/second)
+     */
+    public static double calculateRPM() {
+        return 60 * calculateVelocity() / CIRCUMFERENCE;
+    }
+
+    /*
      * Finds the needed velocity to reach a target (x, y) or (distanceToTarget,
      * verticalDistance). The formula takes takes theta or launch angle, target and
      * gravity.
      */
 
-    public static double calculateVelocity(final double distanceToTarget) {
+    public static double calculateVelocity() {
         if (distanceToTarget * Math.tan(THETA) >= verticalDistance) {
             final double gravitySide = GRAVITY * distanceToTarget * distanceToTarget;
             final double tanSide = distanceToTarget * Math.tan(THETA) - verticalDistance;
