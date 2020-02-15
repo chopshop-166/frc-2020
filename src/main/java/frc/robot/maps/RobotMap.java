@@ -9,20 +9,12 @@ import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
-import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.sensors.MockEncoder;
-import com.revrobotics.CANPIDController;
-import com.chopshop166.chopshoplib.sensors.DigitalInputSource;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
-import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
+import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class RobotMap {
@@ -176,7 +168,7 @@ public class RobotMap {
 
         // this will be the left lift encoder (kinda gross but for now it works?)
         public IEncoder getLiftEncoder() {
-            return new MockEncoder();
+            return new SparkMaxEncoder(null);
         }
 
     }

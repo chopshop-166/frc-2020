@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -89,9 +90,11 @@ public class FrancoisMap extends RobotMap {
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
+
+            CANSparkMax leader = new CANSparkMax(27, MotorType.kBrushless);
+
             @Override
             public PIDSparkMax elevator() {
-                CANSparkMax leader = new CANSparkMax(27, MotorType.kBrushless);
                 CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
                 follower.follow(leader);
 
@@ -125,7 +128,7 @@ public class FrancoisMap extends RobotMap {
             @Override
             public IEncoder getLiftEncoder() {
                 // TODO Change this to a real Channel
-                WEncoder getEncoder = new WEncoder(4, 5);
+                SparkMaxEncoder getEncoder = new SparkMaxEncoder(leader.getEncoder());
 
                 return getEncoder;
             }

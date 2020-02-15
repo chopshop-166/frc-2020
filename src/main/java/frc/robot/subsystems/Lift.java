@@ -7,6 +7,7 @@ import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.google.common.collect.Range;
 
 import org.checkerframework.checker.units.qual.Speed;
 
@@ -42,8 +43,7 @@ public class Lift extends SubsystemBase {
     private BooleanSupplier upperLimitSwitch;
     private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
-
-    boolean isBraked = elevatorBrake.get();
+    private static final double TOLERANCE_RANGE = 5;
 
     // TODO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
@@ -57,37 +57,35 @@ public class Lift extends SubsystemBase {
 
     public void liftSpeed(double speed) {
         if (speed > 0) {
-            isBraked = false;
+            elevatorBrake.set(false);
             if (upperLimitSwitch.getAsBoolean()) {
                 speed = 0;
             }
         } else if (speed <= 0) {
-            isBraked = true;
+            elevatorBrake.set(true);
             if (lowerLimitSwitch.getAsBoolean()) {
                 speed = 0;
             }
         }
-        elevatorBrake.set(isBraked);
         elevatorMotor.set(speed);
-
     }
 
     // TODO make these heights reflect where we actually want them to be
     public enum liftHeights {
         Top(52.25), Middle(63), Bottom(78.125);
 
-        private double iPosition;
+        private double mPosition;
 
         private double minLiftHeight = 51;
 
         // Returning an double to compare whether we're in the right place or not
         public double value() {
-            return this.iPosition - minLiftHeight;
+            return this.mPosition - minLiftHeight;
         }
 
         // Returning the level the lift is at (top middle or bottom)
-        private liftHeights(double iPosition) {
-            this.iPosition = iPosition;
+        private liftHeights(double mPosition) {
+            this.mPosition = mPosition;
         }
     }
 
@@ -104,23 +102,9 @@ public class Lift extends SubsystemBase {
         }, this);
     }
 
-    public InstantCommand engageBrake() {
-        return new InstantCommand(() -> {
-            elevatorBrake.set(true);
-            isBraked = true;
-        }, this);
-    }
-
-    public InstantCommand disengageBrake() {
-        return new InstantCommand(() -> {
-            elevatorBrake.set(false);
-            isBraked = false;
-        }, this);
-    }
-
     public InstantCommand toggleBrake() {
         return new InstantCommand(() -> {
-            elevatorBrake.set(!isBraked);
+            elevatorBrake.set(!elevatorBrake.get());
         }, this);
     }
 
@@ -136,11 +120,9 @@ public class Lift extends SubsystemBase {
             }
         }, (Boolean interrupted) -> {
             liftSpeed(0);
-            elevatorBrake.set(true);
-            isBraked = true;
         }, () -> {
             double getPosition = liftEncoder.getDistance();
-            return getPosition == iPoint.value();
+            return Math.abs(iPoint.value() - getPosition) <= TOLERANCE_RANGE;
         }, this);
     }
 }
