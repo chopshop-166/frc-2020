@@ -31,6 +31,7 @@ public class FrancoisMap extends RobotMap {
                 follower.follow(leader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
+
                 return EncodedSpeedController.wrap(leader);
             }
 
