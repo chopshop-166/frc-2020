@@ -91,14 +91,7 @@ public class TempestMap extends RobotMap {
             @Override
             public PIDSpeedController shooterWheel() {
                 final Talon rollerMotor = new Talon(0);
-                final PIDController pid = new PIDController(0, 0, 0);
-                final DoubleSupplier measurement = new MockEncoder()::getRate;
-                return new SwPIDSpeedController(rollerMotor, pid, measurement);
-            }
-
-            @Override
-            public PIDSpeedController shooterWheel2() {
-                final Talon rollerMotor = new Talon(1);
+                final Talon rollerMotor2 = new Talon(1);
                 final PIDController pid = new PIDController(0, 0, 0);
                 final DoubleSupplier measurement = new MockEncoder()::getRate;
                 return new SwPIDSpeedController(rollerMotor, pid, measurement);
