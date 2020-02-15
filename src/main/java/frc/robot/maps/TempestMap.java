@@ -24,8 +24,8 @@ public class TempestMap extends RobotMap {
             @Override
             public EncodedSpeedController getLeft() {
 
-                SendableSpeedController motors = SendableSpeedController
-                        .group(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1)));
+                SendableSpeedController motors = SendableSpeedController.group(new WPI_TalonSRX(4),
+                        new WPI_TalonSRX(1));
                 return EncodedSpeedController.join(motors, new MockEncoder());
 
             }

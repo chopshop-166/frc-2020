@@ -74,14 +74,6 @@ public class Indexer extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase runPierre() {
-        return new StartEndCommand(() -> {
-            pierreMotor.set(.75);
-        }, () -> {
-            pierreMotor.stopMotor();
-        }, this);
-    }
-
     public CommandBase quicklyPush() {
         return indexMotor(singulatorMotorSpeed);
     }
@@ -98,12 +90,7 @@ public class Indexer extends SubsystemBase {
         return indexMotor(-pierreIndexSpeed);
     }
 
-    /*
-     * Command to run the singlator motor until the IR sensor 1 (analog 0) Command
-     * to run the singulator and pierre motor until the IR senor 1 is empty and IR
-     * senor 2 is covered Command to run the pierre motor until the IR sensor is
-     * uncovered
-     */
+  
     public CommandBase singulatorPossesion() {
         return new CommandBase() {
             {
@@ -114,12 +101,6 @@ public class Indexer extends SubsystemBase {
             public boolean isFinished() {
                 return frontIntakeIR.getAsBoolean();
             }
-
-            @Override
-            public void execute() {
-
-            }
-
             @Override
             public void end(final boolean interrupted) {
                 singulator.set(0);

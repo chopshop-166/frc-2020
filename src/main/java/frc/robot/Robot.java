@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
     final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
     final private String robotName = nameEntry.getString("Unknown");
 
-    final private RobotMap map = new TempestMap();
+    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
@@ -131,8 +131,7 @@ public class Robot extends TimedRobot {
             autonomousCommand.schedule();
         }
     }
-    
- 
+
     @Override
     public void teleopInit() {
         // This makes sure that the autonomous stops running when
@@ -150,17 +149,15 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public ParallelCommandGroup singulatorAndIntake(){
+    public ParallelCommandGroup singulatorAndIntake() {
 
-        return new ParallelCommandGroup(intake.runRoller(), indexer.indexMotor(.85)) ;
+        return new ParallelCommandGroup(intake.runRoller(), indexer.indexMotor(.85));
     }
-    
+
     public ParallelCommandGroup cancelCommand() {
 
         return new ParallelCommandGroup(intake.runIntakeReverse(), indexer.reversePush());
     }
-
-    
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
