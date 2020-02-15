@@ -90,7 +90,6 @@ public class Indexer extends SubsystemBase {
         return indexMotor(-pierreIndexSpeed);
     }
 
-  
     public CommandBase singulatorPossesion() {
         return new CommandBase() {
             {
@@ -101,6 +100,7 @@ public class Indexer extends SubsystemBase {
             public boolean isFinished() {
                 return frontIntakeIR.getAsBoolean();
             }
+
             @Override
             public void end(final boolean interrupted) {
                 singulator.set(0);

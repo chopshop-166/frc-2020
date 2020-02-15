@@ -87,7 +87,7 @@ public class TempestMap extends RobotMap {
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
             @Override
-            public SendableSpeedController shooterWheel1() {
+            public SendableSpeedController shooterWheel() {
                 final Talon rollerMotor = new Talon(0);
                 return SendableSpeedController.wrap(rollerMotor);
             }

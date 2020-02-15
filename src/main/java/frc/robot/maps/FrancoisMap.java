@@ -57,7 +57,7 @@ public class FrancoisMap extends RobotMap {
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
             @Override
-            public PIDSparkMax shooterWheel1() {
+            public PIDSparkMax shooterWheel() {
                 CANSparkMax leader = new CANSparkMax(25, MotorType.kBrushless);
                 CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
                 follower.follow(leader);

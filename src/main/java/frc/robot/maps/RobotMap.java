@@ -35,11 +35,10 @@ public class RobotMap {
     }
 
     public static class IntakeMap {
-        
+
         public SendableSpeedController intake() {
             return new MockSpeedController();
         }
-        
 
         public SendableSpeedController singulator() {
             return new MockSpeedController();
@@ -60,7 +59,7 @@ public class RobotMap {
     }
 
     public static class ShooterMap {
-        public SendableSpeedController shooterWheel1() {
+        public SendableSpeedController shooterWheel() {
             return new MockSpeedController();
         }
 
@@ -102,14 +101,14 @@ public class RobotMap {
             return new MockSpeedController();
         }
 
-        public BooleanSupplier frontIntakeIR(){
-            return ()-> false;
+        public BooleanSupplier frontIntakeIR() {
+            return () -> false;
         }
 
         public BooleanSupplier bottomPierreIR() {
             return () -> false;
         }
-        
+
         public BooleanSupplier topPierreIR() {
             return () -> false;
         }
