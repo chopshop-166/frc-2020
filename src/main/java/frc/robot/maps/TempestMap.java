@@ -36,4 +36,14 @@ public class TempestMap extends RobotMap {
             }
         };
     }
+
+    @Override
+    public ShooterMap getShooterMap() {
+        return new ShooterMap() {
+            @Override
+            public double shooterHeight() {
+                return 46.5;
+            }
+        };
+    }
 }
