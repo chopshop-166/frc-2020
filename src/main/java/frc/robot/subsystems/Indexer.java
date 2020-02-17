@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.maps.RobotMap.IndexMap;
 
 /**
@@ -224,13 +224,8 @@ public class Indexer extends SubsystemBase {
     }
 
     // this will make space for another ball
-    public CommandBase stopWhenBallsAtTop() {
-        return new CommandBase() {
-            @Override
-            public boolean isFinished() {
-                return topPierreIR.getAsBoolean();
-            }
-        };
+    public WaitUntilCommand stopWhenBallsAtTop() {
+        return new WaitUntilCommand(topPierreIR::getAsBoolean);
     }
     // The balls will not go past the top sensor unless called by the specific
     // function
