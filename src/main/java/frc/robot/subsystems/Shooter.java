@@ -20,6 +20,10 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class Shooter extends SubsystemBase {
 
+    @Log(tabName = "Configurable Values")
+    public final static double THETA = Math.toRadians(37);
+    public final static double DIAMETER = 4;
+
     private final double MAX_RPM = 5200;
     private final PIDSpeedController shooterWheelMotor;
     public static double distanceToTarget;
@@ -30,8 +34,6 @@ public class Shooter extends SubsystemBase {
     public final static double GRAVITY = 386.2205;
     // inches
     public final static double TARGET_HEIGHT = 98.25;
-    public final static double THETA = Math.toRadians(37);
-    public final static double DIAMETER = 4;
     public final static double CIRCUMFERENCE = DIAMETER * Math.PI * Math.PI;
 
     public Shooter(final RobotMap.ShooterMap map) {
