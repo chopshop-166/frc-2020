@@ -89,15 +89,6 @@ public class Indexer extends SubsystemBase {
     public CommandBase pierrePossesion() {
         return new FunctionalCommand(() -> {
 
-            if (frontIntakeIR.getAsBoolean()) {
-
-                singulator.set(singulatorMotorSpeed);
-            }
-            if (backIntakeIR.getAsBoolean()) {
-                pierreMotor.set(pierreIndexSpeed);
-                singulator.set(singulatorMotorSpeed);
-            }
-
         }, () -> {
 
             if (frontIntakeIR.getAsBoolean()) {
