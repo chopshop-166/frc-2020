@@ -91,68 +91,56 @@ public class Indexer extends SubsystemBase {
     }
 
     public CommandBase singulatorPossesion() {
-        return new CommandBase() {
-            {
-                addRequirements(Indexer.this);
-            }
+        return new FunctionalCommand(() -> {
 
-            @Override
-            public boolean isFinished() {
-                return frontIntakeIR.getAsBoolean() || topPierreIR.getAsBoolean();
-            }
+        }, () -> {
 
-            @Override
-            public void end(final boolean interrupted) {
-                singulator.set(0);
-            }
+        }, (interrupted) -> {
 
-        };
+            singulator.set(0);
+
+        }, () -> {
+
+            return frontIntakeIR.getAsBoolean() || topPierreIR.getAsBoolean();
+
+        }, this);
 
     }
     // This command will make sure that the singulator has possesion of the ball
 
     public CommandBase pierrePossesion() {
-        return new CommandBase() {
+        return new FunctionalCommand(() -> {
 
-            @Override
-            public void initialize() {
-                if (frontIntakeIR.getAsBoolean()) {
+            if (frontIntakeIR.getAsBoolean()) {
 
-                    singulator.set(singulatorMotorSpeed);
-                }
-                if (backIntakeIR.getAsBoolean()) {
-                    pierreMotor.set(pierreIndexSpeed);
-                    singulator.set(singulatorMotorSpeed);
-                }
+                singulator.set(singulatorMotorSpeed);
+            }
+            if (backIntakeIR.getAsBoolean()) {
+                pierreMotor.set(pierreIndexSpeed);
+                singulator.set(singulatorMotorSpeed);
             }
 
-            public boolean isFinished() {
-                return bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
-                // values of .8 when open, 2.4 when closed
+        }, () -> {
 
+            if (frontIntakeIR.getAsBoolean()) {
+
+                singulator.set(singulatorMotorSpeed);
             }
-
-            @Override
-            public void execute() {
-                if (frontIntakeIR.getAsBoolean()) {
-
-                    singulator.set(singulatorMotorSpeed);
-                }
-                if (backIntakeIR.getAsBoolean()) {
-                    pierreMotor.set(pierreIndexSpeed);
-                    singulator.set(singulatorMotorSpeed);
-                }
+            if (backIntakeIR.getAsBoolean()) {
+                pierreMotor.set(pierreIndexSpeed);
+                singulator.set(singulatorMotorSpeed);
             }
+        }, (interrupted) -> {
 
-            @Override
-            public void end(final boolean interrupted) {
-                pierreMotor.set(0);
-                singulator.set(0);
-                SmartDashboard.putNumber("Ball Count", ballCounting);
+            pierreMotor.set(0);
+            singulator.set(0);
+            SmartDashboard.putNumber("Ball Count", ballCounting);
 
-            }
+        }, () -> {
 
-        };
+            return bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
+
+        }, this);
 
     }
     // This command will make sure that pierre has possesion of the ball. It will be
