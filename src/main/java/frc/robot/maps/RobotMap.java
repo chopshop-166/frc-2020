@@ -13,7 +13,6 @@ import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
-import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
@@ -161,12 +160,6 @@ public class RobotMap {
             return () -> false;
         }
 
-        public BooleanSupplier lowerLiftLimit() {
-
-            return () -> false;
-        }
-
-        // this will be the left lift encoder (kinda gross but for now it works?)
         public IEncoder getLiftEncoder() {
             return new MockEncoder();
         }

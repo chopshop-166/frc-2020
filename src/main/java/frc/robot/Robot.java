@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-
 import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;

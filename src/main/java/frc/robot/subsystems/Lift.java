@@ -6,10 +6,6 @@ import java.util.function.DoubleSupplier;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
-import com.google.common.collect.Range;
-
-import org.checkerframework.checker.units.qual.Speed;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -43,7 +39,7 @@ public class Lift extends SubsystemBase {
     private BooleanSupplier upperLimitSwitch;
     private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
-    private static final double TOLERANCE_RANGE = 5;
+    private static final double TOLERANCE_RANGE_INCHES = 5;
 
     // TODO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
@@ -52,7 +48,6 @@ public class Lift extends SubsystemBase {
         liftEncoder = map.getLiftEncoder();
         elevatorBrake = map.liftBrake();
         upperLimitSwitch = map.upperLiftLimit();
-        lowerLimitSwitch = map.lowerLiftLimit();
     }
 
     public void liftSpeed(double speed) {
@@ -122,7 +117,7 @@ public class Lift extends SubsystemBase {
             liftSpeed(0);
         }, () -> {
             double getPosition = liftEncoder.getDistance();
-            return Math.abs(iPoint.value() - getPosition) <= TOLERANCE_RANGE;
+            return Math.abs(iPoint.value() - getPosition) <= TOLERANCE_RANGE_INCHES;
         }, this);
     }
 }
