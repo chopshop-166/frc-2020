@@ -126,10 +126,7 @@ public class RobotMap {
         public double shooterHeight() {
             return 0;
         }
-
-        public double shooterHeight() {
-            return 0;
-        }
+        
     }
 
     public ShooterMap getShooterMap() {
