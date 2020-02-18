@@ -72,8 +72,6 @@ public class RobotMap {
         return new ControlPanelMap();
     }
 
-    // TODO replace these values once true ports are determined
-
     public static class LiftMap {
 
         public PIDSpeedController elevator() {
