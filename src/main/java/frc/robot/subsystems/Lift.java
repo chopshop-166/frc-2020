@@ -70,7 +70,7 @@ public class Lift extends SubsystemBase {
 
     // Heights of the bar at max, min, and middle
     public enum liftHeights {
-        Top(52.25), Middle(63), Bottom(78.125);
+        Bottom(52.25), Middle(63), Top(78.125);
 
         private double mPosition;
 
@@ -88,7 +88,6 @@ public class Lift extends SubsystemBase {
     }
 
     public CommandBase moveLift(DoubleSupplier speed) {
-        // The command is named "Move Lift" and requires this subsystem.
         return new FunctionalCommand(() -> {
             liftSpeed(0);
         }, () -> {

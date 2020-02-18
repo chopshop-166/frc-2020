@@ -7,6 +7,7 @@ import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
+import com.chopshop166.chopshoplib.outputs.MockPIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
