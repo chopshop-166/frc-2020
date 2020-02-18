@@ -39,7 +39,7 @@ public class Lift extends SubsystemBase {
     private BooleanSupplier upperLimitSwitch;
     private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
-    private static final double TOLERANCE_RANGE = .5;
+    private static final double TOLERANCE_RANGE_INCHES = .5;
     // TODO I don't know what unit tolerance range is in but I set it to .5 assuming
     // it's in inches
 
