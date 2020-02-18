@@ -154,5 +154,6 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
         driveController.getButton(Button.kA).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
+        copilotController.getButton(Button.kB).whenPressed(drive.alignVision());
     }
 }

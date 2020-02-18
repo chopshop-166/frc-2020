@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.lang.Math;
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -33,6 +35,7 @@ public class Drive extends SubsystemBase {
     private final EncodedSpeedController leftMotorGroup;
     private final GyroBase gyro;
     private final DifferentialDrive driveTrain;
+    private final double angle = SmartDashboard.getNumber("Angle Offset", 0);
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -87,6 +90,14 @@ public class Drive extends SubsystemBase {
             driveTrain.stopMotor();
         }, () -> {
             return Math.abs(gyro.getAngle()) >= Math.abs(degrees);
+        }, this);
+    }
+
+    public CommandBase alignVision() {
+        return new RunCommand(() -> {
+            if (Math.abs(angle) > 5) {
+                driveTrain.arcadeDrive(.2, 0); // hi
+            }
         }, this);
     }
 }
