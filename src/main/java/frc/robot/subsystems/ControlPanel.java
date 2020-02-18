@@ -166,46 +166,4 @@ public class ControlPanel extends SubsystemBase {
 
     }
 
-    // public void stageTwoRotation() {
-
-    // int iRed = 0;
-    // int iBlue = 0;
-    // int iGreen = 0;
-    // int iYellow = 0;
-    // int iUnk = 0;
-    // spinForwards();
-
-    // for (int i = 0; i < 100; i++) {
-    // detectColor();
-    // if (colorString1 == "Red") {
-    // iRed++;
-
-    // } else if (colorString1 == "Blue") {
-    // iBlue++;
-    // } else if (colorString1 == "Green") {
-    // iGreen++;
-    // } else if (colorString1 == "Yellow") {
-    // iYellow++;
-    // } else if (colorString1 == "Blue") {
-    // iBlue++;
-    // } else if (colorString1 == "Unknown") {
-    // iUnk++;
-    // }
-
-    // if (iGreen + iRed + iUnk + iYellow + iBlue == 36) {
-    // // this is 36 because that means that the wheel would have spun 4 rotations
-    // spinnerMotor.stopMotor();
-    // }
-
-    // }
-
-    // }
-
 };
-
-// I want to make a function that when engaged will take a reading of the color,
-// mark that in an array, then, slowly rotate the color wheel and record every
-// color change as a
-// new member of the array, once the array has reached 24-40 changes (8 changes
-// per rotation, 3-5 rotations). once this number of members has been reached in
-// the array the motors stop
