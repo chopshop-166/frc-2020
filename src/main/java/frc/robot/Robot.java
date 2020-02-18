@@ -7,23 +7,28 @@
 
 package frc.robot;
 
+import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
-import frc.robot.maps.TempestMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,36 +39,41 @@ import frc.robot.subsystems.Intake;
  */
 public class Robot extends TimedRobot {
 
-  private Command autonomousCommand;
-  private ButtonXboxController driveController = new ButtonXboxController(1);
-  private JoystickButton aButton = new JoystickButton(driveController, XBoxButton.A.get());
-  private JoystickButton bButton = new JoystickButton(driveController, XBoxButton.B.get());
-  private JoystickButton xButton = new JoystickButton(driveController, XBoxButton.X.get());
-  private JoystickButton yButton = new JoystickButton(driveController, XBoxButton.Y.get());
+    private Command autonomousCommand;
+    final private ButtonXboxController driveController = new ButtonXboxController(1);
+    final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
-  RobotMap map = new TempestMap();
+    final private NetworkTableEntry nameEntry = Shuffleboard.getTab("RobotData").addPersistent("RobotName", "Unknown")
+            .getEntry();
+    final private String robotName = nameEntry.getString("Unknown");
 
-  final private Drive drive = new Drive(map.getDriveMap());
+    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
 
-  final private Intake intake = new Intake(map.getIntakeMap());
+    final private Drive drive = new Drive(map.getDriveMap());
+    final private Intake intake = new Intake(map.getIntakeMap());
+    final private Shooter shooter = new Shooter(map.getShooterMap());
+    final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
+    final private Lift lift = new Lift(map.getLiftMap());
 
-  final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
+    final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-  final private SendableChooser<Command> autoChooser = new SendableChooser<>();
+    /**
+     * This function is run when the robot is first started up and should be used
+     * for any initialization code.
+     */
+    @Override
+    public void robotInit() {
+        configureButtonBindings();
 
-  /**
-   * This function is run when the robot is first started up and should be used
-   * for any initialization code.
-   */
-  @Override
-  public void robotInit() {
-    configureButtonBindings();
+        autoChooser.setDefaultOption("Nothing", new InstantCommand());
+        autoChooser.addOption("Pass the Line", passLine());
 
-    autoChooser.setDefaultOption("Nothing", null);
+        Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
-    drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
+        DashboardUtils.logTelemetry();
 
-  }
+        drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
+    }
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for
@@ -87,56 +97,63 @@ public class Robot extends TimedRobot {
     controlPanel.detectColor();
   }
 
-  /**
-   * This function is called once each time the robot enters Disabled mode.
-   */
-  @Override
-  public void disabledInit() {
-    RobotUtils.resetAll(this);
-  }
-
-  /**
-   * This autonomous runs the autonomous command selected by your
-   * {@link RobotContainer} class.
-   */
-  @Override
-  public void autonomousInit() {
-    autonomousCommand = autoChooser.getSelected();
-
-    // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
+    /**
+     * This function is called once each time the robot enters Disabled mode.
+     */
+    @Override
+    public void disabledInit() {
+        RobotUtils.resetAll(this);
+        CommandScheduler.getInstance().cancelAll();
     }
-  }
 
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (autonomousCommand != null) {
-      autonomousCommand.cancel();
+    /**
+     * This autonomous runs the autonomous command selected by your
+     * {@link RobotContainer} class.
+     */
+    @Override
+    public void autonomousInit() {
+        autonomousCommand = autoChooser.getSelected();
+
+        // schedule the autonomous command (example)
+        if (autonomousCommand != null) {
+            autonomousCommand.schedule();
+        }
     }
-  }
 
-  @Override
-  public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
-  }
+    @Override
+    public void teleopInit() {
+        // This makes sure that the autonomous stops running when
+        // teleop starts running. If you want the autonomous to
+        // continue until interrupted by another command, remove
+        // this line or comment it out.
+        if (autonomousCommand != null) {
+            autonomousCommand.cancel();
+        }
+    }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by instantiating a {@link GenericHID} or one of its subclasses
-   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
-   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    aButton.whenHeld(intake.intake());
-    bButton.whenHeld(intake.discharge());
-    xButton.whenHeld(controlPanel.spinForwards());
-    yButton.whenHeld(controlPanel.spinBackwards());
+    @Override
+    public void testInit() {
+        // Cancels all running commands at the start of test mode.
+        CommandScheduler.getInstance().cancelAll();
+    }
 
-  }
+    public SequentialCommandGroup passLine() {
+        return new SequentialCommandGroup(drive.driveDistance(40, .5));
+    }
+
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by instantiating a {@link GenericHID} or one of its subclasses
+     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+     * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+
+    private void configureButtonBindings() {
+        driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
+        driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
+        copilotController.getButton(Button.kX).whenHeld(intake.intake());
+        copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
+        driveController.getButton(Button.kA).toggleWhenActive(
+                drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
+    }
 }
