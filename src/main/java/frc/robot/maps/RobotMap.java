@@ -10,6 +10,7 @@ import com.chopshop166.chopshoplib.outputs.MockPIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
 public class RobotMap {
@@ -36,14 +37,6 @@ public class RobotMap {
     public static class IntakeMap {
 
         public SendableSpeedController intake() {
-            return new MockSpeedController();
-        }
-
-        public SendableSpeedController singulator() {
-            return new MockSpeedController();
-        }
-
-        public SendableSpeedController pierre() {
             return new MockSpeedController();
         }
 
@@ -103,19 +96,19 @@ public class RobotMap {
         }
 
         public BooleanSupplier frontIntakeIR() {
-            return () -> false;
+            return new MockDigitalInput()::getAsBoolean;
         }
 
         public BooleanSupplier bottomPierreIR() {
-            return () -> false;
+            return new MockDigitalInput()::getAsBoolean;
         }
 
         public BooleanSupplier topPierreIR() {
-            return () -> false;
+            return new MockDigitalInput()::getAsBoolean;
         }
 
         public BooleanSupplier backIntakeIR() {
-            return () -> false;
+            return new MockDigitalInput()::getAsBoolean;
         }
     }
 

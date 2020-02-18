@@ -58,12 +58,6 @@ public class Indexer extends SubsystemBase {
         return new SequentialCommandGroup(loadBallToTop(), unLoadBall());
     }
 
-    public ParallelDeadlineGroup topSensorTriggered() {
-        final ParallelDeadlineGroup topIRStop = new ParallelDeadlineGroup(
-                new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor()));
-        topIRStop.setDeadline(stopWhenBallsAtTop());
-        return topIRStop;
-    }
     // This will stop all commands when the top IR sensor on Pierre is triggered
 
     public CommandBase indexMotor(final double motorSpeed) {
@@ -90,22 +84,6 @@ public class Indexer extends SubsystemBase {
         return indexMotor(-pierreIndexSpeed);
     }
 
-    public CommandBase singulatorPossesion() {
-        return new FunctionalCommand(() -> {
-
-        }, () -> {
-
-        }, (interrupted) -> {
-
-            singulator.set(0);
-
-        }, () -> {
-
-            return frontIntakeIR.getAsBoolean() || topPierreIR.getAsBoolean();
-
-        }, this);
-
-    }
     // This command will make sure that the singulator has possesion of the ball
 
     public CommandBase pierrePossesion() {

@@ -70,7 +70,6 @@ public class Robot extends TimedRobot {
         nameEntry.setPersistent();
         nameEntry.setDefaultString("Unknown");
         Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
-        SmartDashboard.putData("singulator", indexer.singulatorPossesion());
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
