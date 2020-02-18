@@ -52,6 +52,7 @@ public class Lift extends SubsystemBase {
         upperLimitSwitch = map.upperLiftLimit();
     }
 
+    // sets the ratchet to either be activated or deactivated depending on liftSpeed
     public void liftSpeed(double speed) {
         if (speed > 0) {
             elevatorBrake.set(false);
@@ -67,6 +68,7 @@ public class Lift extends SubsystemBase {
         elevatorMotor.set(speed);
     }
 
+    // Heights of the bar at max, min, and middle
     public enum liftHeights {
         Top(52.25), Middle(63), Bottom(78.125);
 
@@ -98,12 +100,14 @@ public class Lift extends SubsystemBase {
         }, this);
     }
 
+    // allows to toggle the break. Pretty self explanitory
     public InstantCommand toggleBrake() {
         return new InstantCommand(() -> {
             elevatorBrake.set(!elevatorBrake.get());
         }, this);
     }
 
+    // Sets the lift go to the point where to bar would be based off the encoder
     public CommandBase goToHeight(liftHeights iPoint) {
         return new FunctionalCommand(() -> {
             elevatorBrake.set(false);
