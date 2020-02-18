@@ -173,10 +173,11 @@ public class Robot extends TimedRobot {
     private void configureButtonBindings() {
         copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
         driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinUp());
+        driveController.getButton(Button.kY).toggleWhenActive(
+                drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         copilotController.getButton(Button.kX).whenHeld(cancelCommand());
         driveController.getButton(Button.kB).whenPressed(indexer.unLoadBall());
-        driveController.getButton(Button.kY).whenPressed(indexer.shootOneBall());
         copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
     }
