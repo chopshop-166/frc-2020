@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
+
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 
 /**
@@ -20,7 +22,7 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class Shooter extends SubsystemBase {
 
-    @Log(tabName = "Configurable Values")
+    @Config(tabName = "Configurable Values")
     public final static double THETA = Math.toRadians(37);
     public final static double DIAMETER = 4;
 

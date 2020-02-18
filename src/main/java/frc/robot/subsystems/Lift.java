@@ -6,13 +6,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class Lift extends SubsystemBase {
 
     private SendableSpeedController elevatorMotor;
 
-    @Log(tabName = "Configurable Values")
+    @Config(tabName = "Configurable Values")
     private static final double elevatorMotorSpeed = 1;
 
     public Lift(RobotMap.LiftMap map) {
