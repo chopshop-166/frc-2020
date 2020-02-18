@@ -33,7 +33,7 @@ def unequal(new, old_list):
 def newLine(filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2):
     filtered_lines.append(new_line)
     cv2.line(filtered_line_img, (x1, y1), (x2, y2), (0, 255, 0), 1)
-    return x1 + x2, y1, y2
+    return x1 + x2, y1 + y2
 
 
 NetworkTables.initialize(server='roborio-166-frc.local')
@@ -124,12 +124,12 @@ while True:
 
             # Checks if we have verified lines, and makes a new line based on that.
             if FILTERED_LINES:
-                if (new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD and unequal(new_slope, FILTERED_LINES):
-                    X_TOTAL, Y_TOTAL=newLine(
+                if (new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD) and unequal(new_slope, FILTERED_LINES):
+                    X_TOTAL, Y_TOTAL = newLine(
                         FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2)
-                elif new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD:
-                    newLine(FILTERED_LINES, NEW_LINE,
-                        FILTERED_LINE_IMG, x1, y1, x2, y2)
+            elif new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD:
+                X_TOTAL, Y_TOTAL = newLine(FILTERED_LINES, NEW_LINE,
+                    FILTERED_LINE_IMG, x1, y1, x2, y2)
 
         NUM_LINES=len(FILTERED_LINES)
         if FILTERED_LINES:
@@ -137,8 +137,8 @@ while True:
             Y_AVG=0
 
             if len(X_VALS) == POINT_SAMPLES:
-                X_VALS[POINTER]=X_TOTAL/(2*NUM_LINES)
-                Y_VALS[POINTER]=Y_TOTAL/(2*NUM_LINES)
+                X_VALS[POINTER]=X_TOTAL/(NUM_LINES)
+                Y_VALS[POINTER]=Y_TOTAL/(NUM_LINES)
 
                 for i in range(len(X_VALS)):
                     X_AVG += X_VALS[i]
@@ -147,10 +147,13 @@ while True:
                 X_AVG=int(X_AVG / POINT_SAMPLES)
                 Y_AVG=int(Y_AVG / POINT_SAMPLES)
 
-                offset=2 * (X_AVG - (WIDTH/2)) / WIDTH
+                offset = 2 * (X_AVG - (WIDTH/2)) / WIDTH
                 cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG),
                            5, [255, 255, 255], -1)
-                dist_to_target=depth.get_distance(X_AVG, Y_AVG)
+                try:
+                    dist_to_target = depth.get_distance(X_AVG, Y_AVG)
+                except:
+                    None
 
                 # Smart Dashboard variables
                 sd.putBoolean("Sees Target", True)
