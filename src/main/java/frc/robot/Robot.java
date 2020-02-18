@@ -19,13 +19,16 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
@@ -54,6 +57,7 @@ public class Robot extends TimedRobot {
     final private Shooter shooter = new Shooter(map.getShooterMap());
     final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
+    final private Indexer indexer = new Indexer(map.getIndexerMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -64,6 +68,15 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         configureButtonBindings();
+        nameEntry.setPersistent();
+        nameEntry.setDefaultString("Unknown");
+        Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
+        SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
+        SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
+        SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
+        SmartDashboard.putData("ball at top", indexer.stopWhenBallsAtTop());
+
+        // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", passLine());
@@ -73,6 +86,7 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
+        indexer.setDefaultCommand(indexer.intakeToPierre());
     }
 
     /**
@@ -136,6 +150,16 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
+    public ParallelCommandGroup singulatorAndIntake() {
+
+        return new ParallelCommandGroup(intake.intake(), indexer.indexMotor(.85));
+    }
+
+    public ParallelCommandGroup cancelCommand() {
+
+        return new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
+    }
+
     public SequentialCommandGroup passLine() {
         return new SequentialCommandGroup(drive.driveDistance(40, .5));
     }
@@ -146,13 +170,15 @@ public class Robot extends TimedRobot {
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-
     private void configureButtonBindings() {
-        driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
-        driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
-        copilotController.getButton(Button.kX).whenHeld(intake.intake());
-        copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
-        driveController.getButton(Button.kA).toggleWhenActive(
+        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        driveController.getButton(Button.kBumperRight).whenHeld(shooter.spinUp());
+        driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
+        driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
+        copilotController.getButton(Button.kX).whenHeld(cancelCommand());
+        driveController.getButton(Button.kB).whenPressed(indexer.unLoadBall());
+        copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
+        copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
     }
 }
