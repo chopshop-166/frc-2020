@@ -37,7 +37,6 @@ public class Lift extends SubsystemBase {
     private ISolenoid elevatorBrake;
     private IEncoder liftEncoder;
     private BooleanSupplier upperLimitSwitch;
-    private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
     private static final double TOLERANCE_RANGE_INCHES = .5;
     // TODO I don't know what unit tolerance range is in but I set it to .5 assuming
@@ -61,9 +60,6 @@ public class Lift extends SubsystemBase {
             }
         } else if (speed <= 0) {
             elevatorBrake.set(true);
-            if (lowerLimitSwitch.getAsBoolean()) {
-                speed = 0;
-            }
         }
         elevatorMotor.set(speed);
     }
