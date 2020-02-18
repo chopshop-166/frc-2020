@@ -94,9 +94,7 @@ public class Lift extends SubsystemBase {
             liftSpeed(speed.getAsDouble());
         }, (Boolean interrupted) -> {
             liftSpeed(0);
-        }, () -> {
-            return false;
-        }, this);
+        }, () -> false, this);
     }
 
     // allows to toggle the break. Pretty self explanitory
