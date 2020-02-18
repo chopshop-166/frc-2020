@@ -118,14 +118,6 @@ public class FrancoisMap extends RobotMap {
             }
 
             @Override
-            public BooleanSupplier lowerLiftLimit() {
-                // TODO Change this to a real Channel
-                InvertDigitalInput lowerLimit = new InvertDigitalInput(1);
-
-                return lowerLimit::get;
-            }
-
-            @Override
             public IEncoder getLiftEncoder() {
                 // TODO Change this to a real Channel
                 SparkMaxEncoder getEncoder = new SparkMaxEncoder(leader.getEncoder());
