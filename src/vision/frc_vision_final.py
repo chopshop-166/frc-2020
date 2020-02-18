@@ -30,11 +30,13 @@ def unequal(new, old_list):
     return True
 
 
-def newLine(filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2):
+def newLine(filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2, X_TOTAL, Y_TOTAL):
     filtered_lines.append(new_line)
     cv2.line(filtered_line_img, (x1, y1), (x2, y2), (0, 255, 0), 1)
-    return x1 + x2, y1 + y2
+    X_TOTAL += x1 + x2
+    Y_TOTAL += y1 + y2
 
+    return X_TOTAL, Y_TOTAL
 
 NetworkTables.initialize(server='roborio-166-frc.local')
 
@@ -126,10 +128,10 @@ while True:
             if FILTERED_LINES:
                 if (new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD) and unequal(new_slope, FILTERED_LINES):
                     X_TOTAL, Y_TOTAL = newLine(
-                        FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2)
+                        FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2, X_TOTAL, Y_TOTAL)
             elif new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD:
                 X_TOTAL, Y_TOTAL = newLine(FILTERED_LINES, NEW_LINE,
-                    FILTERED_LINE_IMG, x1, y1, x2, y2)
+                    FILTERED_LINE_IMG, x1, y1, x2, y2, X_TOTAL, Y_TOTAL)
 
         NUM_LINES=len(FILTERED_LINES)
         if FILTERED_LINES:
@@ -137,8 +139,8 @@ while True:
             Y_AVG=0
 
             if len(X_VALS) == POINT_SAMPLES:
-                X_VALS[POINTER]=X_TOTAL/(NUM_LINES)
-                Y_VALS[POINTER]=Y_TOTAL/(NUM_LINES)
+                X_VALS[POINTER]=X_TOTAL/(2*NUM_LINES)
+                Y_VALS[POINTER]=Y_TOTAL/(2*NUM_LINES)
 
                 for i in range(len(X_VALS)):
                     X_AVG += X_VALS[i]
@@ -157,7 +159,7 @@ while True:
 
                 # Smart Dashboard variables
                 sd.putBoolean("Sees Target", True)
-                sd.putNumber("Target Offset", offset)
+                sd.putNumber("Ratio Offset", offset)
                 sd.putNumber("Angle Offset", PIXEL_ANGLE * X_AVG)
                 sd.putNumber("Distance To Target", dist_to_target)
 
