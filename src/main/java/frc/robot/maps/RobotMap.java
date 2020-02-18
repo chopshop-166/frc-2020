@@ -155,7 +155,7 @@ public class RobotMap {
     public static class LiftMap {
 
         public PIDSpeedController elevator() {
-            return new PIDSpeedController() {
+            return new MockPIDSpeedController() {
 
                 @Override
                 public void pidWrite(double output) {
