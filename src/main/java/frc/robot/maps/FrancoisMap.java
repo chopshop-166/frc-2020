@@ -1,17 +1,27 @@
 package frc.robot.maps;
 
+import java.util.function.BooleanSupplier;
+
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
+import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
+import com.chopshop166.chopshoplib.outputs.WSolenoid;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
+import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.EncoderType;
+
+import edu.wpi.first.wpilibj.Solenoid;
 
 import edu.wpi.first.wpilibj.GyroBase;
 
@@ -130,14 +140,35 @@ public class FrancoisMap extends RobotMap {
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-            CANSparkMax leader = new CANSparkMax(21, MotorType.kBrushless);
-            CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
+            CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
+            CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
+            InvertDigitalInput upperLimit = new InvertDigitalInput(0);
 
             @Override
             public PIDSparkMax elevator() {
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
+            }
+
+            @Override
+            public ISolenoid liftBrake() {
+                // TODO Change this to a real Channel
+                WSolenoid brake = new WSolenoid(3);
+
+                return brake;
+            }
+
+            @Override
+            public BooleanSupplier upperLiftLimit() {
+                return upperLimit::get;
+            }
+
+            @Override
+            public IEncoder getLiftEncoder() {
+                SparkMaxEncoder getEncoder = new SparkMaxEncoder(leader.getEncoder());
+
+                return getEncoder;
             }
         };
     }

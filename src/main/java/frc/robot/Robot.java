@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
+        lift.setDefaultCommand(lift.moveLift(copilotController::getTriggers));
         indexer.setDefaultCommand(indexer.intakeToPierre());
     }
 
