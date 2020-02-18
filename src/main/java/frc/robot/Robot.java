@@ -67,8 +67,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        configureButtonBindings();
-
         nameEntry.setPersistent();
         nameEntry.setDefaultString("Unknown");
         Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
