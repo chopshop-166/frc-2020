@@ -152,12 +152,12 @@ public class Robot extends TimedRobot {
 
     public ParallelCommandGroup singulatorAndIntake() {
 
-        return new ParallelCommandGroup(intake.runRoller(), indexer.indexMotor(.85));
+        return new ParallelCommandGroup(intake.intake(), indexer.indexMotor(.85));
     }
 
     public ParallelCommandGroup cancelCommand() {
 
-        return new ParallelCommandGroup(intake.runIntakeReverse(), indexer.reversePush());
+        return new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
     }
 
     public SequentialCommandGroup passLine() {
