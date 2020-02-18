@@ -39,7 +39,9 @@ public class Lift extends SubsystemBase {
     private BooleanSupplier upperLimitSwitch;
     private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
-    private static final double TOLERANCE_RANGE_INCHES = 5;
+    private static final double TOLERANCE_RANGE = .5;
+    // TODO I don't know what unit tolerance range is in but I set it to .5 assuming
+    // it's in inches
 
     // TODO Find a way to sync the elevatorLeft and elevatorRight motors
     public Lift(RobotMap.LiftMap map) {
@@ -65,7 +67,6 @@ public class Lift extends SubsystemBase {
         elevatorMotor.set(speed);
     }
 
-    // TODO make these heights reflect where we actually want them to be
     public enum liftHeights {
         Top(52.25), Middle(63), Bottom(78.125);
 

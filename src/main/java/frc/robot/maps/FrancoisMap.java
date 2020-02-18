@@ -26,12 +26,11 @@ public class FrancoisMap extends RobotMap {
     @Override
     public DifferentialDriveMap getDriveMap() {
         return new DifferentialDriveMap() {
+            CANSparkMax follower = new CANSparkMax(23, MotorType.kBrushless);
 
             @Override
             public EncodedSpeedController getRight() {
-
                 CANSparkMax leader = new CANSparkMax(20, MotorType.kBrushless);
-                CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
                 follower.follow(leader);
 
                 return EncodedSpeedController.wrap(leader);
@@ -40,7 +39,6 @@ public class FrancoisMap extends RobotMap {
             @Override
             public EncodedSpeedController getLeft() {
                 CANSparkMax leader = new CANSparkMax(22, MotorType.kBrushless);
-                CANSparkMax follower = new CANSparkMax(23, MotorType.kBrushless);
                 follower.follow(leader);
 
                 return EncodedSpeedController.wrap(leader);
@@ -66,10 +64,11 @@ public class FrancoisMap extends RobotMap {
     @Override
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
+            CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
+
             @Override
             public PIDSparkMax shooterWheel() {
                 CANSparkMax leader = new CANSparkMax(25, MotorType.kBrushless);
-                CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
@@ -90,12 +89,12 @@ public class FrancoisMap extends RobotMap {
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-
+            CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
             CANSparkMax leader = new CANSparkMax(27, MotorType.kBrushless);
+            InvertDigitalInput upperLimit = new InvertDigitalInput(0);
 
             @Override
             public PIDSparkMax elevator() {
-                CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
@@ -111,15 +110,11 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public BooleanSupplier upperLiftLimit() {
-                // TODO Change this to a real Channel
-                InvertDigitalInput upperLimit = new InvertDigitalInput(0);
-
                 return upperLimit::get;
             }
 
             @Override
             public IEncoder getLiftEncoder() {
-                // TODO Change this to a real Channel
                 SparkMaxEncoder getEncoder = new SparkMaxEncoder(leader.getEncoder());
 
                 return getEncoder;

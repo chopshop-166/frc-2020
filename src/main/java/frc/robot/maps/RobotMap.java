@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -157,7 +158,7 @@ public class RobotMap {
         }
 
         public BooleanSupplier upperLiftLimit() {
-            return () -> false;
+            return new MockDigitalInput()::getAsBoolean;
         }
 
         public IEncoder getLiftEncoder() {
