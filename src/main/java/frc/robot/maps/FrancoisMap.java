@@ -15,33 +15,84 @@ import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.EncoderType;
 
 import edu.wpi.first.wpilibj.Solenoid;
+
+import edu.wpi.first.wpilibj.GyroBase;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
 
     @Override
     public DifferentialDriveMap getDriveMap() {
+        final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
-            CANSparkMax follower = new CANSparkMax(23, MotorType.kBrushless);
+            CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
+            CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
+
+            CANSparkMax leftLeader = new CANSparkMax(29, MotorType.kBrushless);
+            CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
 
             @Override
             public EncodedSpeedController getRight() {
-                CANSparkMax leader = new CANSparkMax(20, MotorType.kBrushless);
-                follower.follow(leader);
 
-                return EncodedSpeedController.wrap(leader);
+                CANEncoder leadEncoder = new CANEncoder(rightLeader, EncoderType.kQuadrature, 42);
+                rightFollower.follow(rightLeader);
+
+                leadEncoder.setPositionConversionFactor(distancePerPulse);
+
+                return EncodedSpeedController.wrap(rightLeader);
             }
 
             @Override
             public EncodedSpeedController getLeft() {
-                CANSparkMax leader = new CANSparkMax(22, MotorType.kBrushless);
-                follower.follow(leader);
+                CANEncoder leadEncoder = new CANEncoder(leftLeader, EncoderType.kQuadrature, 42);
+                leftFollower.follow(leftLeader);
 
-                return EncodedSpeedController.wrap(leader);
+                leadEncoder.setPositionConversionFactor(distancePerPulse);
+
+                return EncodedSpeedController.wrap(leftLeader);
+            }
+
+            @Override
+            public GyroBase getGyro() {
+                PigeonIMU gyro = new PigeonIMU(new WPI_TalonSRX(42));
+                return new GyroBase() {
+
+                    @Override
+                    public void close() throws Exception {
+                        // NoOp
+
+                    }
+
+                    @Override
+                    public void reset() {
+                        gyro.setFusedHeading(0);
+
+                    }
+
+                    @Override
+                    public double getRate() {
+                        double[] xyz = new double[3];
+                        gyro.getRawGyro(xyz);
+                        return xyz[2];
+                    }
+
+                    @Override
+                    public double getAngle() {
+                        return gyro.getFusedHeading();
+                    }
+
+                    @Override
+                    public void calibrate() {
+                        // NoOp
+                    }
+                };
             }
         };
     }
@@ -64,11 +115,11 @@ public class FrancoisMap extends RobotMap {
     @Override
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
+            CANSparkMax leader = new CANSparkMax(23, MotorType.kBrushless);
             CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
 
             @Override
             public PIDSparkMax shooterWheel() {
-                CANSparkMax leader = new CANSparkMax(25, MotorType.kBrushless);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
@@ -89,8 +140,8 @@ public class FrancoisMap extends RobotMap {
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-            CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
-            CANSparkMax leader = new CANSparkMax(27, MotorType.kBrushless);
+            CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
+            CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
             InvertDigitalInput upperLimit = new InvertDigitalInput(0);
 
             @Override

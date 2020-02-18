@@ -12,7 +12,6 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -23,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
@@ -43,7 +43,8 @@ public class Robot extends TimedRobot {
     final private ButtonXboxController driveController = new ButtonXboxController(1);
     final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
-    final private NetworkTableEntry nameEntry = NetworkTableInstance.getDefault().getEntry("RobotName");
+    final private NetworkTableEntry nameEntry = Shuffleboard.getTab("RobotData").addPersistent("RobotName", "Unknown")
+            .getEntry();
     final private String robotName = nameEntry.getString("Unknown");
 
     final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
@@ -64,11 +65,10 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         configureButtonBindings();
 
-        nameEntry.setPersistent();
-        nameEntry.setDefaultString("Unknown");
-        Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
-
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
+        autoChooser.addOption("Pass the Line", passLine());
+
+        Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
         DashboardUtils.logTelemetry();
 
@@ -103,6 +103,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         RobotUtils.resetAll(this);
+        CommandScheduler.getInstance().cancelAll();
     }
 
     /**
@@ -134,6 +135,10 @@ public class Robot extends TimedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+    }
+
+    public SequentialCommandGroup passLine() {
+        return new SequentialCommandGroup(drive.driveDistance(40, .5));
     }
 
     /**
