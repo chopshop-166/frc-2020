@@ -122,7 +122,7 @@ public class FrancoisMap extends RobotMap {
             @Override
             public PIDSparkMax shooterWheel() {
                 leader.setInverted(true);
-                follower.follow(leader);
+                follower.follow(leader, true);
 
                 return new PIDSparkMax(leader);
             }
@@ -191,8 +191,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public PIDSparkMax elevator() {
-                follower.setInverted(true);
-                follower.follow(leader);
+                follower.follow(leader, true);
 
                 return new PIDSparkMax(leader);
             }
