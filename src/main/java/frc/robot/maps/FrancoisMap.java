@@ -103,12 +103,12 @@ public class FrancoisMap extends RobotMap {
         return new IntakeMap() {
             @Override
             public SendableSpeedController intake() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(40));
+                return SendableSpeedController.wrap(new WPI_TalonSRX(42));
             }
 
             @Override
             public WDSolenoid deployIntake() {
-                return new WDSolenoid(0, 1);
+                return new WDSolenoid(1, 2);
             }
         };
     }
@@ -121,6 +121,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public PIDSparkMax shooterWheel() {
+                leader.setInverted(true);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
@@ -133,7 +134,7 @@ public class FrancoisMap extends RobotMap {
         return new ControlPanelMap() {
             @Override
             public SendableSpeedController spinner() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(41));
+                return SendableSpeedController.wrap(new WPI_TalonSRX(49));
             }
         };
     }
@@ -150,11 +151,12 @@ public class FrancoisMap extends RobotMap {
 
             public SendableSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
+                singulator.setInverted(true);
                 return SendableSpeedController.wrap(singulator);
             }
 
             public BooleanSupplier frontIntakeIR() {
-                AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
+                AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
                 frontIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return frontIntakeIR::getTriggerState;
             }
@@ -166,13 +168,13 @@ public class FrancoisMap extends RobotMap {
             }
 
             public BooleanSupplier topPierreIR() {
-                AnalogTrigger topPierreIR = new AnalogTrigger(0);
+                AnalogTrigger topPierreIR = new AnalogTrigger(2);
                 topPierreIR.setLimitsVoltage(1.8, 2.4);
                 return topPierreIR::getTriggerState;
             }
 
             public BooleanSupplier backIntakeIR() {
-                AnalogTrigger backIntakeIR = new AnalogTrigger(2);
+                AnalogTrigger backIntakeIR = new AnalogTrigger(3);
                 backIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return backIntakeIR::getTriggerState;
             }
@@ -189,6 +191,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public PIDSparkMax elevator() {
+                follower.setInverted(true);
                 follower.follow(leader);
 
                 return new PIDSparkMax(leader);
@@ -196,8 +199,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public ISolenoid liftBrake() {
-                // TODO Change this to a real Channel
-                WSolenoid brake = new WSolenoid(3);
+                WSolenoid brake = new WSolenoid(0);
 
                 return brake;
             }

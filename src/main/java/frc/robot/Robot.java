@@ -76,6 +76,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
         SmartDashboard.putData("ball at top", indexer.stopWhenBallsAtTop());
+        SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
 
         // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
@@ -87,7 +88,7 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
-        lift.setDefaultCommand(lift.moveLift(copilotController::getTriggers));
+        // lift.setDefaultCommand(lift.moveLift(copilotController::getTriggers));
         indexer.setDefaultCommand(indexer.intakeToPierre());
     }
 
