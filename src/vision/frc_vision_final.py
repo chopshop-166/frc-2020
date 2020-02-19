@@ -1,10 +1,4 @@
-# Contains most of the vision processing, though the most complete is under Offline_Filter
-# Likely to become the final product file for vision processing
-# The exposure options are likely needed to be adjusted per competition
-# They are currently tuned to the testing area
-# Tuning for the RealSense camera can be done easily through the ReaslSense Viewer app in a GUI
-# One thing I do still need to figure out is assigning the camera to a specific IO port number
-# Testing on my laptop, it is only visible when using one port
+# Exists solely for me to reorganize this code and test stuff out
 
 from math import degrees, radians
 import pyrealsense2 as rs2
@@ -21,11 +15,11 @@ ANGLETHRESHOLD = 40
 def unequal(new, old_list):
     variance = 5
     for i in old_list:
-        x3, y3, x4, y4 = i[0]
-        old_slope = degrees(np.arctan((y4 - y3)/(x4 - x3)))
+        x1, y1, x2, y2 = i[0]
+        old_slope = degrees(np.arctan((y2 - y1)/(x2 - x1)))
         min_val = old_slope - variance
         max_val = old_slope + variance
-        if min_val < new < max_val:
+        if abs(new - old_slope) < variance:
             return False
     return True
 
@@ -69,8 +63,7 @@ s.set_option(rs2.option.saturation, 50)
 s.set_option(rs2.option.sharpness, 0)
 s.set_option(rs2.option.white_balance, 2800)
 
-X_VALS = []
-Y_VALS = []
+VALS = []
 
 POINTER = 0
 
@@ -99,7 +92,7 @@ while True:
 
     # Various blur method testings (buffer for pixel imperfections)
     BLUR = cv2.GaussianBlur(MASK, (3, 3), 0)
-    MEDIAN = cv2.medianBlur(MASK, 3)
+    MEDIAN = cv2.medianBlur(MASK, 5)
 
     # Edge detection on each test for use in line detection
     BLUR_EDGES = cv2.Canny(BLUR, 100, 200)
@@ -111,7 +104,7 @@ while True:
     LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
 
     # Find lines in selected image
-    LINES = cv2.HoughLinesP(MASK_EDGES, 1, radians(.5), 25, maxLineGap=25)
+    LINES = cv2.HoughLinesP(MED_EDGES, 1, radians(.5), 25, maxLineGap=25)
 
     # If there are lines:
     if LINES is not None:
@@ -138,13 +131,16 @@ while True:
             X_AVG=0
             Y_AVG=0
 
-            if len(X_VALS) == POINT_SAMPLES:
-                X_VALS[POINTER]=X_TOTAL/(2*NUM_LINES)
-                Y_VALS[POINTER]=Y_TOTAL/(2*NUM_LINES)
+            if len(VALS) == POINT_SAMPLES:
+                VALS.pop(0)
+                VALS.append([X_TOTAL/(2*NUM_LINES), Y_TOTAL/(2*NUM_LINES)])
 
-                for i in range(len(X_VALS)):
-                    X_AVG += X_VALS[i]
-                    Y_AVG += Y_VALS[i]
+                # TODO: Test if you could keep this continuous, not re-add everything every loop
+                # Subtract Popped val, add new val?
+                for VAL in VALS:
+                    X_VAL, Y_VAL = VAL
+                    X_AVG += X_VAL
+                    Y_AVG += Y_VAL
 
                 X_AVG=int(X_AVG / POINT_SAMPLES)
                 Y_AVG=int(Y_AVG / POINT_SAMPLES)
@@ -164,8 +160,7 @@ while True:
                 sd.putNumber("Distance To Target", dist_to_target)
 
             else:
-                X_VALS.append(X_TOTAL/(2*NUM_LINES))
-                Y_VALS.append(Y_TOTAL/(2*NUM_LINES))
+                VALS.append([X_TOTAL/(2*NUM_LINES), Y_TOTAL/(2*NUM_LINES)])
 
         for LINE in LINES:
             x1, y1, x2, y2=LINE[0]
