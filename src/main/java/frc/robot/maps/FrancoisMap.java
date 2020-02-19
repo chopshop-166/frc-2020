@@ -156,7 +156,7 @@ public class FrancoisMap extends RobotMap {
             }
 
             public BooleanSupplier frontIntakeIR() {
-                AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
+                AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
                 frontIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return frontIntakeIR::getTriggerState;
             }
@@ -174,7 +174,7 @@ public class FrancoisMap extends RobotMap {
             }
 
             public BooleanSupplier backIntakeIR() {
-                AnalogTrigger backIntakeIR = new AnalogTrigger(3);
+                AnalogTrigger backIntakeIR = new AnalogTrigger(2);
                 backIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return backIntakeIR::getTriggerState;
             }
