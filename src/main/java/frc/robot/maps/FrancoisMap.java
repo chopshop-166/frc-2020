@@ -22,7 +22,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.EncoderType;
 
 import edu.wpi.first.wpilibj.Solenoid;
-
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 
 @RobotMapFor("Francois")
@@ -59,41 +60,41 @@ public class FrancoisMap extends RobotMap {
                 return EncodedSpeedController.wrap(leftLeader);
             }
 
-            @Override
-            public GyroBase getGyro() {
-                PigeonIMU gyro = new PigeonIMU(new WPI_TalonSRX(42));
-                return new GyroBase() {
+            // @Override
+            // public GyroBase getGyro() {
+            // PigeonIMU gyro = new PigeonIMU(new WPI_TalonSRX(42));
+            // return new GyroBase() {
 
-                    @Override
-                    public void close() throws Exception {
-                        // NoOp
+            // @Override
+            // public void close() throws Exception {
+            // // NoOp
 
-                    }
+            // }
 
-                    @Override
-                    public void reset() {
-                        gyro.setFusedHeading(0);
+            // @Override
+            // public void reset() {
+            // gyro.setFusedHeading(0);
 
-                    }
+            // }
 
-                    @Override
-                    public double getRate() {
-                        double[] xyz = new double[3];
-                        gyro.getRawGyro(xyz);
-                        return xyz[2];
-                    }
+            // @Override
+            // public double getRate() {
+            // double[] xyz = new double[3];
+            // gyro.getRawGyro(xyz);
+            // return xyz[2];
+            // }
 
-                    @Override
-                    public double getAngle() {
-                        return gyro.getFusedHeading();
-                    }
+            // @Override
+            // public double getAngle() {
+            // return gyro.getFusedHeading();
+            // }
 
-                    @Override
-                    public void calibrate() {
-                        // NoOp
-                    }
-                };
-            }
+            // @Override
+            // public void calibrate() {
+            // // NoOp
+            // }
+            // };
+            // }
         };
     }
 
@@ -134,6 +135,48 @@ public class FrancoisMap extends RobotMap {
             public SendableSpeedController spinner() {
                 return SendableSpeedController.wrap(new WPI_TalonSRX(41));
             }
+        };
+    }
+
+    @Override
+    public IndexMap getIndexerMap() {
+        return new IndexMap() {
+
+            @Override
+            public SendableSpeedController pierreMotor() {
+                final WPI_TalonSRX pierreMotor = new WPI_TalonSRX(40);
+                return SendableSpeedController.wrap(pierreMotor);
+            }
+
+            public SendableSpeedController singulator() {
+                final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
+                return SendableSpeedController.wrap(singulator);
+            }
+
+            public BooleanSupplier frontIntakeIR() {
+                AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
+                frontIntakeIR.setLimitsVoltage(1.2, 1.4);
+                return frontIntakeIR::getTriggerState;
+            }
+
+            public BooleanSupplier bottomPierreIR() {
+                AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
+                bottomPierreIR.setLimitsVoltage(1.2, 1.4);
+                return bottomPierreIR::getTriggerState;
+            }
+
+            public BooleanSupplier topPierreIR() {
+                AnalogTrigger topPierreIR = new AnalogTrigger(0);
+                topPierreIR.setLimitsVoltage(1.8, 2.4);
+                return topPierreIR::getTriggerState;
+            }
+
+            public BooleanSupplier backIntakeIR() {
+                AnalogTrigger backIntakeIR = new AnalogTrigger(2);
+                backIntakeIR.setLimitsVoltage(1.2, 1.4);
+                return backIntakeIR::getTriggerState;
+            }
+
         };
     }
 

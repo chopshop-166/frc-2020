@@ -68,9 +68,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         configureButtonBindings();
-        nameEntry.setPersistent();
-        nameEntry.setDefaultString("Unknown");
-        Shuffleboard.getTab("RobotData").addString("RobotName", () -> nameEntry.getString("Unknown"));
+        // nameEntry.setPersistent();
+        // nameEntry.setDefaultString("Unknown");
+        // Shuffleboard.getTab("RobotData").addString("RobotName", () ->
+        // nameEntry.getString("Unknown"));
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
@@ -178,7 +179,7 @@ public class Robot extends TimedRobot {
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         copilotController.getButton(Button.kX).whenHeld(cancelCommand());
-        driveController.getButton(Button.kB).whenPressed(indexer.unLoadBall());
+        driveController.getButton(Button.kB).whenPressed(indexer.shootOneBall());
         copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
     }
