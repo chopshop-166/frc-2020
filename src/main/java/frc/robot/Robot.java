@@ -77,6 +77,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
         SmartDashboard.putData("ball at top", indexer.stopWhenBallsAtTop());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
+        SmartDashboard.putData("Deploy intake", intake.deployIntake());
 
         // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
@@ -167,6 +168,11 @@ public class Robot extends TimedRobot {
         return new SequentialCommandGroup(drive.driveDistance(40, .5));
     }
 
+    public SequentialCommandGroup endGame() {
+        return new SequentialCommandGroup(intake.deployIntake(),
+                lift.liftEndGame(() -> driveController.getY(Hand.kRight)));
+    }
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -174,14 +180,16 @@ public class Robot extends TimedRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
         driveController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
-        copilotController.getButton(Button.kX).whenHeld(cancelCommand());
         driveController.getButton(Button.kB).whenPressed(indexer.shootOneBall());
+        driveController.getButton(Button.kX).whenPressed(endGame());
+
         copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
+        copilotController.getButton(Button.kX).whenHeld(cancelCommand());
+        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
     }
 }

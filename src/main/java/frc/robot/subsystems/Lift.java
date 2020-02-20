@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.sql.Time;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -10,7 +11,9 @@ import com.chopshop166.chopshoplib.sensors.IEncoder;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap;
 
 /*
@@ -54,12 +57,11 @@ public class Lift extends SubsystemBase {
     // sets the ratchet to either be activated or deactivated depending on liftSpeed
     public void liftSpeed(double speed) {
         if (speed > 0) {
-            elevatorBrake.set(false);
             if (upperLimitSwitch.getAsBoolean()) {
                 speed = 0;
             }
         } else if (speed <= 0) {
-            elevatorBrake.set(true);
+            elevatorBrake.set(false);
         }
         elevatorMotor.set(speed);
     }
@@ -81,6 +83,27 @@ public class Lift extends SubsystemBase {
         private liftHeights(double mPosition) {
             this.mPosition = mPosition;
         }
+    }
+
+    public SequentialCommandGroup liftEndGame(DoubleSupplier speed) {
+        return new SequentialCommandGroup(moveTicks(100, 0.10), turnOffBrake(), new WaitCommand(.5), moveLift(speed));
+
+    }
+
+    public CommandBase turnOffBrake() {
+        return new InstantCommand(() -> elevatorBrake.set(true), this);
+    }
+
+    public CommandBase moveTicks(double ticks, double speed) {
+        return new FunctionalCommand(() -> {
+            liftEncoder.reset();
+        }, () -> {
+            elevatorMotor.set(speed);
+        }, (interrupted) -> {
+            elevatorMotor.stopMotor();
+        }, () -> {
+            return liftEncoder.getDistance() == ticks;
+        }, this);
     }
 
     public CommandBase moveLift(DoubleSupplier speed) {

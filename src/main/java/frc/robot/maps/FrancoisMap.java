@@ -155,10 +155,10 @@ public class FrancoisMap extends RobotMap {
                 return SendableSpeedController.wrap(singulator);
             }
 
-            public BooleanSupplier frontIntakeIR() {
-                AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
-                frontIntakeIR.setLimitsVoltage(1.2, 1.4);
-                return frontIntakeIR::getTriggerState;
+            public BooleanSupplier topPierreIR() {
+                AnalogTrigger topPierreIR = new AnalogTrigger(0);
+                topPierreIR.setLimitsVoltage(1.8, 2.4);
+                return topPierreIR::getTriggerState;
             }
 
             public BooleanSupplier bottomPierreIR() {
@@ -167,16 +167,16 @@ public class FrancoisMap extends RobotMap {
                 return bottomPierreIR::getTriggerState;
             }
 
-            public BooleanSupplier topPierreIR() {
-                AnalogTrigger topPierreIR = new AnalogTrigger(2);
-                topPierreIR.setLimitsVoltage(1.8, 2.4);
-                return topPierreIR::getTriggerState;
-            }
-
             public BooleanSupplier backIntakeIR() {
                 AnalogTrigger backIntakeIR = new AnalogTrigger(2);
                 backIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return backIntakeIR::getTriggerState;
+            }
+
+            public BooleanSupplier frontIntakeIR() {
+                AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
+                frontIntakeIR.setLimitsVoltage(1.2, 1.4);
+                return frontIntakeIR::getTriggerState;
             }
 
         };
@@ -191,6 +191,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public PIDSparkMax elevator() {
+                leader.setInverted(true);
                 follower.follow(leader, true);
 
                 return new PIDSparkMax(leader);
@@ -199,12 +200,12 @@ public class FrancoisMap extends RobotMap {
             @Override
             public ISolenoid liftBrake() {
                 WSolenoid brake = new WSolenoid(0);
-
                 return brake;
             }
 
             @Override
             public BooleanSupplier upperLiftLimit() {
+                upperLimit.setInverted(true);
                 return upperLimit::get;
             }
 
