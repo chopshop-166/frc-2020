@@ -168,6 +168,12 @@ public class Robot extends TimedRobot {
         return new SequentialCommandGroup(drive.driveDistance(40, .5));
     }
 
+    public SequentialCommandGroup shootAllBalls() {
+        return new SequentialCommandGroup(shooter.spinUp(), indexer.shootAllBalls(), shooter.spinDown());
+    }
+
+    // will spin the shooter then shoot all the balls and then turn the shooter off.
+    // in the future we will add the vision lining up command to this.
     public SequentialCommandGroup endGame() {
         return new SequentialCommandGroup(intake.deployIntake(),
                 lift.liftEndGame(() -> driveController.getY(Hand.kRight)));
