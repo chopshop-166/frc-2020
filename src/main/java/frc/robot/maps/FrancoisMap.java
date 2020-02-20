@@ -6,8 +6,11 @@ import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
+import com.chopshop166.chopshoplib.outputs.ModSpeedController;
+import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SparkMaxSendable;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
@@ -46,8 +49,13 @@ public class FrancoisMap extends RobotMap {
                 rightFollower.follow(rightLeader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
+                SparkMaxSendable sendleader = new SparkMaxSendable(rightLeader);
+                SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
 
-                return EncodedSpeedController.wrap(rightLeader);
+                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+
+                return EncodedSpeedController.join(averageInputs, enc);
+
             }
 
             @Override
@@ -56,8 +64,12 @@ public class FrancoisMap extends RobotMap {
                 leftFollower.follow(leftLeader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
+                SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
+                SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
 
-                return EncodedSpeedController.wrap(leftLeader);
+                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+
+                return EncodedSpeedController.join(averageInputs, enc);
             }
 
             // @Override

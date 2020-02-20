@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
+import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -56,6 +57,7 @@ public class Drive extends SubsystemBase {
      * @return returns a run command so drive will stay running as long as drive is
      *         being called
      */
+
     public CommandBase drive(DoubleSupplier forward, DoubleSupplier turn) {
         return new RunCommand(() -> {
             double yAxis = forward.getAsDouble();
