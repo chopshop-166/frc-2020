@@ -52,11 +52,11 @@ public class Indexer extends SubsystemBase {
         return new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
     }
 
-    public SequentialCommandGroup shootOneBall() {
+    public SequentialCommandGroup shootingBalls() {
         return new SequentialCommandGroup(loadBallToTop(), unLoadBall());
     }
-
-    // This will stop all commands when the top IR sensor on Pierre is triggered
+    // Will shoot all the balls. the only thing missing to this is the command to
+    // spin up the shooter. that happens in robot
 
     public CommandBase indexMotor(final double motorSpeed) {
         return new StartEndCommand(() -> {
@@ -154,6 +154,26 @@ public class Indexer extends SubsystemBase {
     }
     // this will bring the ball to the shooter, it must already be at the top
 
+    public CommandBase shootAllBalls() {
+        return new FunctionalCommand(() -> {
+
+        }, () -> {
+
+            shootingBalls();
+
+        }, (interrupted) -> {
+
+            pierreMotor.set(0);
+
+        }, () -> {
+
+            return ballCounting == 0;
+
+        }, this);
+
+    }
+
+    // this will shoot the balls until there are none left in pierre.
     public CommandBase runToClearBottomSensor() {
         return new FunctionalCommand(() -> {
             if (bottomPierreIR.getAsBoolean()) {
