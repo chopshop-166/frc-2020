@@ -166,4 +166,33 @@ public class ControlPanel extends SubsystemBase {
 
     }
 
+    public CommandBase stageThreeRotation() {
+        return new CommandBase() {
+            ColorStates desiredColor = getTargetColor();
+
+            @Override
+            public void initialize() {
+                spinnerMotor.set(spinnerMotorSpeed);
+                super.initialize();
+            }
+
+            @Override
+            public boolean isFinished() {
+                ColorStates currentColor = detectColor();
+                return (currentColor == desiredColor);
+            }
+
+            @Override
+            public void execute() {
+                spinnerMotor.set(spinnerMotorSpeed);
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                spinnerMotor.stopMotor();
+                super.end(interrupted);
+            }
+        };
+    }
+
 };
