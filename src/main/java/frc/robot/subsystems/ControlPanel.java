@@ -34,24 +34,26 @@ public class ControlPanel extends SubsystemBase {
 
     public enum ColorStates {
 
-        RED, BLUE, GREEN, YELLOW, OTHER
+        RED, GREEN, BLUE, YELLOW, OTHER
 
     }
 
+    // Mapping the cases to the correct color due to the difference in what vision
+    // is reading and what the field is reading
     public ColorStates getTargetColor() {
         gameData = DriverStation.getInstance().getGameSpecificMessage();
         if (gameData.length() > 0) {
             switch (gameData.charAt(0)) {
-            case 'B':
+            case 'R':
                 color = ColorStates.BLUE;
                 break;
-            case 'G':
+            case 'Y':
                 color = ColorStates.GREEN;
                 break;
-            case 'R':
+            case 'B':
                 color = ColorStates.RED;
                 break;
-            case 'Y':
+            case 'G':
                 color = ColorStates.YELLOW;
                 break;
             default:
@@ -132,8 +134,8 @@ public class ControlPanel extends SubsystemBase {
             public void initialize() {
 
                 ColorStates firstColor = detectColor();
-                spinForwards();
                 super.initialize();
+                spinForwards();
             }
 
             @Override
@@ -172,8 +174,8 @@ public class ControlPanel extends SubsystemBase {
 
             @Override
             public void initialize() {
-                spinnerMotor.set(spinnerMotorSpeed);
                 super.initialize();
+                spinnerMotor.set(spinnerMotorSpeed);
             }
 
             @Override
