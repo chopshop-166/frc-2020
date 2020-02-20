@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -56,11 +57,14 @@ public class Lift extends SubsystemBase {
 
     // sets the ratchet to either be activated or deactivated depending on liftSpeed
     public void liftSpeed(double speed) {
-        if (speed > 0) {
-            if (upperLimitSwitch.getAsBoolean()) {
+        if (Math.abs(speed) <= .1) {
+            speed = 0.0;
+        }
+        if (speed < 0) {
+            if (upperLimitSwitch.getAsBoolean() || !elevatorBrake.get()) {
                 speed = 0;
             }
-        } else if (speed <= 0) {
+        } else if (speed > 0) {
             elevatorBrake.set(false);
         }
         elevatorMotor.set(speed);
@@ -86,7 +90,7 @@ public class Lift extends SubsystemBase {
     }
 
     public SequentialCommandGroup liftEndGame(DoubleSupplier speed) {
-        return new SequentialCommandGroup(moveTicks(100, 0.10), turnOffBrake(), new WaitCommand(.5), moveLift(speed));
+        return new SequentialCommandGroup(moveTicks(1, 0.10), turnOffBrake(), new WaitCommand(.5), moveLift(speed));
 
     }
 
@@ -98,11 +102,12 @@ public class Lift extends SubsystemBase {
         return new FunctionalCommand(() -> {
             liftEncoder.reset();
         }, () -> {
+            SmartDashboard.putNumber("Lift Encoder", liftEncoder.getDistance());
             elevatorMotor.set(speed);
         }, (interrupted) -> {
             elevatorMotor.stopMotor();
         }, () -> {
-            return liftEncoder.getDistance() == ticks;
+            return Math.abs(liftEncoder.getDistance()) >= ticks;
         }, this);
     }
 

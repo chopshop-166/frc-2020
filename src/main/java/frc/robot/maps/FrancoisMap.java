@@ -26,6 +26,7 @@ import com.revrobotics.EncoderType;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 
@@ -46,15 +47,18 @@ public class FrancoisMap extends RobotMap {
             public EncodedSpeedController getRight() {
 
                 CANEncoder leadEncoder = new CANEncoder(rightLeader, EncoderType.kQuadrature, 42);
+
                 rightFollower.follow(rightLeader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
                 SparkMaxSendable sendleader = new SparkMaxSendable(rightLeader);
-                SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
+                SparkMaxEncoder enc = new SparkMaxEncoder(leadEncoder);
+                SendableSpeedController right = new SparkMaxSendable(rightLeader);
 
-                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+                // ModSpeedController averageInputs = new ModSpeedController(sendleader,
+                // Modifier.rollingAverage(10));
 
-                return EncodedSpeedController.join(averageInputs, enc);
+                return EncodedSpeedController.join(right, enc);
 
             }
 
@@ -66,10 +70,12 @@ public class FrancoisMap extends RobotMap {
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
                 SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
                 SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
+                SendableSpeedController left = new SparkMaxSendable(leftLeader);
 
-                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+                // ModSpeedController averageInputs = new ModSpeedController(sendleader,
+                // Modifier.rollingAverage(10));
 
-                return EncodedSpeedController.join(averageInputs, enc);
+                return EncodedSpeedController.join(left, enc);
             }
 
             // @Override
@@ -224,7 +230,7 @@ public class FrancoisMap extends RobotMap {
             @Override
             public IEncoder getLiftEncoder() {
                 SparkMaxEncoder getEncoder = new SparkMaxEncoder(leader.getEncoder());
-
+                getEncoder.setScaleFactor(1);
                 return getEncoder;
             }
         };
