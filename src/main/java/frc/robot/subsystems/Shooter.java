@@ -23,6 +23,7 @@ public class Shooter extends SubsystemBase {
     public static double distanceToTarget;
     public final double shooterHeight;
     public static double verticalDistance;
+    public static double horizontalDistance;
 
     // inches/second/second
     public final static double GRAVITY = 386.2205;
@@ -34,10 +35,11 @@ public class Shooter extends SubsystemBase {
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
-        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 0);
+        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 160);
         shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
+        horizontalDistance = Math.sqrt((verticalDistance * verticalDistance) - (distanceToTarget * distanceToTarget));
     }
 
     public CommandBase spinUp() {
@@ -59,14 +61,14 @@ public class Shooter extends SubsystemBase {
     }
 
     /*
-     * Finds the needed velocity to reach a target (x, y) or (distanceToTarget,
+     * Finds the needed velocity to reach a target (x, y) or (horizontalDistance,
      * verticalDistance). The formula takes takes theta or launch angle, target and
      * gravity.
      */
     public static double calculateVelocity() {
-        if (distanceToTarget * Math.tan(THETA) >= verticalDistance) {
-            final double gravitySide = GRAVITY * distanceToTarget * distanceToTarget;
-            final double tanSide = distanceToTarget * Math.tan(THETA) - verticalDistance;
+        if (horizontalDistance * Math.tan(THETA) >= verticalDistance) {
+            final double gravitySide = GRAVITY * horizontalDistance * horizontalDistance;
+            final double tanSide = horizontalDistance * Math.tan(THETA) - verticalDistance;
             final double cosSide = Math.cos(THETA) * Math.cos(THETA);
 
             return Math.sqrt(gravitySide / tanSide / cosSide / 2);
