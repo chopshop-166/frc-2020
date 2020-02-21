@@ -190,7 +190,7 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
-        driveController.getButton(Button.kB).whenPressed(indexer.shootOneBall());
+        // driveController.getButton(Button.kB).whenPressed(indexer.shootOneBall());
         driveController.getButton(Button.kX).whenPressed(endGame());
 
         copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
