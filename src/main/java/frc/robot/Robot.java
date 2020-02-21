@@ -10,6 +10,7 @@ package frc.robot;
 import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -23,8 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
+import frc.robot.triggers.EndGameTrigger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -176,7 +178,7 @@ public class Robot extends TimedRobot {
     // in the future we will add the vision lining up command to this.
     public SequentialCommandGroup endGame() {
         return new SequentialCommandGroup(intake.deployIntake(),
-                lift.liftEndGame(() -> driveController.getY(Hand.kRight)));
+                lift.disengageRatchet(() -> driveController.getY(Hand.kRight)));
     }
 
     /**
@@ -190,8 +192,10 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
-        // driveController.getButton(Button.kB).whenPressed(indexer.shootOneBall());
+        driveController.getButton(Button.kB).whenPressed(indexer.shootingBalls());
         driveController.getButton(Button.kX).whenPressed(endGame());
+        XboxTrigger endTrigger = new XboxTrigger(driveController, 5, true);
+        endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
 
         copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());

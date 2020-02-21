@@ -89,7 +89,7 @@ public class Lift extends SubsystemBase {
         }
     }
 
-    public SequentialCommandGroup liftEndGame(DoubleSupplier speed) {
+    public SequentialCommandGroup disengageRatchet(DoubleSupplier speed) {
         return new SequentialCommandGroup(moveTicks(1, 0.10), turnOffBrake(), new WaitCommand(.5), moveLift(speed));
 
     }
