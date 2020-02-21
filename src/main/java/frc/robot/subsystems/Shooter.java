@@ -10,28 +10,27 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
 
 /**
- * What does it do? When the A button is pressed- it shoots a ball. What modes
- * does it have? Semi-Auto and DUMP. what interactions does it have with other
- * subsystems? Asks the Indexer and 'vision' if it's ready to shoot. How is it
- * triggered/OI? A semi-auto button A- or X for shoot all. Does it store any
- * state? No. Sensors? No.
+ * What does it do? Given a target and shooter height, it calculates velocity
+ * needed to hit said target, and spins the motors at a corresponding RPM. What
+ * modes does it have? Semi-Auto and DUMP. what interactions does it have with
+ * other subsystems? Asks the Indexer if there is a ball, and get's information
+ * about the target from vision. How is it triggered/OI? A semi-auto button A-
+ * or X for shoot all. Does it store any state? No. Sensors? No.
  */
 
 public class Shooter extends SubsystemBase {
-
-    private final double MAX_RPM = 5200;
     private final PIDSpeedController shooterWheelMotor;
     public static double distanceToTarget;
     public final double shooterHeight;
     public static double verticalDistance;
 
-    // inches/second
+    // inches/second/second
     public final static double GRAVITY = 386.2205;
     // inches
     public final static double TARGET_HEIGHT = 98.25;
+    private final double MAX_RPM = 5200;
     public final static double THETA = Math.toRadians(37);
-    public final static double DIAMETER = 4;
-    public final static double CIRCUMFERENCE = DIAMETER * Math.PI * Math.PI;
+    public final static double BALL_SPEED_RATIO = 27.358;
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
@@ -52,12 +51,11 @@ public class Shooter extends SubsystemBase {
     }
 
     /*
-     * Calculates RPM -> velocity / circumference is how many rotation needed in a
-     * second, so times 60 gives us how many RPM we need. (returns inches/second)
-     * Also applies a 20% loss.
+     * Calculates RPM with some gear ratio mathematics. (returns inches/second) Also
+     * applies a 10% loss.
      */
     public static double calculateRPM() {
-        return 60 * calculateVelocity() / CIRCUMFERENCE * 0.8;
+        return calculateVelocity() * BALL_SPEED_RATIO * 0.9;
     }
 
     /*
@@ -65,7 +63,6 @@ public class Shooter extends SubsystemBase {
      * verticalDistance). The formula takes takes theta or launch angle, target and
      * gravity.
      */
-
     public static double calculateVelocity() {
         if (distanceToTarget * Math.tan(THETA) >= verticalDistance) {
             final double gravitySide = GRAVITY * distanceToTarget * distanceToTarget;
