@@ -52,13 +52,11 @@ public class FrancoisMap extends RobotMap {
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
                 SparkMaxSendable sendleader = new SparkMaxSendable(rightLeader);
-                SparkMaxEncoder enc = new SparkMaxEncoder(leadEncoder);
-                SendableSpeedController right = new SparkMaxSendable(rightLeader);
+                SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
 
-                // ModSpeedController averageInputs = new ModSpeedController(sendleader,
-                // Modifier.rollingAverage(10));
+                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(25));
 
-                return EncodedSpeedController.join(right, enc);
+                return EncodedSpeedController.join(averageInputs, enc);
 
             }
 
@@ -69,13 +67,11 @@ public class FrancoisMap extends RobotMap {
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
                 SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
-                SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
-                SendableSpeedController left = new SparkMaxSendable(leftLeader);
+                SparkMaxEncoder enc = new SparkMaxEncoder(leftLeader.getEncoder());
 
-                // ModSpeedController averageInputs = new ModSpeedController(sendleader,
-                // Modifier.rollingAverage(10));
+                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(25));
 
-                return EncodedSpeedController.join(left, enc);
+                return EncodedSpeedController.join(averageInputs, enc);
             }
 
             // @Override
