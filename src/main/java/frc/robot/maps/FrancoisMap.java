@@ -111,6 +111,10 @@ public class FrancoisMap extends RobotMap {
     @Override
     public IndexMap getIndexerMap() {
         return new IndexMap() {
+            AnalogTrigger topPierreIR = new AnalogTrigger(0);
+            AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
+            AnalogTrigger backIntakeIR = new AnalogTrigger(2);
+            AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
 
             @Override
             public SendableSpeedController pierreMotor() {
@@ -125,25 +129,21 @@ public class FrancoisMap extends RobotMap {
             }
 
             public BooleanSupplier topPierreIR() {
-                AnalogTrigger topPierreIR = new AnalogTrigger(0);
                 topPierreIR.setLimitsVoltage(1.2, 1.4);
                 return topPierreIR::getTriggerState;
             }
 
             public BooleanSupplier bottomPierreIR() {
-                AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
                 bottomPierreIR.setLimitsVoltage(1.2, 1.4);
                 return bottomPierreIR::getTriggerState;
             }
 
             public BooleanSupplier backIntakeIR() {
-                AnalogTrigger backIntakeIR = new AnalogTrigger(2);
                 backIntakeIR.setLimitsVoltage(1.2, 2.6);
                 return backIntakeIR::getTriggerState;
             }
 
             public BooleanSupplier frontIntakeIR() {
-                AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
                 frontIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return frontIntakeIR::getTriggerState;
             }
