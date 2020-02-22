@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
     // inches
     public final static double TARGET_HEIGHT = 98.25;
     private final static double MAX_RPM = 5200;
-    public final static double THETA = Math.toRadians(32);
+    public final static double THETA = Math.toRadians(60);
     // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
 
@@ -112,5 +112,6 @@ public class Shooter extends SubsystemBase {
         } else {
             return 0;
         }
+
     }
 }
