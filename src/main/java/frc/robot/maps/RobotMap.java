@@ -3,7 +3,6 @@ package frc.robot.maps;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
@@ -12,11 +11,9 @@ import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
-
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class RobotMap {
 
@@ -24,17 +21,13 @@ public class RobotMap {
         return new DifferentialDriveMap() {
 
             @Override
-            public EncodedSpeedController getRight() {
-                return getMock();
+            public SendableSpeedController getRight() {
+                return new MockSpeedController();
             }
 
             @Override
-            public EncodedSpeedController getLeft() {
-                return getMock();
-            }
-
-            private EncodedSpeedController getMock() {
-                return EncodedSpeedController.join(new MockSpeedController(), new MockEncoder());
+            public SendableSpeedController getLeft() {
+                return new MockSpeedController();
             }
         };
     }

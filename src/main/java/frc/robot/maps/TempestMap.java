@@ -1,22 +1,21 @@
 package frc.robot.maps;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
+import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.outputs.SwPIDSpeedController;
-import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.controller.PIDController;
 
 @RobotMapFor("Tempest")
 public class TempestMap extends RobotMap {
@@ -26,22 +25,17 @@ public class TempestMap extends RobotMap {
         final double distancePerPulse = (1.0 / 256.0) * (4.0 * Math.PI);
         return new DifferentialDriveMap() {
             @Override
-            public EncodedSpeedController getLeft() {
-
-                SendableSpeedController motors = SendableSpeedController.group(new WPI_TalonSRX(4),
-                        new WPI_TalonSRX(1));
-                return EncodedSpeedController.join(motors, new MockEncoder());
-
+            public SendableSpeedController getLeft() {
+                return SendableSpeedController.group(new WPI_TalonSRX(4), new WPI_TalonSRX(1));
             }
 
             @Override
-            public EncodedSpeedController getRight() {
-                final SendableSpeedController rightGroup = SendableSpeedController.group(new WPI_TalonSRX(2),
-                        new WPI_TalonSRX(3));
+            public SendableSpeedController getRight() {
                 final WEncoder encoder = new WEncoder(1, 0);
-
                 encoder.setDistancePerPulse(distancePerPulse);
-                return EncodedSpeedController.join(rightGroup, encoder);
+
+                return new ModSpeedController(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3)),
+                        encoder);
             }
         };
     }
@@ -50,6 +44,11 @@ public class TempestMap extends RobotMap {
     public IndexMap getIndexerMap() {
         return new IndexMap() {
 
+            AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
+            AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
+            AnalogTrigger topPierreIR = new AnalogTrigger(2);
+            AnalogTrigger backIntakeIR = new AnalogTrigger(3);
+
             @Override
             public SendableSpeedController pierreMotor() {
                 final Victor pierreMotor = new Victor(5);
@@ -57,25 +56,21 @@ public class TempestMap extends RobotMap {
             }
 
             public BooleanSupplier frontIntakeIR() {
-                AnalogTrigger frontIntakeIR = new AnalogTrigger(0);
                 frontIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return frontIntakeIR::getTriggerState;
             }
 
             public BooleanSupplier bottomPierreIR() {
-                AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
                 bottomPierreIR.setLimitsVoltage(1.2, 1.4);
                 return bottomPierreIR::getTriggerState;
             }
 
             public BooleanSupplier topPierreIR() {
-                AnalogTrigger topPierreIR = new AnalogTrigger(2);
                 topPierreIR.setLimitsVoltage(1.8, 2.4);
                 return topPierreIR::getTriggerState;
             }
 
             public BooleanSupplier backIntakeIR() {
-                AnalogTrigger backIntakeIR = new AnalogTrigger(3);
                 backIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return backIntakeIR::getTriggerState;
             }
@@ -90,10 +85,9 @@ public class TempestMap extends RobotMap {
             public PIDSpeedController shooterWheel() {
                 final Talon rollerMotor = new Talon(0);
                 final Talon rollerMotor2 = new Talon(1);
-                final SpeedControllerGroup bothRollers = new SpeedControllerGroup(rollerMotor, rollerMotor2);
+                final SendableSpeedController bothRollers = SendableSpeedController.group(rollerMotor, rollerMotor2);
                 final PIDController pid = new PIDController(0, 0, 0);
-                final DoubleSupplier measurement = new MockEncoder()::getRate;
-                return new SwPIDSpeedController(bothRollers, pid, measurement);
+                return SwPIDSpeedController.velocity(bothRollers, pid);
             }
         };
     }
