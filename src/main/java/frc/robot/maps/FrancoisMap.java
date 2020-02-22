@@ -31,7 +31,7 @@ public class FrancoisMap extends RobotMap {
     public DifferentialDriveMap getDriveMap() {
         // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
         final int averageCount = 15;
-        final double distancePerPulse = (1.0 / 12.27) * (6.0 * Math.PI);
+        final double distancePerRev = (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
@@ -43,20 +43,20 @@ public class FrancoisMap extends RobotMap {
             public SendableSpeedController getRight() {
                 rightFollower.follow(rightLeader);
 
-                rightLeader.getEncoder().setPositionConversionFactor(distancePerPulse);
-                SparkMaxSendable sendleader = new SparkMaxSendable(rightLeader);
+                SparkMaxSendable sendLeader = new SparkMaxSendable(rightLeader);
+                sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
 
-                return new ModSpeedController(sendleader, Modifier.rollingAverage(averageCount));
+                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
             }
 
             @Override
             public SendableSpeedController getLeft() {
                 leftFollower.follow(leftLeader);
 
-                leftLeader.getEncoder().setPositionConversionFactor(distancePerPulse);
-                SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
+                SparkMaxSendable sendLeader = new SparkMaxSendable(leftLeader);
+                sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
 
-                return new ModSpeedController(sendleader, Modifier.rollingAverage(averageCount));
+                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
 
             }
 
@@ -156,8 +156,10 @@ public class FrancoisMap extends RobotMap {
         return new LiftMap() {
             CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
             CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
+            PIDSparkMax pidLeader = new PIDSparkMax(leader);
             InvertDigitalInput upperLimit = new InvertDigitalInput(0);
             InvertDigitalInput lowerLimit = new InvertDigitalInput(1);
+            double distancePerRev = (1.0 / 81.0) * (1.87 * Math.PI);
 
             @Override
             public PIDSparkMax elevator() {
@@ -166,7 +168,7 @@ public class FrancoisMap extends RobotMap {
                 leader.setIdleMode(IdleMode.kBrake);
                 follower.setIdleMode(IdleMode.kBrake);
 
-                return new PIDSparkMax(leader);
+                return pidLeader;
             }
 
             @Override
@@ -183,14 +185,14 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public BooleanSupplier lowerLiftLimit() {
+                lowerLimit.setInverted(true);
                 return lowerLimit::get;
             }
 
             @Override
             public IEncoder getLiftEncoder() {
-                SparkMaxEncoder getEncoder = new SparkMaxEncoder(leader.getEncoder());
-                getEncoder.setScaleFactor(1);
-                return getEncoder;
+                pidLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                return pidLeader.getEncoder();
             }
         };
     }

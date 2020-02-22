@@ -63,10 +63,13 @@ public class Lift extends SubsystemBase {
             speed = 0.0;
         }
         if (speed < 0) {
-            if (upperLimitSwitch.getAsBoolean() || lowerLimitSwitch.getAsBoolean() || !elevatorBrake.get()) {
+            if (upperLimitSwitch.getAsBoolean() || !elevatorBrake.get()) {
                 speed = 0;
             }
         } else if (speed > 0) {
+            if (lowerLimitSwitch.getAsBoolean()) {
+                speed = 0;
+            }
             elevatorBrake.set(false);
         }
         elevatorMotor.set(speed);

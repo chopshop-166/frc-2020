@@ -50,6 +50,7 @@ public class Shooter extends SubsystemBase {
 
     public CommandBase spinUp() {
         return new InstantCommand(() -> {
+            // TODO incorperate calculations
             // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
             shooterWheelMotor.set(1.0);
         }, this);

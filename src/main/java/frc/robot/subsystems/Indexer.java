@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 
+import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -147,7 +148,7 @@ public class Indexer extends SubsystemBase {
     // this will bring the ball to the shooter, it must already be at the top
 
     public CommandBase shootAllBalls() {
-        CommandBase cmd = new SequentialCommandGroup(shootBall(), shootBall(), shootBall(), shootBall(), shootBall());
+        CommandBase cmd = CommandUtils.repeat(5, this::shootBall);
         cmd.setName("Shoot All Balls");
         return cmd;
     }

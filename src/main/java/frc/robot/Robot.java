@@ -186,6 +186,7 @@ public class Robot extends TimedRobot {
     }
 
     // will spin the shooter then shoot all the balls and then turn the shooter off.
+    // TODO spin up is an instant command therefore it will never end
     public CommandBase shootAllBalls() {
         CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(), indexer.shootAllBalls(), shooter.spinDown());
         cmd.setName("Shoot all Balls");
