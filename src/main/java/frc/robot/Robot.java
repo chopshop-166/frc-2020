@@ -78,6 +78,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         configureButtonBindings();
+        nameEntry.setPersistent();
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
@@ -216,19 +217,5 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
-
-        // driveController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp());
-        // driveController.getButton(Button.kY).toggleWhenActive(
-        // drive.drive(() -> -driveController.getTriggers(), () ->
-        // driveController.getX(Hand.kLeft)));
-        // driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
-        // driveController.getButton(Button.kB).whenPressed(indexer.shootingBalls());
-        // XboxTrigger endTrigger = new XboxTrigger(driveController, 5, false);
-        // // endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
-        // endTrigger.whileActiveOnce(endGame());
-        // copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
-        // copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
-        // copilotController.getButton(Button.kX).whenHeld(regurgitateFC());
-        // driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
     }
 }

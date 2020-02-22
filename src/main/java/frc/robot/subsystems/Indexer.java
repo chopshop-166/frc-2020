@@ -54,8 +54,8 @@ public class Indexer extends SubsystemBase {
         return cmd;
     }
 
-    public CommandBase shootingBalls() {
-        CommandBase cmd = new SequentialCommandGroup(loadBallToTop(), unLoadBall());
+    public CommandBase shootBall() {
+        CommandBase cmd = new SequentialCommandGroup(loadBallToTop(), unloadBall());
         cmd.setName("Shoot Ball");
         return cmd;
     }
@@ -130,7 +130,7 @@ public class Indexer extends SubsystemBase {
         return cmd;
     }
 
-    public CommandBase unLoadBall() {
+    public CommandBase unloadBall() {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
             pierreMotor.set(pierreIndexSpeed);
@@ -147,8 +147,7 @@ public class Indexer extends SubsystemBase {
     // this will bring the ball to the shooter, it must already be at the top
 
     public CommandBase shootAllBalls() {
-        CommandBase cmd = new SequentialCommandGroup(shootingBalls(), shootingBalls(), shootingBalls(), shootingBalls(),
-                shootingBalls());
+        CommandBase cmd = new SequentialCommandGroup(shootBall(), shootBall(), shootBall(), shootBall(), shootBall());
         cmd.setName("Shoot All Balls");
         return cmd;
     }

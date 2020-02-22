@@ -59,7 +59,6 @@ public class Drive extends SubsystemBase {
      * @return returns a run command so drive will stay running as long as drive is
      *         being called
      */
-
     public CommandBase drive(DoubleSupplier forward, DoubleSupplier turn) {
         CommandBase cmd = new RunCommand(() -> {
             double yAxis = forward.getAsDouble();
@@ -84,7 +83,7 @@ public class Drive extends SubsystemBase {
             double avg = (leftMotorGroup.getEncoder().getDistance() + rightMotorGroup.getEncoder().getDistance()) / 2;
             return (avg >= distance);
         }, this);
-        cmd.setName("Drive Distane");
+        cmd.setName("Drive Distance");
         return cmd;
     }
 
