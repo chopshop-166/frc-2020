@@ -1,6 +1,6 @@
 {
     # To run, type "pip install --upgrade frc-characterization"
-    # Then, "type frc-characterization simple-motor new"
+    # Then, type "frc-characterization simple-motor new"
     # Then select this file
     # Warning: This project type is for BRUSHLESS motors ONLY!
     # Unit of analysis
