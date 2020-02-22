@@ -7,6 +7,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -57,15 +58,19 @@ public class Drive extends SubsystemBase {
      *         being called
      */
     public CommandBase drive(DoubleSupplier forward, DoubleSupplier turn) {
-        return new RunCommand(() -> {
+        CommandBase cmd = new RunCommand(() -> {
             double yAxis = forward.getAsDouble();
             double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
+            SmartDashboard.putNumber("Left Drive Encoder", leftMotorGroup.getEncoder().getDistance());
+            SmartDashboard.putNumber("Right Drive Encoder", rightMotorGroup.getEncoder().getDistance());
         }, this);
+        cmd.setName("Drive");
+        return cmd;
     }
 
     public CommandBase driveDistance(double distance, double speed) {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             leftMotorGroup.getEncoder().reset();
             rightMotorGroup.getEncoder().reset();
         }, () -> {
@@ -76,10 +81,12 @@ public class Drive extends SubsystemBase {
             double avg = (leftMotorGroup.getEncoder().getDistance() + rightMotorGroup.getEncoder().getDistance()) / 2;
             return (avg >= distance);
         }, this);
+        cmd.setName("Drive Distance");
+        return cmd;
     }
 
     public CommandBase turnDegrees(double degrees, double speed) {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             gyro.reset();
         }, () -> {
             driveTrain.arcadeDrive(0, speed);
@@ -88,5 +95,7 @@ public class Drive extends SubsystemBase {
         }, () -> {
             return Math.abs(gyro.getAngle()) >= Math.abs(degrees);
         }, this);
+        cmd.setName("Turn Degrees");
+        return cmd;
     }
 }

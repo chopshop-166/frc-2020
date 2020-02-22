@@ -7,10 +7,14 @@ import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap;
 
 /*
@@ -37,6 +41,7 @@ public class Lift extends SubsystemBase {
     private ISolenoid elevatorBrake;
     private IEncoder liftEncoder;
     private BooleanSupplier upperLimitSwitch;
+    private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
     private static final double TOLERANCE_RANGE_INCHES = .5;
     // TODO I don't know what unit tolerance range is in but I set it to .5 assuming
@@ -49,17 +54,23 @@ public class Lift extends SubsystemBase {
         liftEncoder = map.getLiftEncoder();
         elevatorBrake = map.liftBrake();
         upperLimitSwitch = map.upperLiftLimit();
+        lowerLimitSwitch = map.lowerLiftLimit();
     }
 
     // sets the ratchet to either be activated or deactivated depending on liftSpeed
     public void liftSpeed(double speed) {
-        if (speed > 0) {
-            elevatorBrake.set(false);
-            if (upperLimitSwitch.getAsBoolean()) {
+        if (Math.abs(speed) <= .1) {
+            speed = 0.0;
+        }
+        if (speed < 0) {
+            if (upperLimitSwitch.getAsBoolean() || !elevatorBrake.get()) {
                 speed = 0;
             }
-        } else if (speed <= 0) {
-            elevatorBrake.set(true);
+        } else if (speed > 0) {
+            if (lowerLimitSwitch.getAsBoolean()) {
+                speed = 0;
+            }
+            elevatorBrake.set(false);
         }
         elevatorMotor.set(speed);
     }
@@ -83,14 +94,51 @@ public class Lift extends SubsystemBase {
         }
     }
 
+    public CommandBase disengageRatchet(DoubleSupplier speed) {
+        CommandBase cmd = new SequentialCommandGroup(moveTicks(.1, 0.10), turnOffBrake(), new WaitCommand(.1),
+                moveLift(speed));
+        cmd.setName("Disengage Ratchet");
+        return cmd;
+    }
+
+    public CommandBase turnOffBrake() {
+        return new InstantCommand(() -> elevatorBrake.set(true), this);
+    }
+
+    public CommandBase moveTicks(double ticks, double speed) {
+        CommandBase cmd = new FunctionalCommand(() -> {
+            liftEncoder.reset();
+        }, () -> {
+            SmartDashboard.putNumber("Lift Encoder", liftEncoder.getDistance());
+            elevatorMotor.set(speed);
+        }, (interrupted) -> {
+            elevatorMotor.stopMotor();
+            // This command might be interrupted if it takes to move the expected amount
+            // If that happens we should NOT continue the sequence as that could cause
+            // further damage.
+            if (interrupted) {
+                // This should get the command group that is trying to move the elevator
+                // We will then cancel that command group so we stop.
+                // TODO Send something to the dashboard.
+                CommandScheduler.getInstance().requiring(this).cancel();
+            }
+        }, () -> {
+            return Math.abs(liftEncoder.getDistance()) >= ticks;
+        }, this);
+        cmd.setName("Move Ticks");
+        return cmd.withTimeout(0.2);
+    }
+
     public CommandBase moveLift(DoubleSupplier speed) {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             liftSpeed(0);
         }, () -> {
             liftSpeed(speed.getAsDouble());
         }, (Boolean interrupted) -> {
             liftSpeed(0);
         }, () -> false, this);
+        cmd.setName("Move Lift");
+        return cmd;
     }
 
     // allows to toggle the break. Pretty self explanitory

@@ -51,6 +51,8 @@ public class Shooter extends SubsystemBase {
 
     public CommandBase spinUp(final double speed) {
         CommandBase cmd = new InstantCommand(() -> {
+            // TODO incorperate calculations
+            // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
             shooterWheelMotor.set(speed);
         }, this);
         cmd.setName("spinUp");
