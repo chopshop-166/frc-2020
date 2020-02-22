@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-    UsbCamera camera1;
+    UsbCamera camera0;
     VideoSink videoSink;
     boolean camera0Active = true;
 
@@ -97,9 +97,9 @@ public class Robot extends TimedRobot {
         indexer.setDefaultCommand(indexer.intakeToPierre());
 
         // protovision
-        camera1 = CameraServer.getInstance().startAutomaticCapture(1);
-        camera1.setResolution(310, 240);
-        camera1.setFPS(20);
+        camera0 = CameraServer.getInstance().startAutomaticCapture(0);
+        camera0.setResolution(310, 240);
+        camera0.setFPS(20);
         // videoSink.getProperty("compression").set(70);
         videoSink = CameraServer.getInstance().getServer();
     }
