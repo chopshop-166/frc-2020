@@ -4,6 +4,7 @@ import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,11 +36,16 @@ public class Shooter extends SubsystemBase {
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
-        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 160);
         shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
+    }
+
+    @Override
+    public void periodic() {
+        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 160);
         horizontalDistance = Math.sqrt((verticalDistance * verticalDistance) - (distanceToTarget * distanceToTarget));
+        super.periodic();
     }
 
     public CommandBase spinUp() {
@@ -50,6 +56,14 @@ public class Shooter extends SubsystemBase {
 
     public CommandBase spinDown() {
         return new InstantCommand(shooterWheelMotor::stopMotor, this);
+    }
+
+    public CommandBase dump() {
+        return new StartEndCommand(() -> {
+            shooterWheelMotor.set(0.3);
+        }, () -> {
+            spinDown();
+        }, this);
     }
 
     /*
