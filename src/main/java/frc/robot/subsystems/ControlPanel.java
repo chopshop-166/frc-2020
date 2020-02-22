@@ -61,7 +61,7 @@ public class ControlPanel extends SubsystemBase {
                 break;
             }
         } else {
-            // Code for no data received yet
+            color = ColorStates.OTHER;
         }
         return color;
     }
@@ -92,7 +92,6 @@ public class ControlPanel extends SubsystemBase {
     public final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
     public final ColorMatch m_colorMatcher = new ColorMatch();
-    public static String colorString1 = "";
 
     public ColorStates detectColor() {
 
@@ -132,17 +131,14 @@ public class ControlPanel extends SubsystemBase {
 
             @Override
             public void initialize() {
-
-                ColorStates firstColor = detectColor();
+                firstColor = detectColor();
                 super.initialize();
                 spinForwards();
             }
 
             @Override
             public boolean isFinished() {
-
                 return 40 < i && i < 50;
-
             }
 
             @Override
@@ -150,7 +146,6 @@ public class ControlPanel extends SubsystemBase {
 
                 ColorStates secondColor = detectColor();
                 if (firstColor != secondColor) {
-
                     i++;
                 }
 
@@ -158,10 +153,8 @@ public class ControlPanel extends SubsystemBase {
 
             @Override
             public void end(boolean interrupted) {
-                // TODO Auto-generated method stub
                 spinnerMotor.stopMotor();
                 super.end(interrupted);
-
             }
 
         };
