@@ -145,7 +145,6 @@ public class Robot extends TimedRobot {
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
-            shooter.spinUp(.7);
         }
     }
 
@@ -188,7 +187,7 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
-        driveController.getButton(Button.kBumperRight).whenHeld(shooter.CalculatedShoot());
+        driveController.getButton(Button.kBumperRight).whenHeld(shooter.calculatedShoot());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
