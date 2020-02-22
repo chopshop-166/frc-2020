@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -80,7 +81,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
-        SmartDashboard.putData("ball at top", indexer.stopWhenBallsAtTop());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
 
@@ -166,29 +166,37 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public ParallelCommandGroup singulatorAndIntake() {
-
-        return new ParallelCommandGroup(intake.intake(), indexer.indexMotor(.85));
+    public CommandBase singulatorAndIntake() {
+        CommandBase cmd = new ParallelCommandGroup(intake.intake(), indexer.indexMotor(.85));
+        cmd.setName("Intake Balls");
+        return cmd;
     }
 
-    public ParallelCommandGroup cancelCommand() {
-
-        return new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
+    public CommandBase regurgitateFC() {
+        CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
+        cmd.setName("Regurgitate FC");
+        return cmd;
     }
 
-    public SequentialCommandGroup passLine() {
-        return new SequentialCommandGroup(drive.driveDistance(40, .5));
+    public CommandBase passLine() {
+        CommandBase cmd = new SequentialCommandGroup(drive.driveDistance(40, .5));
+        cmd.setName("Pass Line");
+        return cmd;
     }
 
-    public SequentialCommandGroup shootAllBalls() {
-        return new SequentialCommandGroup(shooter.spinUp(), indexer.shootAllBalls(), shooter.spinDown());
+    public CommandBase shootAllBalls() {
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(), indexer.shootAllBalls(), shooter.spinDown());
+        cmd.setName("Shoot all Balls");
+        return cmd;
     }
 
     // will spin the shooter then shoot all the balls and then turn the shooter off.
     // in the future we will add the vision lining up command to this.
-    public SequentialCommandGroup endGame() {
-        return new SequentialCommandGroup(intake.deployIntake(),
+    public CommandBase endGame() {
+        CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(),
                 lift.disengageRatchet(() -> driveController.getY(Hand.kRight)));
+        endGameCmd.setName("End Game Lift");
+        return endGameCmd;
     }
 
     /**
@@ -210,7 +218,7 @@ public class Robot extends TimedRobot {
 
         copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
-        copilotController.getButton(Button.kX).whenHeld(cancelCommand());
+        copilotController.getButton(Button.kX).whenHeld(regurgitateFC());
         driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
     }
 }

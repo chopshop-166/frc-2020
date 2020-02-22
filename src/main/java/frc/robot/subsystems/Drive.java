@@ -58,15 +58,17 @@ public class Drive extends SubsystemBase {
      */
 
     public CommandBase drive(DoubleSupplier forward, DoubleSupplier turn) {
-        return new RunCommand(() -> {
+        CommandBase cmd = new RunCommand(() -> {
             double yAxis = forward.getAsDouble();
             double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
         }, this);
+        cmd.setName("Drive");
+        return cmd;
     }
 
     public CommandBase driveDistance(double distance, double speed) {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             leftMotorGroup.getEncoder().reset();
             rightMotorGroup.getEncoder().reset();
         }, () -> {
@@ -77,10 +79,12 @@ public class Drive extends SubsystemBase {
             double avg = (leftMotorGroup.getEncoder().getDistance() + rightMotorGroup.getEncoder().getDistance()) / 2;
             return (avg >= distance);
         }, this);
+        cmd.setName("Drive Distane");
+        return cmd;
     }
 
     public CommandBase turnDegrees(double degrees, double speed) {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             gyro.reset();
         }, () -> {
             driveTrain.arcadeDrive(0, speed);
@@ -89,5 +93,7 @@ public class Drive extends SubsystemBase {
         }, () -> {
             return Math.abs(gyro.getAngle()) >= Math.abs(degrees);
         }, this);
+        cmd.setName("Turn Degrees");
+        return cmd;
     }
 }

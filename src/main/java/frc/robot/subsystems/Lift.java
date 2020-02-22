@@ -89,9 +89,11 @@ public class Lift extends SubsystemBase {
         }
     }
 
-    public SequentialCommandGroup disengageRatchet(DoubleSupplier speed) {
-        return new SequentialCommandGroup(moveTicks(.5, 0.10), turnOffBrake(), new WaitCommand(.1), moveLift(speed));
-
+    public CommandBase disengageRatchet(DoubleSupplier speed) {
+        CommandBase cmd = new SequentialCommandGroup(moveTicks(.5, 0.10), turnOffBrake(), new WaitCommand(.1),
+                moveLift(speed));
+        cmd.setName("Disengage Ratchet");
+        return cmd;
     }
 
     public CommandBase turnOffBrake() {
@@ -99,7 +101,7 @@ public class Lift extends SubsystemBase {
     }
 
     public CommandBase moveTicks(double ticks, double speed) {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             liftEncoder.reset();
         }, () -> {
             SmartDashboard.putNumber("Lift Encoder", liftEncoder.getDistance());
@@ -109,16 +111,20 @@ public class Lift extends SubsystemBase {
         }, () -> {
             return Math.abs(liftEncoder.getDistance()) >= ticks;
         }, this);
+        cmd.setName("Move Ticks");
+        return cmd;
     }
 
     public CommandBase moveLift(DoubleSupplier speed) {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             liftSpeed(0);
         }, () -> {
             liftSpeed(speed.getAsDouble());
         }, (Boolean interrupted) -> {
             liftSpeed(0);
         }, () -> false, this);
+        cmd.setName("Move Lift");
+        return cmd;
     }
 
     // allows to toggle the break. Pretty self explanitory

@@ -48,22 +48,28 @@ public class Indexer extends SubsystemBase {
 
     }
 
-    public SequentialCommandGroup intakeToPierre() {
-        return new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
+    public CommandBase intakeToPierre() {
+        CommandBase cmd = new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
+        cmd.setName("Intake to Pierre");
+        return cmd;
     }
 
-    public SequentialCommandGroup shootingBalls() {
-        return new SequentialCommandGroup(loadBallToTop(), unLoadBall());
+    public CommandBase shootingBalls() {
+        CommandBase cmd = new SequentialCommandGroup(loadBallToTop(), unLoadBall());
+        cmd.setName("Shoot Ball");
+        return cmd;
     }
     // Will shoot all the balls. the only thing missing to this is the command to
     // spin up the shooter. that happens in robot
 
     public CommandBase indexMotor(final double motorSpeed) {
-        return new StartEndCommand(() -> {
+        CommandBase cmd = new StartEndCommand(() -> {
             singulator.set(motorSpeed);
         }, () -> {
             singulator.set(0);
         }, this);
+        cmd.setName("Run Singulator");
+        return cmd;
     }
 
     public CommandBase quicklyPush() {
@@ -85,10 +91,8 @@ public class Indexer extends SubsystemBase {
     // This command will make sure that the singulator has possesion of the ball
 
     public CommandBase pierrePossesion() {
-        return new FunctionalCommand(() -> {
-
+        CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-
             if (frontIntakeIR.getAsBoolean()) {
                 singulator.set(singulatorMotorSpeed);
             }
@@ -97,111 +101,81 @@ public class Indexer extends SubsystemBase {
                 singulator.set(singulatorMotorSpeed);
             }
         }, (interrupted) -> {
-
             pierreMotor.set(0);
             singulator.set(0);
             SmartDashboard.putNumber("Ball Count", ballCounting);
-
         }, () -> {
-
             return bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
-
         }, this);
-
+        cmd.setName("Pierre Possession");
+        return cmd;
     }
     // This command will make sure that pierre has possesion of the ball. It will be
     // at the bottom
 
     public CommandBase loadBallToTop() {
-        return new FunctionalCommand(() -> {
-
+        CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
             if (!topPierreIR.getAsBoolean()) {
                 pierreMotor.set(pierreIndexSpeed);
             }
-
         }, (interrupted) -> {
-
             pierreMotor.set(0);
-
         }, () -> {
-
             return topPierreIR.getAsBoolean();
-
         }, this);
-
+        cmd.setName("Load Ball to Top");
+        return cmd;
     }
 
     public CommandBase unLoadBall() {
-        return new FunctionalCommand(() -> {
-
+        CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-
             pierreMotor.set(pierreIndexSpeed);
-
         }, (interrupted) -> {
-
             pierreMotor.set(0);
             ballCounting--;
             SmartDashboard.putNumber("Ball Count", ballCounting);
-
         }, () -> {
-
             return !topPierreIR.getAsBoolean();
-
         }, this);
-
+        cmd.setName("Unload Ball");
+        return cmd;
     }
     // this will bring the ball to the shooter, it must already be at the top
 
     public CommandBase shootAllBalls() {
-        return new FunctionalCommand(() -> {
-
+        CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-
             shootingBalls();
-
         }, (interrupted) -> {
-
             pierreMotor.set(0);
-
         }, () -> {
-
             return ballCounting == 0;
-
         }, this);
-
+        cmd.setName("Shoot All Balls");
+        return cmd;
     }
 
     // this will shoot the balls until there are none left in pierre.
     public CommandBase runToClearBottomSensor() {
-        return new FunctionalCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             if (bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
                 pierreMotor.set(pierreIndexSpeed);
             }
-
         }, () -> {
-
         }, (interrupted) -> {
-
             pierreMotor.set(0);
             if (interrupted == false) {
                 ballCounting++;
             }
             SmartDashboard.putNumber("Ball Count", ballCounting);
-
         }, () -> {
-
             return !bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
-
         }, this);
-
+        cmd.setName("Clear Bottom Sensor");
+        return cmd;
     }
 
     // this will make space for another ball
-    public WaitUntilCommand stopWhenBallsAtTop() {
-        return new WaitUntilCommand(topPierreIR::getAsBoolean);
-    }
-    // The balls will not go past the top sensor unless called by the specific
-    // function
 }
