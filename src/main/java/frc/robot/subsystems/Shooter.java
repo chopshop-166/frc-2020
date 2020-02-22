@@ -30,8 +30,9 @@ public class Shooter extends SubsystemBase {
     public final static double GRAVITY = 386.2205;
     // inches
     public final static double TARGET_HEIGHT = 98.25;
-    private final double MAX_RPM = 5200;
-    public final static double THETA = Math.toRadians(37);
+    private final static double MAX_RPM = 5200;
+    public final static double THETA = Math.toRadians(60);
+    // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
 
     public Shooter(final RobotMap.ShooterMap map) {
@@ -48,38 +49,52 @@ public class Shooter extends SubsystemBase {
         super.periodic();
     }
 
-    public CommandBase spinUp() {
-        return new InstantCommand(() -> {
+    public CommandBase spinUp(final double speed) {
+        CommandBase cmd = new InstantCommand(() -> {
             // TODO incorperate calculations
             // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
-            shooterWheelMotor.set(1.0);
+            shooterWheelMotor.set(speed);
         }, this);
+        cmd.setName("spinUp");
+        return cmd;
     }
 
     public CommandBase spinDown() {
-        return new InstantCommand(shooterWheelMotor::stopMotor, this);
+        CommandBase cmd = new InstantCommand(shooterWheelMotor::stopMotor, this);
+        cmd.setName("spinDown");
+        return cmd;
     }
 
-    public CommandBase dump() {
-        return new StartEndCommand(() -> {
+    public CommandBase mandatoryEvacuation() {
+        CommandBase cmd = new StartEndCommand(() -> {
             shooterWheelMotor.set(0.3);
         }, () -> {
             spinDown();
         }, this);
+        cmd.setName("mandatoryEvacuation");
+        return cmd;
     }
 
     /*
      * Calculates RPM with some gear ratio mathematics. (returns inches/second) Also
-     * applies a 10% loss.
+     * applies a 15% increase.
      */
-    public static double calculateRPM() {
+    public CommandBase calculatedShoot() {
+        final double RPM_SPEED;
+
+        // If it doesn't see the target, it will just shoot at the last speed.
         if (SmartDashboard.getBoolean("Sees Target", false)) {
-            return SmartDashboard.getNumber("Last RPM", 0);
+            RPM_SPEED = SmartDashboard.getNumber("Last RPM", 0);
         } else {
-            final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 0.9;
+            final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
             SmartDashboard.putNumber("Last RPM", RPM);
-            return RPM;
+            RPM_SPEED = RPM;
         }
+        CommandBase cmd = new InstantCommand(() -> {
+            shooterWheelMotor.set(RPM_SPEED / MAX_RPM);
+        }, this);
+        cmd.setName("calculatedShoot");
+        return cmd;
     }
 
     /*
@@ -88,7 +103,9 @@ public class Shooter extends SubsystemBase {
      * gravity.
      */
     public static double calculateVelocity() {
-        if (horizontalDistance * Math.tan(THETA) >= verticalDistance) {
+        // Checks if the target is within reach, plus a 12.5% leniency rate- incase lift
+        // gets it there or something.
+        if ((horizontalDistance * Math.tan(THETA)) * 1.125 >= verticalDistance) {
             final double gravitySide = GRAVITY * horizontalDistance * horizontalDistance;
             final double tanSide = horizontalDistance * Math.tan(THETA) - verticalDistance;
             final double cosSide = Math.cos(THETA) * Math.cos(THETA);
@@ -97,5 +114,6 @@ public class Shooter extends SubsystemBase {
         } else {
             return 0;
         }
+
     }
 }
