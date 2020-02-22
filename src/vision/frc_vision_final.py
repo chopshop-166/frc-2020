@@ -1,4 +1,7 @@
-# Exists solely for me to reorganize this code and test stuff out
+# Final FRC 2020 vision program
+# Exposure setting should be tuned on a per-competition basis
+# They are currently tuned to the testing area
+# Tuning for the RealSense camera can be done easily through the ReaslSense Viewer app in a GUI
 
 from math import degrees, radians
 import pyrealsense2 as rs2
@@ -7,18 +10,15 @@ import numpy as np
 import time
 from networktables import NetworkTables
 
-ANGLETHRESHOLD = 40
+ANGLE_THRESHOLD = 40
 
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
-
 
 def unequal(new, old_list):
     variance = 5
     for i in old_list:
         x1, y1, x2, y2 = i[0]
         old_slope = degrees(np.arctan((y2 - y1)/(x2 - x1)))
-        min_val = old_slope - variance
-        max_val = old_slope + variance
         if abs(new - old_slope) < variance:
             return False
     return True
@@ -64,8 +64,6 @@ s.set_option(rs2.option.sharpness, 0)
 s.set_option(rs2.option.white_balance, 2800)
 
 VALS = []
-
-POINTER = 0
 
 while True:
     start_time = time.time()
@@ -119,10 +117,10 @@ while True:
 
             # Checks if we have verified lines, and makes a new line based on that.
             if FILTERED_LINES:
-                if (new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD) and unequal(new_slope, FILTERED_LINES):
+                if (new_slope < -ANGLE_THRESHOLD or new_slope > ANGLE_THRESHOLD) and unequal(new_slope, FILTERED_LINES):
                     X_TOTAL, Y_TOTAL = newLine(
                         FILTERED_LINES, NEW_LINE, FILTERED_LINE_IMG, x1, y1, x2, y2, X_TOTAL, Y_TOTAL)
-            elif new_slope < -ANGLETHRESHOLD or new_slope > ANGLETHRESHOLD:
+            elif new_slope < -ANGLE_THRESHOLD or new_slope > ANGLE_THRESHOLD:
                 X_TOTAL, Y_TOTAL = newLine(FILTERED_LINES, NEW_LINE,
                     FILTERED_LINE_IMG, x1, y1, x2, y2, X_TOTAL, Y_TOTAL)
 
@@ -166,20 +164,15 @@ while True:
             x1, y1, x2, y2=LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
+    # Open the gallery of all my filtered works
     cv2.imshow("og lines", LINE_IMG)
     cv2.imshow("lines", FILTERED_LINE_IMG)
-    # Open the gallery of all my filtered works
     cv2.imshow('OG', IMG)
     cv2.imshow('Mask', MASK)
     cv2.imshow('blur', BLUR_EDGES)
     cv2.imshow('median', MEDIAN)
     cv2.imshow('med', MED_EDGES)
     cv2.imshow('Mask Edges', MASK_EDGES)
-
-    if POINTER == POINT_SAMPLES - 1:
-        POINTER=0
-    else:
-        POINTER += 1
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
