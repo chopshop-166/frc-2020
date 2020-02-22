@@ -41,6 +41,7 @@ public class Lift extends SubsystemBase {
     private ISolenoid elevatorBrake;
     private IEncoder liftEncoder;
     private BooleanSupplier upperLimitSwitch;
+    private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
     private static final double TOLERANCE_RANGE_INCHES = .5;
     // TODO I don't know what unit tolerance range is in but I set it to .5 assuming
@@ -53,6 +54,7 @@ public class Lift extends SubsystemBase {
         liftEncoder = map.getLiftEncoder();
         elevatorBrake = map.liftBrake();
         upperLimitSwitch = map.upperLiftLimit();
+        lowerLimitSwitch = map.lowerLiftLimit();
     }
 
     // sets the ratchet to either be activated or deactivated depending on liftSpeed
@@ -61,7 +63,7 @@ public class Lift extends SubsystemBase {
             speed = 0.0;
         }
         if (speed < 0) {
-            if (upperLimitSwitch.getAsBoolean() || !elevatorBrake.get()) {
+            if (upperLimitSwitch.getAsBoolean() || lowerLimitSwitch.getAsBoolean() || !elevatorBrake.get()) {
                 speed = 0;
             }
         } else if (speed > 0) {
