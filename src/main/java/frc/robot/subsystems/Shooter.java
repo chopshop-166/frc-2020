@@ -32,6 +32,7 @@ public class Shooter extends SubsystemBase {
     public final static double TARGET_HEIGHT = 98.25;
     private final static double MAX_RPM = 5200;
     public final static double THETA = Math.toRadians(37);
+    // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
 
     public Shooter(final RobotMap.ShooterMap map) {
@@ -48,7 +49,7 @@ public class Shooter extends SubsystemBase {
         super.periodic();
     }
 
-    public CommandBase spinUp(double speed) {
+    public CommandBase spinUp(final double speed) {
         return new InstantCommand(() -> {
             shooterWheelMotor.set(speed);
         }, this);
@@ -68,14 +69,16 @@ public class Shooter extends SubsystemBase {
 
     /*
      * Calculates RPM with some gear ratio mathematics. (returns inches/second) Also
-     * applies a 10% loss.
+     * applies a 15% increase.
      */
-    public CommandBase CalculatedShoot() {
+    public CommandBase calculatedShoot() {
         final double RPM_SPEED;
+
+        // If it doesn't see the target, it will just shoot at the last speed.
         if (SmartDashboard.getBoolean("Sees Target", false)) {
             RPM_SPEED = SmartDashboard.getNumber("Last RPM", 0);
         } else {
-            final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 0.9;
+            final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
             SmartDashboard.putNumber("Last RPM", RPM);
             RPM_SPEED = RPM;
         }
@@ -90,7 +93,9 @@ public class Shooter extends SubsystemBase {
      * gravity.
      */
     public static double calculateVelocity() {
-        if (horizontalDistance * Math.tan(THETA) >= verticalDistance) {
+        // Checks if the target is within reach, plus a 12.5% leniency rate- incase lift
+        // gets it there or something.
+        if ((horizontalDistance * Math.tan(THETA)) * 1.125 >= verticalDistance) {
             final double gravitySide = GRAVITY * horizontalDistance * horizontalDistance;
             final double tanSide = horizontalDistance * Math.tan(THETA) - verticalDistance;
             final double cosSide = Math.cos(THETA) * Math.cos(THETA);
