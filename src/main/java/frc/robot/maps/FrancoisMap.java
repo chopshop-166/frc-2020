@@ -17,11 +17,9 @@ import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
 import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.EncoderType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
@@ -31,6 +29,8 @@ public class FrancoisMap extends RobotMap {
 
     @Override
     public DifferentialDriveMap getDriveMap() {
+        // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
+        final int averageCount = 15;
         final double distancePerPulse = (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
@@ -46,7 +46,7 @@ public class FrancoisMap extends RobotMap {
                 rightLeader.getEncoder().setPositionConversionFactor(distancePerPulse);
                 SparkMaxSendable sendleader = new SparkMaxSendable(rightLeader);
 
-                return new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+                return new ModSpeedController(sendleader, Modifier.rollingAverage(averageCount));
             }
 
             @Override
@@ -56,7 +56,7 @@ public class FrancoisMap extends RobotMap {
                 leftLeader.getEncoder().setPositionConversionFactor(distancePerPulse);
                 SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
 
-                return new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+                return new ModSpeedController(sendleader, Modifier.rollingAverage(averageCount));
 
             }
 

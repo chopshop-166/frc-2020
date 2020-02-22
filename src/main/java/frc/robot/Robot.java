@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
-        lift.setDefaultCommand(lift.moveLift(() -> driveController.getY(Hand.kRight)));
+        lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
         indexer.setDefaultCommand(indexer.intakeToPierre());
 
         // protovision
@@ -184,17 +184,17 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
+    // will spin the shooter then shoot all the balls and then turn the shooter off.
     public CommandBase shootAllBalls() {
         CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(), indexer.shootAllBalls(), shooter.spinDown());
         cmd.setName("Shoot all Balls");
         return cmd;
     }
 
-    // will spin the shooter then shoot all the balls and then turn the shooter off.
     // in the future we will add the vision lining up command to this.
     public CommandBase endGame() {
         CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(),
-                lift.disengageRatchet(() -> driveController.getY(Hand.kRight)));
+                lift.disengageRatchet(() -> -copilotController.getTriggers()));
         endGameCmd.setName("End Game Lift");
         return endGameCmd;
     }
@@ -206,19 +206,29 @@ public class Robot extends TimedRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp());
+        driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        driveController.getButton(Button.kB).whenPressed(indexer.shootingBalls());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
-        driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
-        driveController.getButton(Button.kB).whenPressed(indexer.shootingBalls());
-        // driveController.getButton(Button.kX).whenPressed(endGame());
-        XboxTrigger endTrigger = new XboxTrigger(driveController, 5, false);
-        // endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
-        endTrigger.whileActiveOnce(endGame());
 
-        copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
-        copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
-        copilotController.getButton(Button.kX).whenHeld(regurgitateFC());
-        driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp());
+        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
+        XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
+        endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+
+        // driveController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp());
+        // driveController.getButton(Button.kY).toggleWhenActive(
+        // drive.drive(() -> -driveController.getTriggers(), () ->
+        // driveController.getX(Hand.kLeft)));
+        // driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
+        // driveController.getButton(Button.kB).whenPressed(indexer.shootingBalls());
+        // XboxTrigger endTrigger = new XboxTrigger(driveController, 5, false);
+        // // endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+        // endTrigger.whileActiveOnce(endGame());
+        // copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
+        // copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
+        // copilotController.getButton(Button.kX).whenHeld(regurgitateFC());
+        // driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
     }
 }

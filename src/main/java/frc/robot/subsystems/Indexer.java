@@ -105,7 +105,7 @@ public class Indexer extends SubsystemBase {
             singulator.set(0);
             SmartDashboard.putNumber("Ball Count", ballCounting);
         }, () -> {
-            return bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
+            return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
         }, this);
         cmd.setName("Pierre Possession");
         return cmd;
