@@ -58,7 +58,7 @@ public class Shooter extends SubsystemBase {
         return new InstantCommand(shooterWheelMotor::stopMotor, this);
     }
 
-    public CommandBase dump() {
+    public CommandBase mandatoryEvacuation() {
         return new StartEndCommand(() -> {
             shooterWheelMotor.set(0.3);
         }, () -> {
