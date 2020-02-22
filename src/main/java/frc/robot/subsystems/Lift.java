@@ -95,7 +95,7 @@ public class Lift extends SubsystemBase {
     }
 
     public CommandBase disengageRatchet(DoubleSupplier speed) {
-        CommandBase cmd = new SequentialCommandGroup(moveTicks(.5, 0.10), turnOffBrake(), new WaitCommand(.1),
+        CommandBase cmd = new SequentialCommandGroup(moveTicks(.1, 0.10), turnOffBrake(), new WaitCommand(.1),
                 moveLift(speed));
         cmd.setName("Disengage Ratchet");
         return cmd;

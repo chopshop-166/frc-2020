@@ -159,7 +159,7 @@ public class FrancoisMap extends RobotMap {
             PIDSparkMax pidLeader = new PIDSparkMax(leader);
             InvertDigitalInput upperLimit = new InvertDigitalInput(0);
             InvertDigitalInput lowerLimit = new InvertDigitalInput(1);
-            double distancePerRev = (1.0 / 81.0) * (1.87 * Math.PI);
+            double distancePerRev = (1.0 / 81.0) * (2.551 * Math.PI);
 
             @Override
             public PIDSparkMax elevator() {
