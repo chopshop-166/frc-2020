@@ -3,13 +3,13 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.maps.RobotMap.IndexMap;
 
 /**
@@ -145,14 +145,8 @@ public class Indexer extends SubsystemBase {
     // this will bring the ball to the shooter, it must already be at the top
 
     public CommandBase shootAllBalls() {
-        CommandBase cmd = new FunctionalCommand(() -> {
-        }, () -> {
-            shootingBalls();
-        }, (interrupted) -> {
-            pierreMotor.set(0);
-        }, () -> {
-            return ballCounting == 0;
-        }, this);
+        CommandBase cmd = new SequentialCommandGroup(shootingBalls(), shootingBalls(), shootingBalls(), shootingBalls(),
+                shootingBalls());
         cmd.setName("Shoot All Balls");
         return cmd;
     }

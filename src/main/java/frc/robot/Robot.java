@@ -207,7 +207,7 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
-        driveController.getButton(Button.kB).whenPressed(indexer.shootingBalls());
+        driveController.getButton(Button.kB).whenHeld(indexer.shootAllBalls());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
 

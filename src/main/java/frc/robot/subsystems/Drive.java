@@ -7,6 +7,8 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -46,6 +48,7 @@ public class Drive extends SubsystemBase {
         leftMotorGroup = map.getLeft();
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
+        leftMotorGroup.getEncoder();
     }
 
     /**
@@ -62,6 +65,8 @@ public class Drive extends SubsystemBase {
             double yAxis = forward.getAsDouble();
             double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
+            SmartDashboard.putNumber("Left Drive Encoder", leftMotorGroup.getEncoder().getDistance());
+            SmartDashboard.putNumber("Right Drive Encoder", rightMotorGroup.getEncoder().getDistance());
         }, this);
         cmd.setName("Drive");
         return cmd;
