@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase {
     public final static double GRAVITY = 386.2205;
     // inches
     public final static double TARGET_HEIGHT = 98.25;
-    private final double MAX_RPM = 5200;
+    private final static double MAX_RPM = 5200;
     public final static double THETA = Math.toRadians(37);
     public final static double BALL_SPEED_RATIO = 27.358;
 
@@ -48,9 +48,9 @@ public class Shooter extends SubsystemBase {
         super.periodic();
     }
 
-    public CommandBase spinUp() {
+    public CommandBase spinUp(double speed) {
         return new InstantCommand(() -> {
-            shooterWheelMotor.set(calculateRPM() / MAX_RPM);
+            shooterWheelMotor.set(speed);
         }, this);
     }
 
@@ -70,14 +70,18 @@ public class Shooter extends SubsystemBase {
      * Calculates RPM with some gear ratio mathematics. (returns inches/second) Also
      * applies a 10% loss.
      */
-    public static double calculateRPM() {
+    public CommandBase CalculatedShoot() {
+        final double RPM_SPEED;
         if (SmartDashboard.getBoolean("Sees Target", false)) {
-            return SmartDashboard.getNumber("Last RPM", 0);
+            RPM_SPEED = SmartDashboard.getNumber("Last RPM", 0);
         } else {
             final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 0.9;
             SmartDashboard.putNumber("Last RPM", RPM);
-            return RPM;
+            RPM_SPEED = RPM;
         }
+        return new InstantCommand(() -> {
+            shooterWheelMotor.set(RPM_SPEED / MAX_RPM);
+        }, this);
     }
 
     /*
