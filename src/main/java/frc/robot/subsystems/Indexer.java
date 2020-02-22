@@ -96,6 +96,8 @@ public class Indexer extends SubsystemBase {
             if (frontIntakeIR.getAsBoolean()) {
                 singulator.set(singulatorMotorSpeed);
             }
+            // This checks to see if a ball is at the top of Pierre and doesn not run if so
+            // since the motors run even though is fininshed should be called
             if (backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
                 pierreMotor.set(pierreIndexSpeed);
                 singulator.set(singulatorMotorSpeed);

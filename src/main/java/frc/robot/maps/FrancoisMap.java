@@ -157,6 +157,7 @@ public class FrancoisMap extends RobotMap {
             CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
             CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
             InvertDigitalInput upperLimit = new InvertDigitalInput(0);
+            InvertDigitalInput lowerLimit = new InvertDigitalInput(1);
 
             @Override
             public PIDSparkMax elevator() {
@@ -182,7 +183,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public BooleanSupplier lowerLiftLimit() {
-                return upperLimit::get;
+                return lowerLimit::get;
             }
 
             @Override
