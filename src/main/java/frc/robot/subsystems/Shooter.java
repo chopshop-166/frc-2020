@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
     // inches
     public final static double TARGET_HEIGHT = 98.25;
     private final static double MAX_RPM = 5200;
-    public final static double THETA = Math.toRadians(37);
+    public final static double THETA = Math.toRadians(32);
     // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
 
@@ -50,21 +50,27 @@ public class Shooter extends SubsystemBase {
     }
 
     public CommandBase spinUp(final double speed) {
-        return new InstantCommand(() -> {
+        CommandBase cmd = new InstantCommand(() -> {
             shooterWheelMotor.set(speed);
         }, this);
+        cmd.setName("spinUp");
+        return cmd;
     }
 
     public CommandBase spinDown() {
-        return new InstantCommand(shooterWheelMotor::stopMotor, this);
+        CommandBase cmd = new InstantCommand(shooterWheelMotor::stopMotor, this);
+        cmd.setName("spinDown");
+        return cmd;
     }
 
     public CommandBase mandatoryEvacuation() {
-        return new StartEndCommand(() -> {
+        CommandBase cmd = new StartEndCommand(() -> {
             shooterWheelMotor.set(0.3);
         }, () -> {
             spinDown();
         }, this);
+        cmd.setName("mandatoryEvacuation");
+        return cmd;
     }
 
     /*
@@ -82,9 +88,11 @@ public class Shooter extends SubsystemBase {
             SmartDashboard.putNumber("Last RPM", RPM);
             RPM_SPEED = RPM;
         }
-        return new InstantCommand(() -> {
+        CommandBase cmd = new InstantCommand(() -> {
             shooterWheelMotor.set(RPM_SPEED / MAX_RPM);
         }, this);
+        cmd.setName("calculatedShoot");
+        return cmd;
     }
 
     /*
