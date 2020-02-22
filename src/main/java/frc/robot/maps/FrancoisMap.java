@@ -181,6 +181,11 @@ public class FrancoisMap extends RobotMap {
             }
 
             @Override
+            public BooleanSupplier lowerLiftLimit() {
+                return upperLimit::get;
+            }
+
+            @Override
             public IEncoder getLiftEncoder() {
                 SparkMaxEncoder getEncoder = new SparkMaxEncoder(leader.getEncoder());
                 getEncoder.setScaleFactor(1);

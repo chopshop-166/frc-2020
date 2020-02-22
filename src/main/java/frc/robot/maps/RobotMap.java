@@ -88,6 +88,10 @@ public class RobotMap {
             return new MockDigitalInput()::getAsBoolean;
         }
 
+        public BooleanSupplier lowerLiftLimit() {
+            return new MockDigitalInput()::getAsBoolean;
+        }
+
         public IEncoder getLiftEncoder() {
             return new MockEncoder();
         }
