@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.sql.Time;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -10,6 +9,7 @@ import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -108,11 +108,20 @@ public class Lift extends SubsystemBase {
             elevatorMotor.set(speed);
         }, (interrupted) -> {
             elevatorMotor.stopMotor();
+            // This command might be interrupted if it takes to move the expected amount
+            // If that happens we should NOT continue the sequence as that could cause
+            // further damage.
+            if (interrupted) {
+                // This should get the command group that is trying to move the elevator
+                // We will then cancel that command group so we stop.
+                // TODO Send something to the dashboard.
+                CommandScheduler.getInstance().requiring(this).cancel();
+            }
         }, () -> {
             return Math.abs(liftEncoder.getDistance()) >= ticks;
         }, this);
         cmd.setName("Move Ticks");
-        return cmd;
+        return cmd.withTimeout(0.2);
     }
 
     public CommandBase moveLift(DoubleSupplier speed) {
