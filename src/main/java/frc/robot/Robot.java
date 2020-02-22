@@ -77,10 +77,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         configureButtonBindings();
-        // nameEntry.setPersistent();
-        // nameEntry.setDefaultString("Unknown");
-        // Shuffleboard.getTab("RobotData").addString("RobotName", () ->
-        // nameEntry.getString("Unknown"));
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
@@ -103,7 +99,7 @@ public class Robot extends TimedRobot {
 
         // protovision
         camera0 = CameraServer.getInstance().startAutomaticCapture(0);
-        camera0.setResolution(310, 240);
+        camera0.setResolution(320, 240);
         camera0.setFPS(20);
         // videoSink.getProperty("compression").set(70);
         videoSink = CameraServer.getInstance().getServer();
