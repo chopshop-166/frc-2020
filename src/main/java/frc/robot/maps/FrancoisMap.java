@@ -49,7 +49,7 @@ public class FrancoisMap extends RobotMap {
                 SparkMaxSendable sendleader = new SparkMaxSendable(rightLeader);
                 SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
 
-                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(25));
+                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
 
                 return EncodedSpeedController.join(averageInputs, enc);
 
@@ -64,7 +64,7 @@ public class FrancoisMap extends RobotMap {
                 SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
                 SparkMaxEncoder enc = new SparkMaxEncoder(leftLeader.getEncoder());
 
-                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(25));
+                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
 
                 return EncodedSpeedController.join(averageInputs, enc);
             }

@@ -35,7 +35,7 @@ public class Indexer extends SubsystemBase {
     public double ballCounting;
 
     private static final double singulatorMotorSpeed = 0.95;
-    private static final double pierreIndexSpeed = 0.85;
+    private static final double pierreIndexSpeed = 1;
 
     public Indexer(final IndexMap map) {
         super();
@@ -90,10 +90,9 @@ public class Indexer extends SubsystemBase {
         }, () -> {
 
             if (frontIntakeIR.getAsBoolean()) {
-
                 singulator.set(singulatorMotorSpeed);
             }
-            if (backIntakeIR.getAsBoolean()) {
+            if (backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
                 pierreMotor.set(pierreIndexSpeed);
                 singulator.set(singulatorMotorSpeed);
             }
@@ -117,8 +116,9 @@ public class Indexer extends SubsystemBase {
         return new FunctionalCommand(() -> {
 
         }, () -> {
-
-            pierreMotor.set(pierreIndexSpeed);
+            if (!topPierreIR.getAsBoolean()) {
+                pierreMotor.set(pierreIndexSpeed);
+            }
 
         }, (interrupted) -> {
 
@@ -176,7 +176,7 @@ public class Indexer extends SubsystemBase {
     // this will shoot the balls until there are none left in pierre.
     public CommandBase runToClearBottomSensor() {
         return new FunctionalCommand(() -> {
-            if (bottomPierreIR.getAsBoolean()) {
+            if (bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
                 pierreMotor.set(pierreIndexSpeed);
             }
 
