@@ -57,7 +57,13 @@ public class Shooter extends SubsystemBase {
      * applies a 10% loss.
      */
     public static double calculateRPM() {
-        return calculateVelocity() * BALL_SPEED_RATIO * 0.9;
+        if (SmartDashboard.getBoolean("Sees Target", false)) {
+            return SmartDashboard.getNumber("Last RPM", 0);
+        } else {
+            final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 0.9;
+            SmartDashboard.putNumber("Last RPM", RPM);
+            return RPM;
+        }
     }
 
     /*
