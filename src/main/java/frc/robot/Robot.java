@@ -12,6 +12,9 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -63,6 +66,10 @@ public class Robot extends TimedRobot {
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+    UsbCamera camera0;
+    VideoSink videoSink;
+    boolean camera0Active = true;
+
     /**
      * This function is run when the robot is first started up and should be used
      * for any initialization code.
@@ -93,6 +100,13 @@ public class Robot extends TimedRobot {
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> driveController.getY(Hand.kRight)));
         indexer.setDefaultCommand(indexer.intakeToPierre());
+
+        // protovision
+        camera0 = CameraServer.getInstance().startAutomaticCapture(0);
+        camera0.setResolution(310, 240);
+        camera0.setFPS(20);
+        // videoSink.getProperty("compression").set(70);
+        videoSink = CameraServer.getInstance().getServer();
     }
 
     /**

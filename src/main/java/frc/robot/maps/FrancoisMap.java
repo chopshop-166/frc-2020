@@ -4,7 +4,6 @@ import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
@@ -15,6 +14,7 @@ import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.PigeonGyro;
 import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANEncoder;
@@ -24,13 +24,14 @@ import com.revrobotics.EncoderType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.AnalogTrigger;
+import edu.wpi.first.wpilibj.GyroBase;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
 
     @Override
     public DifferentialDriveMap getDriveMap() {
-        final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
+        final double distancePerPulse = (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
@@ -39,71 +40,30 @@ public class FrancoisMap extends RobotMap {
             CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
 
             @Override
-            public EncodedSpeedController getRight() {
-
-                CANEncoder leadEncoder = new CANEncoder(rightLeader, EncoderType.kQuadrature, 42);
-
+            public SendableSpeedController getRight() {
                 rightFollower.follow(rightLeader);
 
-                leadEncoder.setPositionConversionFactor(distancePerPulse);
+                rightLeader.getEncoder().setPositionConversionFactor(distancePerPulse);
                 SparkMaxSendable sendleader = new SparkMaxSendable(rightLeader);
-                SparkMaxEncoder enc = new SparkMaxEncoder(rightLeader.getEncoder());
 
-                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+                return new ModSpeedController(sendleader, Modifier.rollingAverage(10));
+            }
 
-                return EncodedSpeedController.join(averageInputs, enc);
+            @Override
+            public SendableSpeedController getLeft() {
+                leftFollower.follow(leftLeader);
+
+                leftLeader.getEncoder().setPositionConversionFactor(distancePerPulse);
+                SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
+
+                return new ModSpeedController(sendleader, Modifier.rollingAverage(10));
 
             }
 
             @Override
-            public EncodedSpeedController getLeft() {
-                CANEncoder leadEncoder = new CANEncoder(leftLeader, EncoderType.kQuadrature, 42);
-                leftFollower.follow(leftLeader);
-
-                leadEncoder.setPositionConversionFactor(distancePerPulse);
-                SparkMaxSendable sendleader = new SparkMaxSendable(leftLeader);
-                SparkMaxEncoder enc = new SparkMaxEncoder(leftLeader.getEncoder());
-
-                ModSpeedController averageInputs = new ModSpeedController(sendleader, Modifier.rollingAverage(10));
-
-                return EncodedSpeedController.join(averageInputs, enc);
+            public GyroBase getGyro() {
+                return new PigeonGyro(new WPI_TalonSRX(42));
             }
-
-            // @Override
-            // public GyroBase getGyro() {
-            // PigeonIMU gyro = new PigeonIMU(new WPI_TalonSRX(42));
-            // return new GyroBase() {
-
-            // @Override
-            // public void close() throws Exception {
-            // // NoOp
-
-            // }
-
-            // @Override
-            // public void reset() {
-            // gyro.setFusedHeading(0);
-
-            // }
-
-            // @Override
-            // public double getRate() {
-            // double[] xyz = new double[3];
-            // gyro.getRawGyro(xyz);
-            // return xyz[2];
-            // }
-
-            // @Override
-            // public double getAngle() {
-            // return gyro.getFusedHeading();
-            // }
-
-            // @Override
-            // public void calibrate() {
-            // // NoOp
-            // }
-            // };
-            // }
         };
     }
 

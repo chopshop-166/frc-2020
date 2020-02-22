@@ -3,8 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
-import com.chopshop166.chopshoplib.outputs.ModSpeedController;
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -30,8 +29,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class Drive extends SubsystemBase {
 
-    private final EncodedSpeedController rightMotorGroup;
-    private final EncodedSpeedController leftMotorGroup;
+    private final SendableSpeedController rightMotorGroup;
+    private final SendableSpeedController leftMotorGroup;
     private final GyroBase gyro;
     private final DifferentialDrive driveTrain;
 
@@ -68,14 +67,14 @@ public class Drive extends SubsystemBase {
 
     public CommandBase driveDistance(double distance, double speed) {
         return new FunctionalCommand(() -> {
-            leftMotorGroup.reset();
-            rightMotorGroup.reset();
+            leftMotorGroup.getEncoder().reset();
+            rightMotorGroup.getEncoder().reset();
         }, () -> {
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            double avg = (leftMotorGroup.getDistance() + rightMotorGroup.getDistance()) / 2;
+            double avg = (leftMotorGroup.getEncoder().getDistance() + rightMotorGroup.getEncoder().getDistance()) / 2;
             return (avg >= distance);
         }, this);
     }
