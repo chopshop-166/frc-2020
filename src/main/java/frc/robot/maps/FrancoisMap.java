@@ -4,24 +4,21 @@ import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SparkMaxSendable;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.PigeonGyro;
 import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
-import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.EncoderType;
-
-import edu.wpi.first.wpilibj.Solenoid;
 
 import edu.wpi.first.wpilibj.GyroBase;
 
@@ -39,60 +36,29 @@ public class FrancoisMap extends RobotMap {
             CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
 
             @Override
-            public EncodedSpeedController getRight() {
+            public SendableSpeedController getRight() {
 
                 CANEncoder leadEncoder = new CANEncoder(rightLeader, EncoderType.kQuadrature, 42);
                 rightFollower.follow(rightLeader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
 
-                return EncodedSpeedController.wrap(rightLeader);
+                return new SparkMaxSendable(rightLeader);
             }
 
             @Override
-            public EncodedSpeedController getLeft() {
+            public SendableSpeedController getLeft() {
                 CANEncoder leadEncoder = new CANEncoder(leftLeader, EncoderType.kQuadrature, 42);
                 leftFollower.follow(leftLeader);
 
                 leadEncoder.setPositionConversionFactor(distancePerPulse);
 
-                return EncodedSpeedController.wrap(leftLeader);
+                return new SparkMaxSendable(leftLeader);
             }
 
             @Override
             public GyroBase getGyro() {
-                PigeonIMU gyro = new PigeonIMU(new WPI_TalonSRX(42));
-                return new GyroBase() {
-
-                    @Override
-                    public void close() throws Exception {
-                        // NoOp
-
-                    }
-
-                    @Override
-                    public void reset() {
-                        gyro.setFusedHeading(0);
-
-                    }
-
-                    @Override
-                    public double getRate() {
-                        double[] xyz = new double[3];
-                        gyro.getRawGyro(xyz);
-                        return xyz[2];
-                    }
-
-                    @Override
-                    public double getAngle() {
-                        return gyro.getFusedHeading();
-                    }
-
-                    @Override
-                    public void calibrate() {
-                        // NoOp
-                    }
-                };
+                return new PigeonGyro(new WPI_TalonSRX(42));
             }
         };
     }
