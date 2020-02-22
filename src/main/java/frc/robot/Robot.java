@@ -188,7 +188,7 @@ public class Robot extends TimedRobot {
     // will spin the shooter then shoot all the balls and then turn the shooter off.
     // TODO spin up is an instant command therefore it will never end
     public CommandBase shootAllBalls() {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(), indexer.shootAllBalls(), shooter.spinDown());
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(.8), indexer.shootAllBalls(), shooter.spinDown());
         cmd.setName("Shoot all Balls");
         return cmd;
     }
@@ -214,7 +214,7 @@ public class Robot extends TimedRobot {
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
 
         copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp());
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(.3));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
