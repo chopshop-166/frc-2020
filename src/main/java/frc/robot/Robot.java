@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
         DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
-        // lift.setDefaultCommand(lift.moveLift(copilotController::getTriggers));
+        lift.setDefaultCommand(lift.moveLift(() -> driveController.getY(Hand.kRight)));
         indexer.setDefaultCommand(indexer.intakeToPierre());
     }
 
@@ -193,13 +193,14 @@ public class Robot extends TimedRobot {
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         driveController.getButton(Button.kB).whenPressed(indexer.shootingBalls());
-        driveController.getButton(Button.kX).whenPressed(endGame());
-        XboxTrigger endTrigger = new XboxTrigger(driveController, 5, true);
-        endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+        // driveController.getButton(Button.kX).whenPressed(endGame());
+        XboxTrigger endTrigger = new XboxTrigger(driveController, 5, false);
+        // endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+        endTrigger.whileActiveOnce(endGame());
 
         copilotController.getButton(Button.kBumperRight).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBumperLeft).whenHeld(controlPanel.spinBackwards());
         copilotController.getButton(Button.kX).whenHeld(cancelCommand());
-        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
     }
 }

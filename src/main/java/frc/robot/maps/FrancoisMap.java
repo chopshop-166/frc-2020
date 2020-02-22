@@ -16,19 +16,14 @@ import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
-import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.EncoderType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogTrigger;
-import edu.wpi.first.wpilibj.GyroBase;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
@@ -171,7 +166,7 @@ public class FrancoisMap extends RobotMap {
 
             public BooleanSupplier topPierreIR() {
                 AnalogTrigger topPierreIR = new AnalogTrigger(0);
-                topPierreIR.setLimitsVoltage(1.8, 2.4);
+                topPierreIR.setLimitsVoltage(1.2, 1.4);
                 return topPierreIR::getTriggerState;
             }
 
@@ -183,7 +178,7 @@ public class FrancoisMap extends RobotMap {
 
             public BooleanSupplier backIntakeIR() {
                 AnalogTrigger backIntakeIR = new AnalogTrigger(2);
-                backIntakeIR.setLimitsVoltage(1.2, 1.4);
+                backIntakeIR.setLimitsVoltage(1.2, 2.6);
                 return backIntakeIR::getTriggerState;
             }
 
@@ -207,6 +202,8 @@ public class FrancoisMap extends RobotMap {
             public PIDSparkMax elevator() {
                 leader.setInverted(true);
                 follower.follow(leader, true);
+                leader.setIdleMode(IdleMode.kBrake);
+                follower.setIdleMode(IdleMode.kBrake);
 
                 return new PIDSparkMax(leader);
             }
