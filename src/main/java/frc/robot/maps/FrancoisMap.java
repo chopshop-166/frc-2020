@@ -87,14 +87,22 @@ public class FrancoisMap extends RobotMap {
         return new ShooterMap() {
             CANSparkMax leader = new CANSparkMax(23, MotorType.kBrushless);
             CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
+            PIDSparkMax pidLeader = new PIDSparkMax(leader);
 
             @Override
             public PIDSparkMax shooterWheel() {
+                leader.setIdleMode(IdleMode.kCoast);
+                follower.setIdleMode(IdleMode.kCoast);
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                return new PIDSparkMax(leader);
+                pidLeader.setP(0.00055);
+                pidLeader.setI(0.0000001);
+                pidLeader.setD(0);
+
+                return pidLeader;
             }
+
         };
     }
 

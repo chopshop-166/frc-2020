@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
 
@@ -40,6 +41,8 @@ public class Shooter extends SubsystemBase {
         shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
+        SendableRegistry.add(shooterWheelMotor.getEncoder(), "Shooter");
+        SendableRegistry.enableLiveWindow(shooterWheelMotor.getEncoder());
     }
 
     @Override
@@ -53,7 +56,7 @@ public class Shooter extends SubsystemBase {
         CommandBase cmd = new InstantCommand(() -> {
             // TODO incorperate calculations
             // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
-            shooterWheelMotor.set(speed);
+            shooterWheelMotor.setSetpoint(speed);
         }, this);
         cmd.setName("spinUp");
         return cmd;
@@ -80,18 +83,18 @@ public class Shooter extends SubsystemBase {
      * applies a 15% increase.
      */
     public CommandBase calculatedShoot() {
-        final double RPM_SPEED;
+        final double rpmSpeed;
 
         // If it doesn't see the target, it will just shoot at the last speed.
         if (SmartDashboard.getBoolean("Sees Target", false)) {
-            RPM_SPEED = SmartDashboard.getNumber("Last RPM", 0);
+            rpmSpeed = SmartDashboard.getNumber("Last RPM", 0);
         } else {
-            final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
-            SmartDashboard.putNumber("Last RPM", RPM);
-            RPM_SPEED = RPM;
+            final double rpm = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
+            SmartDashboard.putNumber("Last RPM", rpm);
+            rpmSpeed = rpm;
         }
         CommandBase cmd = new InstantCommand(() -> {
-            shooterWheelMotor.set(RPM_SPEED / MAX_RPM);
+            shooterWheelMotor.setSetpoint(rpmSpeed);
         }, this);
         cmd.setName("calculatedShoot");
         return cmd;
