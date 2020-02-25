@@ -9,13 +9,11 @@ import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.outputs.SparkMaxSendable;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
-import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -43,7 +41,7 @@ public class FrancoisMap extends RobotMap {
             public SendableSpeedController getRight() {
                 rightFollower.follow(rightLeader);
 
-                SparkMaxSendable sendLeader = new SparkMaxSendable(rightLeader);
+                PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
 
                 return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
@@ -53,7 +51,7 @@ public class FrancoisMap extends RobotMap {
             public SendableSpeedController getLeft() {
                 leftFollower.follow(leftLeader);
 
-                SparkMaxSendable sendLeader = new SparkMaxSendable(leftLeader);
+                PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
 
                 return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
