@@ -94,9 +94,10 @@ public class FrancoisMap extends RobotMap {
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                pidLeader.setP(0.00055);
+                pidLeader.setP(0.00045);
                 pidLeader.setI(0);
                 pidLeader.setD(0);
+                pidLeader.setF(0.0002);
 
                 // kp = .00045, kF = .0002
 
