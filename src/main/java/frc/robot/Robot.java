@@ -96,7 +96,7 @@ public class Robot extends TimedRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
-        indexer.setDefaultCommand(indexer.intakeToPierre());
+        indexer.setDefaultCommand(indexer.indexBall());
 
         // protovision
         camera0 = CameraServer.getInstance().startAutomaticCapture(0);
@@ -167,12 +167,6 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public CommandBase singulatorAndIntake() {
-        CommandBase cmd = new ParallelCommandGroup(intake.intake(), indexer.indexMotor(.85));
-        cmd.setName("Intake Balls");
-        return cmd;
-    }
-
     public CommandBase regurgitateFC() {
         CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
         cmd.setName("Regurgitate FC");
@@ -208,15 +202,16 @@ public class Robot extends TimedRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        driveController.getButton(Button.kB).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         driveController.getButton(Button.kB).whenHeld(indexer.shootAllBalls());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
 
-        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        copilotController.getButton(Button.kB).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(2500));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+
     }
 }

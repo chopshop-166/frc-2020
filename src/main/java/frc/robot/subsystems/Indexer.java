@@ -49,9 +49,15 @@ public class Indexer extends SubsystemBase {
 
     }
 
-    public CommandBase intakeToPierre() {
+    public CommandBase indexBall() {
         CommandBase cmd = new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
         cmd.setName("Intake to Pierre");
+        return cmd;
+    }
+
+    public CommandBase intakeToPierre() {
+        CommandBase cmd = new SequentialCommandGroup(indexMotor(.85), indexBall());
+        cmd.setName("Shoot Ball");
         return cmd;
     }
 
@@ -64,10 +70,13 @@ public class Indexer extends SubsystemBase {
     // spin up the shooter. that happens in robot
 
     public CommandBase indexMotor(final double motorSpeed) {
-        CommandBase cmd = new StartEndCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             singulator.set(motorSpeed);
         }, () -> {
+        }, (interrupted) -> {
             singulator.set(0);
+        }, () -> {
+            return bottomPierreIR.getAsBoolean();
         }, this);
         cmd.setName("Run Singulator");
         return cmd;
