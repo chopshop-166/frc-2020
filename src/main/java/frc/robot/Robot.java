@@ -175,17 +175,14 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase shootAuto() {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(3),
-                drive.driveDistance(20, .5));
+        CommandBase cmd = new SequentialCommandGroup(releaseBalls(3), shooter.spinDown(), drive.driveDistance(20, .5));
         cmd.setName("Shoot Auto");
         return cmd;
     }
 
     // will spin the shooter then shoot all the balls and then turn the shooter off.
-    // TODO spin up is an instant command therefore it will never end
-    public CommandBase releaseAllBalls() {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(5),
-                shooter.spinDown());
+    public CommandBase releaseBalls(int ballCount) {
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(ballCount));
         cmd.setName("Shoot all Balls");
         return cmd;
     }
@@ -206,7 +203,7 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(releaseAllBalls());
+        driveController.getButton(Button.kB).whenHeld(releaseBalls(5)).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
 
@@ -216,7 +213,6 @@ public class Robot extends TimedRobot {
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
         copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
-        copilotController.getButton(Button.kX).whenHeld(controlPanel.spinBackwards());
 
     }
 }
