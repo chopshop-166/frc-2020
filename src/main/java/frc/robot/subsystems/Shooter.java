@@ -4,77 +4,116 @@ import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
 
 /**
- * What does it do? When the A button is pressed- it shoots a ball. What modes
- * does it have? Semi-Auto and DUMP. what interactions does it have with other
- * subsystems? Asks the Indexer and 'vision' if it's ready to shoot. How is it
- * triggered/OI? A semi-auto button A- or X for shoot all. Does it store any
- * state? No. Sensors? No.
+ * What does it do? Given a target and shooter height, it calculates velocity
+ * needed to hit said target, and spins the motors at a corresponding RPM. What
+ * modes does it have? Semi-Auto and DUMP. what interactions does it have with
+ * other subsystems? Asks the Indexer if there is a ball, and get's information
+ * about the target from vision. How is it triggered/OI? A semi-auto button A-
+ * or X for shoot all. Does it store any state? No. Sensors? No.
  */
 
 public class Shooter extends SubsystemBase {
-
-    private final double MAX_RPM = 5200;
     private final PIDSpeedController shooterWheelMotor;
     public static double distanceToTarget;
     public final double shooterHeight;
     public static double verticalDistance;
+    public static double horizontalDistance;
 
-    // inches/second
+    // inches/second/second
     public final static double GRAVITY = 386.2205;
     // inches
     public final static double TARGET_HEIGHT = 98.25;
-    public final static double THETA = Math.toRadians(37);
-    public final static double DIAMETER = 4;
-    public final static double CIRCUMFERENCE = DIAMETER * Math.PI * Math.PI;
+    private final static double MAX_RPM = 5200;
+    public final static double THETA = Math.toRadians(60);
+    // RPM equal to 1ft/s
+    public final static double BALL_SPEED_RATIO = 27.358;
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
-        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 0);
         shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
     }
 
-    public CommandBase spinUp() {
-        return new InstantCommand(() -> {
-            shooterWheelMotor.set(calculateRPM() / MAX_RPM);
+    @Override
+    public void periodic() {
+        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 160);
+        horizontalDistance = Math.sqrt((verticalDistance * verticalDistance) - (distanceToTarget * distanceToTarget));
+        super.periodic();
+    }
+
+    public CommandBase spinUp(final double speed) {
+        CommandBase cmd = new InstantCommand(() -> {
+            // TODO incorperate calculations
+            // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
+            shooterWheelMotor.set(speed);
         }, this);
+        cmd.setName("spinUp");
+        return cmd;
     }
 
     public CommandBase spinDown() {
-        return new InstantCommand(shooterWheelMotor::stopMotor, this);
+        CommandBase cmd = new InstantCommand(shooterWheelMotor::stopMotor, this);
+        cmd.setName("spinDown");
+        return cmd;
+    }
+
+    public CommandBase mandatoryEvacuation() {
+        CommandBase cmd = new StartEndCommand(() -> {
+            shooterWheelMotor.set(0.3);
+        }, () -> {
+            spinDown();
+        }, this);
+        cmd.setName("mandatoryEvacuation");
+        return cmd;
     }
 
     /*
-     * Calculates RPM -> velocity / circumference is how many rotation needed in a
-     * second, so times 60 gives us how many RPM we need. (returns inches/second)
-     * Also applies a 20% loss.
+     * Calculates RPM with some gear ratio mathematics. (returns inches/second) Also
+     * applies a 15% increase.
      */
-    public static double calculateRPM() {
-        return 60 * calculateVelocity() / CIRCUMFERENCE * 0.8;
+    public CommandBase calculatedShoot() {
+        final double RPM_SPEED;
+
+        // If it doesn't see the target, it will just shoot at the last speed.
+        if (SmartDashboard.getBoolean("Sees Target", false)) {
+            RPM_SPEED = SmartDashboard.getNumber("Last RPM", 0);
+        } else {
+            final double RPM = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
+            SmartDashboard.putNumber("Last RPM", RPM);
+            RPM_SPEED = RPM;
+        }
+        CommandBase cmd = new InstantCommand(() -> {
+            shooterWheelMotor.set(RPM_SPEED / MAX_RPM);
+        }, this);
+        cmd.setName("calculatedShoot");
+        return cmd;
     }
 
     /*
-     * Finds the needed velocity to reach a target (x, y) or (distanceToTarget,
+     * Finds the needed velocity to reach a target (x, y) or (horizontalDistance,
      * verticalDistance). The formula takes takes theta or launch angle, target and
      * gravity.
      */
-
     public static double calculateVelocity() {
-        if (distanceToTarget * Math.tan(THETA) >= verticalDistance) {
-            final double gravitySide = GRAVITY * distanceToTarget * distanceToTarget;
-            final double tanSide = distanceToTarget * Math.tan(THETA) - verticalDistance;
+        // Checks if the target is within reach, plus a 12.5% leniency rate- incase lift
+        // gets it there or something.
+        if ((horizontalDistance * Math.tan(THETA)) * 1.125 >= verticalDistance) {
+            final double gravitySide = GRAVITY * horizontalDistance * horizontalDistance;
+            final double tanSide = horizontalDistance * Math.tan(THETA) - verticalDistance;
             final double cosSide = Math.cos(THETA) * Math.cos(THETA);
 
             return Math.sqrt(gravitySide / tanSide / cosSide / 2);
         } else {
             return 0;
         }
+
     }
 }
