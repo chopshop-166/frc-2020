@@ -90,7 +90,8 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
-        autoChooser.addOption("Pass the Line", passLine());
+        autoChooser.addOption("Pass the Line", drive.driveDistance(20, .5));
+        autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
@@ -98,7 +99,7 @@ public class Robot extends TimedRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
-        indexer.setDefaultCommand(indexer.intakeToPierre());
+        indexer.setDefaultCommand(indexer.indexBall());
 
         // protovision
         camera0 = CameraServer.getInstance().startAutomaticCapture(0);
@@ -170,28 +171,21 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public CommandBase singulatorAndIntake() {
-        CommandBase cmd = new ParallelCommandGroup(intake.intake(), indexer.indexMotor(.85));
-        cmd.setName("Intake Balls");
-        return cmd;
-    }
-
     public CommandBase regurgitateFC() {
         CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
         cmd.setName("Regurgitate FC");
         return cmd;
     }
 
-    public CommandBase passLine() {
-        CommandBase cmd = new SequentialCommandGroup(drive.driveDistance(40, .5));
-        cmd.setName("Pass Line");
+    public CommandBase shootAuto() {
+        CommandBase cmd = new SequentialCommandGroup(releaseBalls(3), shooter.spinDown(), drive.driveDistance(20, .5));
+        cmd.setName("Shoot Auto");
         return cmd;
     }
 
     // will spin the shooter then shoot all the balls and then turn the shooter off.
-    // TODO spin up is an instant command therefore it will never end
-    public CommandBase shootAllBalls() {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(.8), indexer.shootAllBalls(), shooter.spinDown());
+    public CommandBase releaseBalls(int ballCount) {
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(ballCount));
         cmd.setName("Shoot all Balls");
         return cmd;
     }
@@ -211,15 +205,17 @@ public class Robot extends TimedRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
-        driveController.getButton(Button.kB).whenHeld(indexer.shootAllBalls());
+        driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+        driveController.getButton(Button.kB).whenHeld(releaseBalls(5)).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
 
-        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(.3));
+        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+        copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
+
     }
 }

@@ -47,6 +47,7 @@ public class Drive extends SubsystemBase {
         leftMotorGroup = map.getLeft();
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
+        driveTrain.setRightSideInverted(false);
     }
 
     /**

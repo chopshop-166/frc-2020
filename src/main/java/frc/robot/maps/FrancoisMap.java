@@ -9,13 +9,11 @@ import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.outputs.SparkMaxSendable;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
-import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -23,9 +21,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
+    // controlPanel is defined here due to the gyro being plugged into this speed
+    // controller as well as the control panel motor
+    WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
 
     @Override
     public DifferentialDriveMap getDriveMap() {
@@ -41,28 +43,38 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
+                // We invert the motor so the controller outputs are aligned
+                rightLeader.setInverted(true);
                 rightFollower.follow(rightLeader);
 
-                SparkMaxSendable sendLeader = new SparkMaxSendable(rightLeader);
+                PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
+                SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
 
-                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
+                return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
+                        Modifier.rollingAverage(averageCount));
             }
 
             @Override
             public SendableSpeedController getLeft() {
                 leftFollower.follow(leftLeader);
 
-                SparkMaxSendable sendLeader = new SparkMaxSendable(leftLeader);
+                PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
+                SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
 
-                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
+                return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
+                        Modifier.rollingAverage(averageCount));
 
             }
 
             @Override
             public GyroBase getGyro() {
-                return new PigeonGyro(new WPI_TalonSRX(42));
+                return new PigeonGyro(controlPanel);
             }
         };
     }
@@ -87,14 +99,25 @@ public class FrancoisMap extends RobotMap {
         return new ShooterMap() {
             CANSparkMax leader = new CANSparkMax(23, MotorType.kBrushless);
             CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
+            PIDSparkMax pidLeader = new PIDSparkMax(leader);
 
             @Override
             public PIDSparkMax shooterWheel() {
+                leader.setIdleMode(IdleMode.kCoast);
+                follower.setIdleMode(IdleMode.kCoast);
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                return new PIDSparkMax(leader);
+                pidLeader.setP(0.0002);
+                pidLeader.setI(0);
+                pidLeader.setD(0);
+                pidLeader.setF(0.0002);
+
+                // kp = .00045, kF = .0002
+
+                return pidLeader;
             }
+
         };
     }
 
@@ -103,7 +126,7 @@ public class FrancoisMap extends RobotMap {
         return new ControlPanelMap() {
             @Override
             public SendableSpeedController spinner() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(49));
+                return SendableSpeedController.wrap(controlPanel);
             }
         };
     }
