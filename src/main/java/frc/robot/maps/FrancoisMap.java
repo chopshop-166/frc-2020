@@ -63,7 +63,8 @@ public class FrancoisMap extends RobotMap {
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
 
-                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
+                return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
+                        Modifier.rollingAverage(averageCount));
 
             }
 
