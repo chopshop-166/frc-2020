@@ -15,7 +15,6 @@ import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
-import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
