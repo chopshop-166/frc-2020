@@ -13,6 +13,7 @@ from networktables import NetworkTables
 
 ANGLE_THRESHOLD = 40
 
+DRIVER_STATION_IP = '192.168.1.6'
 # Resolution
 WIDTH = 640
 HEIGHT = 480
@@ -47,12 +48,11 @@ def newLine(filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2, X_TOTAL
 
     return X_TOTAL, Y_TOTAL
 
-NetworkTables.initialize(server='pi-166-frc.local')
+NetworkTables.initialize(server=DRIVER_STATION_IP)
 
 sd = NetworkTables.getTable('SmartDashboard')
 # sd.putNumber('someNumber', 1234)
 # otherNumber = sd.getNumber('otherNumber')
-
 
 # Camera settings
 pipe = rs2.pipeline()
@@ -171,6 +171,8 @@ while True:
         for LINE in LINES:
             x1, y1, x2, y2=LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
+    else:
+        sd.putBoolean("Sees Target", False)
 
     # Open the gallery of all my filtered works
     # cv2.imshow("og lines", LINE_IMG)
@@ -187,7 +189,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     end_time=time.time()
-    # print(end_time - start_time)
+    sd.putNumber("FPS", 1/(end_time - start_time))
 
 cv2.destroyAllWindows()
 pipe.stop()
