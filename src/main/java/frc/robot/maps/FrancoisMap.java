@@ -43,7 +43,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
-                // Differential Drive automatically sets right inverted
+                // We invert the motor so the controller outputs are aligned
                 rightLeader.setInverted(true);
                 rightFollower.follow(rightLeader);
 

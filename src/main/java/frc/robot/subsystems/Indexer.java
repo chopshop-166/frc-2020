@@ -34,9 +34,9 @@ public class Indexer extends SubsystemBase {
     final BooleanSupplier backIntakeIR;
     public double ballCounting;
 
-    private static final double singulatorMotorSpeed = 1.0;
-    private static final double pierreIndexSpeed = 0.7;
-    private static final double pierreShootSpeed = 1.0;
+    private static final double SINGULATOR_MOTOR_SPEED = 1.0;
+    private static final double PIERRE_INDEX_SPEED = 0.7;
+    private static final double PIERRE_SHOOT_SPEED = 1.0;
 
     public Indexer(final IndexMap map) {
         super();
@@ -56,7 +56,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public CommandBase intakeToPierre() {
-        CommandBase cmd = new SequentialCommandGroup(indexMotor(pierreIndexSpeed), indexBall());
+        CommandBase cmd = new SequentialCommandGroup(indexMotor(PIERRE_INDEX_SPEED), indexBall());
         cmd.setName("Intake to Pierre");
         return cmd;
     }
@@ -83,19 +83,19 @@ public class Indexer extends SubsystemBase {
     }
 
     public CommandBase quicklyPush() {
-        return indexMotor(singulatorMotorSpeed);
+        return indexMotor(SINGULATOR_MOTOR_SPEED);
     }
 
     public CommandBase reversePush() {
-        return indexMotor(-singulatorMotorSpeed);
+        return indexMotor(-SINGULATOR_MOTOR_SPEED);
     }
 
     public CommandBase quicklyOutput() {
-        return indexMotor(pierreIndexSpeed);
+        return indexMotor(PIERRE_INDEX_SPEED);
     }
 
     public CommandBase reverseOutput() {
-        return indexMotor(-pierreIndexSpeed);
+        return indexMotor(-PIERRE_INDEX_SPEED);
     }
 
     // This command will make sure that the singulator has possesion of the ball
@@ -104,13 +104,13 @@ public class Indexer extends SubsystemBase {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
             if (frontIntakeIR.getAsBoolean()) {
-                singulator.set(singulatorMotorSpeed);
+                singulator.set(SINGULATOR_MOTOR_SPEED);
             }
             // This checks to see if a ball is at the top of Pierre and doesn't not run
             // because sometimes it will
             if (backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
-                pierreMotor.set(pierreIndexSpeed);
-                singulator.set(singulatorMotorSpeed);
+                pierreMotor.set(PIERRE_INDEX_SPEED);
+                singulator.set(SINGULATOR_MOTOR_SPEED);
             }
         }, (interrupted) -> {
             pierreMotor.set(0);
@@ -129,7 +129,7 @@ public class Indexer extends SubsystemBase {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
             if (!topPierreIR.getAsBoolean()) {
-                pierreMotor.set(pierreShootSpeed);
+                pierreMotor.set(PIERRE_SHOOT_SPEED);
             }
         }, (interrupted) -> {
             pierreMotor.set(0);
@@ -143,7 +143,7 @@ public class Indexer extends SubsystemBase {
     public CommandBase unloadBall() {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-            pierreMotor.set(pierreShootSpeed);
+            pierreMotor.set(PIERRE_SHOOT_SPEED);
         }, (interrupted) -> {
             pierreMotor.set(0);
             ballCounting--;
@@ -166,7 +166,7 @@ public class Indexer extends SubsystemBase {
     public CommandBase runToClearBottomSensor() {
         CommandBase cmd = new FunctionalCommand(() -> {
             if (bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
-                pierreMotor.set(pierreIndexSpeed);
+                pierreMotor.set(PIERRE_INDEX_SPEED);
             }
         }, () -> {
         }, (interrupted) -> {
