@@ -17,13 +17,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
 public class ControlPanel extends SubsystemBase {
+    public final I2C.Port i2cPort = I2C.Port.kOnboard;
 
+    public final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+
+    public final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
+    public final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
+    public final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
+    public final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+
+    public final ColorMatch m_colorMatcher = new ColorMatch();
     private String gameData;
     private ColorStates color;
 
     private SendableSpeedController spinnerMotor;
 
-    private static final double spinnerMotorSpeed = 1;
+    private static final double spinnerMotorSpeed = .6;
 
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
@@ -79,17 +88,6 @@ public class ControlPanel extends SubsystemBase {
         cmd.setName("Spin Control Panel");
         return cmd;
     }
-
-    public final I2C.Port i2cPort = I2C.Port.kOnboard;
-
-    public final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-
-    public final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
-    public final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
-    public final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
-    public final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
-
-    public final ColorMatch m_colorMatcher = new ColorMatch();
 
     public ColorStates detectColor() {
 
