@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -40,7 +39,6 @@ import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
 import frc.robot.triggers.EndGameTrigger;
 import io.github.oblarg.oblog.Logger;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -54,7 +52,6 @@ public class Robot extends TimedRobot {
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
     final private ButtonXboxController copilotController = new ButtonXboxController(5);
-    private static final String CONFIGURABLEVALUE = "Configurable Values";
 
     final private NetworkTableEntry nameEntry = Shuffleboard.getTab("RobotData").addPersistent("RobotName", "Unknown")
             .getEntry();
