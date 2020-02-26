@@ -41,6 +41,16 @@ public class Intake extends SubsystemBase {
         }, this);
     }
 
+    public CommandBase pushBalls() {
+        return new StartEndCommand(() -> {
+            intakeMotor.set(INTAKE_DISCHARGE);
+            deployPiston.set(Value.kForward);
+        }, () -> {
+            intakeMotor.stopMotor();
+            deployPiston.set(Value.kReverse);
+        }, this);
+    }
+
     public StartEndCommand discharge() {
         return new StartEndCommand(() -> {
             intakeMotor.set(INTAKE_DISCHARGE);

@@ -10,7 +10,11 @@ package frc.robot;
 import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -20,18 +24,23 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
 import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.triggers.EndGameTrigger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -57,8 +66,13 @@ public class Robot extends TimedRobot {
     final private Shooter shooter = new Shooter(map.getShooterMap());
     final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
+    final private Indexer indexer = new Indexer(map.getIndexerMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+    UsbCamera camera0;
+    VideoSink videoSink;
+    boolean camera0Active = true;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -68,6 +82,14 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
+        nameEntry.setPersistent();
+        SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
+        SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
+        SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
+        SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
+        SmartDashboard.putData("Deploy intake", intake.deployIntake());
+
+        // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", passLine());
@@ -78,6 +100,15 @@ public class Robot extends TimedRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
 
+        lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
+        indexer.setDefaultCommand(indexer.intakeToPierre());
+
+        // protovision
+        camera0 = CameraServer.getInstance().startAutomaticCapture(0);
+        camera0.setResolution(320, 240);
+        camera0.setFPS(20);
+        // videoSink.getProperty("compression").set(70);
+        videoSink = CameraServer.getInstance().getServer();
     }
 
     /**
@@ -142,8 +173,38 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public SequentialCommandGroup passLine() {
-        return new SequentialCommandGroup(drive.driveDistance(40, .5));
+    public CommandBase singulatorAndIntake() {
+        CommandBase cmd = new ParallelCommandGroup(intake.intake(), indexer.indexMotor(.85));
+        cmd.setName("Intake Balls");
+        return cmd;
+    }
+
+    public CommandBase regurgitateFC() {
+        CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
+        cmd.setName("Regurgitate FC");
+        return cmd;
+    }
+
+    public CommandBase passLine() {
+        CommandBase cmd = new SequentialCommandGroup(drive.driveDistance(40, .5));
+        cmd.setName("Pass Line");
+        return cmd;
+    }
+
+    // will spin the shooter then shoot all the balls and then turn the shooter off.
+    // TODO spin up is an instant command therefore it will never end
+    public CommandBase shootAllBalls() {
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(.8), indexer.shootAllBalls(), shooter.spinDown());
+        cmd.setName("Shoot all Balls");
+        return cmd;
+    }
+
+    // in the future we will add the vision lining up command to this.
+    public CommandBase endGame() {
+        CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(),
+                lift.disengageRatchet(() -> -copilotController.getTriggers()));
+        endGameCmd.setName("End Game Lift");
+        return endGameCmd;
     }
 
     /**
@@ -152,14 +213,16 @@ public class Robot extends TimedRobot {
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-
     private void configureButtonBindings() {
-        driveController.getButton(Button.kX).whenHeld(controlPanel.spinForwards());
-        driveController.getButton(Button.kY).whenHeld(controlPanel.spinBackwards());
-        copilotController.getButton(Button.kX).whenHeld(intake.intake());
-        copilotController.getButton(Button.kBumperRight).whenHeld(intake.discharge());
-        driveController.getButton(Button.kA).toggleWhenActive(
+        driveController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        driveController.getButton(Button.kB).whenHeld(indexer.shootAllBalls());
+        driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
-    };
 
+        copilotController.getButton(Button.kA).whenHeld(singulatorAndIntake());
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(.3));
+        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
+        XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
+        endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+    }
 }

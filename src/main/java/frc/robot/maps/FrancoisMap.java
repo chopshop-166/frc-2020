@@ -1,18 +1,27 @@
 package frc.robot.maps;
 
+import java.util.function.BooleanSupplier;
+
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.EncodedSpeedController;
+import com.chopshop166.chopshoplib.outputs.ISolenoid;
+import com.chopshop166.chopshoplib.outputs.ModSpeedController;
+import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SparkMaxSendable;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
+import com.chopshop166.chopshoplib.outputs.WSolenoid;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.PigeonGyro;
+import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
-import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.EncoderType;
 
+import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 
 @RobotMapFor("Francois")
@@ -20,7 +29,9 @@ public class FrancoisMap extends RobotMap {
 
     @Override
     public DifferentialDriveMap getDriveMap() {
-        final double distancePerPulse = (1.0 / 46.0) * (1.0 / 12.27) * (6.0 * Math.PI);
+        // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
+        final int averageCount = 15;
+        final double distancePerRev = (1.0 / 12.27) * (6.0 * Math.PI);
         return new DifferentialDriveMap() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
@@ -29,60 +40,29 @@ public class FrancoisMap extends RobotMap {
             CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
 
             @Override
-            public EncodedSpeedController getRight() {
-
-                CANEncoder leadEncoder = new CANEncoder(rightLeader, EncoderType.kQuadrature, 42);
+            public SendableSpeedController getRight() {
                 rightFollower.follow(rightLeader);
 
-                leadEncoder.setPositionConversionFactor(distancePerPulse);
+                SparkMaxSendable sendLeader = new SparkMaxSendable(rightLeader);
+                sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
 
-                return EncodedSpeedController.wrap(rightLeader);
+                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
             }
 
             @Override
-            public EncodedSpeedController getLeft() {
-                CANEncoder leadEncoder = new CANEncoder(leftLeader, EncoderType.kQuadrature, 42);
+            public SendableSpeedController getLeft() {
                 leftFollower.follow(leftLeader);
 
-                leadEncoder.setPositionConversionFactor(distancePerPulse);
+                SparkMaxSendable sendLeader = new SparkMaxSendable(leftLeader);
+                sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
 
-                return EncodedSpeedController.wrap(leftLeader);
+                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
+
             }
 
             @Override
             public GyroBase getGyro() {
-                PigeonIMU gyro = new PigeonIMU(new WPI_TalonSRX(42));
-                return new GyroBase() {
-
-                    @Override
-                    public void close() throws Exception {
-                        // NoOp
-
-                    }
-
-                    @Override
-                    public void reset() {
-                        gyro.setFusedHeading(0);
-
-                    }
-
-                    @Override
-                    public double getRate() {
-                        double[] xyz = new double[3];
-                        gyro.getRawGyro(xyz);
-                        return xyz[2];
-                    }
-
-                    @Override
-                    public double getAngle() {
-                        return gyro.getFusedHeading();
-                    }
-
-                    @Override
-                    public void calibrate() {
-                        // NoOp
-                    }
-                };
+                return new PigeonGyro(new WPI_TalonSRX(42));
             }
         };
     }
@@ -92,12 +72,12 @@ public class FrancoisMap extends RobotMap {
         return new IntakeMap() {
             @Override
             public SendableSpeedController intake() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(40));
+                return SendableSpeedController.wrap(new WPI_TalonSRX(42));
             }
 
             @Override
             public WDSolenoid deployIntake() {
-                return new WDSolenoid(0, 1);
+                return new WDSolenoid(1, 2);
             }
         };
     }
@@ -110,7 +90,8 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public PIDSparkMax shooterWheel() {
-                follower.follow(leader);
+                leader.setInverted(true);
+                follower.follow(leader, true);
 
                 return new PIDSparkMax(leader);
             }
@@ -122,22 +103,96 @@ public class FrancoisMap extends RobotMap {
         return new ControlPanelMap() {
             @Override
             public SendableSpeedController spinner() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(41));
+                return SendableSpeedController.wrap(new WPI_TalonSRX(49));
             }
+        };
+    }
+
+    @Override
+    public IndexMap getIndexerMap() {
+        return new IndexMap() {
+            AnalogTrigger topPierreIR = new AnalogTrigger(0);
+            AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
+            AnalogTrigger backIntakeIR = new AnalogTrigger(2);
+            AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
+
+            @Override
+            public SendableSpeedController pierreMotor() {
+                final WPI_TalonSRX pierreMotor = new WPI_TalonSRX(40);
+                return SendableSpeedController.wrap(pierreMotor);
+            }
+
+            public SendableSpeedController singulator() {
+                final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
+                singulator.setInverted(true);
+                return SendableSpeedController.wrap(singulator);
+            }
+
+            public BooleanSupplier topPierreIR() {
+                topPierreIR.setLimitsVoltage(1.2, 1.4);
+                return topPierreIR::getTriggerState;
+            }
+
+            public BooleanSupplier bottomPierreIR() {
+                bottomPierreIR.setLimitsVoltage(1.2, 1.4);
+                return bottomPierreIR::getTriggerState;
+            }
+
+            public BooleanSupplier backIntakeIR() {
+                backIntakeIR.setLimitsVoltage(1.2, 2.6);
+                return backIntakeIR::getTriggerState;
+            }
+
+            public BooleanSupplier frontIntakeIR() {
+                frontIntakeIR.setLimitsVoltage(1.2, 1.4);
+                return frontIntakeIR::getTriggerState;
+            }
+
         };
     }
 
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-            CANSparkMax leader = new CANSparkMax(21, MotorType.kBrushless);
-            CANSparkMax follower = new CANSparkMax(28, MotorType.kBrushless);
+            CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
+            CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
+            PIDSparkMax pidLeader = new PIDSparkMax(leader);
+            InvertDigitalInput upperLimit = new InvertDigitalInput(0);
+            InvertDigitalInput lowerLimit = new InvertDigitalInput(1);
+            double distancePerRev = (1.0 / 81.0) * (2.551 * Math.PI);
 
             @Override
             public PIDSparkMax elevator() {
-                follower.follow(leader);
+                leader.setInverted(true);
+                follower.follow(leader, true);
+                leader.setIdleMode(IdleMode.kBrake);
+                follower.setIdleMode(IdleMode.kBrake);
 
-                return new PIDSparkMax(leader);
+                return pidLeader;
+            }
+
+            @Override
+            public ISolenoid liftBrake() {
+                WSolenoid brake = new WSolenoid(0);
+                return brake;
+            }
+
+            @Override
+            public BooleanSupplier upperLiftLimit() {
+                upperLimit.setInverted(true);
+                return upperLimit::get;
+            }
+
+            @Override
+            public BooleanSupplier lowerLiftLimit() {
+                lowerLimit.setInverted(true);
+                return lowerLimit::get;
+            }
+
+            @Override
+            public IEncoder getLiftEncoder() {
+                pidLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                return pidLeader.getEncoder();
             }
         };
     }
