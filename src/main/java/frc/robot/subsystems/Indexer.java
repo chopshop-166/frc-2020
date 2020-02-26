@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.IndexMap;
 
@@ -35,8 +34,9 @@ public class Indexer extends SubsystemBase {
     final BooleanSupplier backIntakeIR;
     public double ballCounting;
 
-    private static final double singulatorMotorSpeed = 0.95;
-    private static final double pierreIndexSpeed = 1;
+    private static final double singulatorMotorSpeed = 1.0;
+    private static final double pierreIndexSpeed = 0.7;
+    private static final double pierreShootSpeed = 1.0;
 
     public Indexer(final IndexMap map) {
         super();
@@ -57,7 +57,7 @@ public class Indexer extends SubsystemBase {
 
     public CommandBase intakeToPierre() {
         CommandBase cmd = new SequentialCommandGroup(indexMotor(.85), indexBall());
-        cmd.setName("Shoot Ball");
+        cmd.setName("Intake to Pierre");
         return cmd;
     }
 
@@ -129,7 +129,7 @@ public class Indexer extends SubsystemBase {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
             if (!topPierreIR.getAsBoolean()) {
-                pierreMotor.set(pierreIndexSpeed);
+                pierreMotor.set(pierreShootSpeed);
             }
         }, (interrupted) -> {
             pierreMotor.set(0);
@@ -143,7 +143,7 @@ public class Indexer extends SubsystemBase {
     public CommandBase unloadBall() {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-            pierreMotor.set(pierreIndexSpeed);
+            pierreMotor.set(pierreShootSpeed);
         }, (interrupted) -> {
             pierreMotor.set(0);
             ballCounting--;
@@ -156,8 +156,8 @@ public class Indexer extends SubsystemBase {
     }
     // this will bring the ball to the shooter, it must already be at the top
 
-    public CommandBase shootAllBalls() {
-        CommandBase cmd = CommandUtils.repeat(5, this::shootBall);
+    public CommandBase shootAllBalls(int ballAmount) {
+        CommandBase cmd = CommandUtils.repeat(ballAmount, this::shootBall);
         cmd.setName("Shoot All Balls");
         return cmd;
     }

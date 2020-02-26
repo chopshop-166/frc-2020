@@ -174,7 +174,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase passLine() {
-        CommandBase cmd = new SequentialCommandGroup(drive.driveDistance(40, .5));
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(3),
+                drive.driveDistance(20, .5));
         cmd.setName("Pass Line");
         return cmd;
     }
@@ -182,7 +183,7 @@ public class Robot extends TimedRobot {
     // will spin the shooter then shoot all the balls and then turn the shooter off.
     // TODO spin up is an instant command therefore it will never end
     public CommandBase shootAllBalls() {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(.8), indexer.shootAllBalls(), shooter.spinDown());
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(.8), indexer.shootAllBalls(5), shooter.spinDown());
         cmd.setName("Shoot all Balls");
         return cmd;
     }
@@ -203,15 +204,17 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(indexer.shootAllBalls());
+        driveController.getButton(Button.kB).whenHeld(indexer.shootAllBalls(5));
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
 
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(2500));
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+        copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
+        copilotController.getButton(Button.kX).whenHeld(controlPanel.spinBackwards());
 
     }
 }

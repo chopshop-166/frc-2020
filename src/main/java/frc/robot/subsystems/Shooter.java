@@ -2,14 +2,14 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
-import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.lang.Math;
 
 /**
  * What does it do? Given a target and shooter height, it calculates velocity
@@ -53,10 +53,16 @@ public class Shooter extends SubsystemBase {
     }
 
     public CommandBase spinUp(final double speed) {
-        CommandBase cmd = new InstantCommand(() -> {
+        CommandBase cmd = new FunctionalCommand(() -> {
             // TODO incorperate calculations
             // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
             shooterWheelMotor.setSetpoint(speed);
+        }, () -> {
+
+        }, (interrupted) -> {
+
+        }, () -> {
+            return shooterWheelMotor.getEncoder().getRate() >= speed;
         }, this);
         cmd.setName("spinUp");
         return cmd;

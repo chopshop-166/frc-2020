@@ -21,9 +21,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
+    WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
 
     @Override
     public DifferentialDriveMap getDriveMap() {
@@ -39,10 +41,14 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
+                rightLeader.setInverted(true);
                 rightFollower.follow(rightLeader);
 
                 PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
+                SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
 
                 return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
             }
@@ -53,6 +59,9 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
+                SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
 
                 return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
 
@@ -60,7 +69,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public GyroBase getGyro() {
-                return new PigeonGyro(new WPI_TalonSRX(42));
+                return new PigeonGyro(controlPanel);
             }
         };
     }
@@ -94,7 +103,7 @@ public class FrancoisMap extends RobotMap {
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                pidLeader.setP(0.00045);
+                pidLeader.setP(0.0002);
                 pidLeader.setI(0);
                 pidLeader.setD(0);
                 pidLeader.setF(0.0002);
@@ -112,7 +121,7 @@ public class FrancoisMap extends RobotMap {
         return new ControlPanelMap() {
             @Override
             public SendableSpeedController spinner() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(49));
+                return SendableSpeedController.wrap(controlPanel);
             }
         };
     }
