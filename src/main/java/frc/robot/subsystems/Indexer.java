@@ -56,7 +56,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public CommandBase intakeToPierre() {
-        CommandBase cmd = new SequentialCommandGroup(indexMotor(.85), indexBall());
+        CommandBase cmd = new SequentialCommandGroup(indexMotor(pierreIndexSpeed), indexBall());
         cmd.setName("Intake to Pierre");
         return cmd;
     }

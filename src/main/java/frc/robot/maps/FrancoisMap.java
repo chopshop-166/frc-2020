@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
+    // controlPanel is defined here due to the gyro being plugged into this speed
+    // controller as well as the control panel motor
     WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
 
     @Override
@@ -41,6 +43,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
+                // Differential Drive automatically sets right inverted
                 rightLeader.setInverted(true);
                 rightFollower.follow(rightLeader);
 
@@ -50,7 +53,8 @@ public class FrancoisMap extends RobotMap {
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
 
-                return new ModSpeedController(sendLeader, Modifier.rollingAverage(averageCount));
+                return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
+                        Modifier.rollingAverage(averageCount));
             }
 
             @Override

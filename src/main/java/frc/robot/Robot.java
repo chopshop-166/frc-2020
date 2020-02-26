@@ -88,7 +88,8 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
-        autoChooser.addOption("Pass the Line", passLine());
+        autoChooser.addOption("Pass the Line", drive.driveDistance(20, .5));
+        autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
@@ -173,17 +174,18 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
-    public CommandBase passLine() {
+    public CommandBase shootAuto() {
         CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(3),
                 drive.driveDistance(20, .5));
-        cmd.setName("Pass Line");
+        cmd.setName("Shoot Auto");
         return cmd;
     }
 
     // will spin the shooter then shoot all the balls and then turn the shooter off.
     // TODO spin up is an instant command therefore it will never end
-    public CommandBase shootAllBalls() {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(.8), indexer.shootAllBalls(5), shooter.spinDown());
+    public CommandBase releaseAllBalls() {
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(5),
+                shooter.spinDown());
         cmd.setName("Shoot all Balls");
         return cmd;
     }
@@ -204,7 +206,7 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(indexer.shootAllBalls(5));
+        driveController.getButton(Button.kB).whenHeld(releaseAllBalls());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
 
