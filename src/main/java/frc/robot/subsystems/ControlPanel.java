@@ -1,16 +1,18 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
@@ -66,20 +68,16 @@ public class ControlPanel extends SubsystemBase {
         return color;
     }
 
-    public CommandBase spinForwards() {
-        return new StartEndCommand(() -> {
-            spinnerMotor.set(spinnerMotorSpeed);
-        }, () -> {
-            spinnerMotor.stopMotor();
-        }, this);
-    }
+    public CommandBase spinControlPanel(DoubleSupplier speed) {
+        CommandBase cmd = new FunctionalCommand(() -> {
 
-    public CommandBase spinBackwards() {
-        return new StartEndCommand(() -> {
-            spinnerMotor.set(-spinnerMotorSpeed);
         }, () -> {
+            spinnerMotor.set(speed.getAsDouble());
+        }, (interrupted) -> {
             spinnerMotor.stopMotor();
-        }, this);
+        }, () -> false, this);
+        cmd.setName("Spin Control Panel");
+        return cmd;
     }
 
     public final I2C.Port i2cPort = I2C.Port.kOnboard;
@@ -133,7 +131,7 @@ public class ControlPanel extends SubsystemBase {
             public void initialize() {
                 firstColor = detectColor();
                 super.initialize();
-                spinForwards();
+                spinnerMotor.set(spinnerMotorSpeed);
             }
 
             @Override

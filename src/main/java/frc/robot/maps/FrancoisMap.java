@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.GyroBase;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
+    WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
 
     @Override
     public DifferentialDriveMap getDriveMap() {
@@ -61,7 +62,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public GyroBase getGyro() {
-                return new PigeonGyro(new WPI_TalonSRX(42));
+                return new PigeonGyro(controlPanel);
             }
         };
     }
@@ -102,7 +103,7 @@ public class FrancoisMap extends RobotMap {
         return new ControlPanelMap() {
             @Override
             public SendableSpeedController spinner() {
-                SendableSpeedController motor = SendableSpeedController.wrap(new WPI_TalonSRX(49));
+                SendableSpeedController motor = SendableSpeedController.wrap(controlPanel);
                 motor.setInverted(true);
                 return motor;
             }
