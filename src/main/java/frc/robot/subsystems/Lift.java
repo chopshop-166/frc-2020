@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap;
 import io.github.oblarg.oblog.annotations.Config;
-import io.github.oblarg.oblog.annotations.Log;
 
 /*
  * SUB REVIEW Lift Subsystem What Does It Do? 1) Raises and lowers lift Manually
@@ -39,8 +38,7 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class Lift extends SubsystemBase {
 
-
-    @Config(tabName = "Configurable Values");
+    @Config(tabName = "Configurable Values")
     private PIDSpeedController elevatorMotor;
     private ISolenoid elevatorBrake;
     private IEncoder liftEncoder;

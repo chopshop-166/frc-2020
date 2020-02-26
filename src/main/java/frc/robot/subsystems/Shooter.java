@@ -2,16 +2,13 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.lang.Math;
-
 import io.github.oblarg.oblog.annotations.Config;
-import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * What does it do? Given a target and shooter height, it calculates velocity
@@ -24,10 +21,6 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class Shooter extends SubsystemBase {
     @Config(tabName = "Configurable Values")
-    public final static double THETA = Math.toRadians(37);
-    public final static double DIAMETER = 4;
-
-    private final double MAX_RPM = 5200;
     private final PIDSpeedController shooterWheelMotor;
     public static double distanceToTarget;
     public final double shooterHeight;
@@ -38,7 +31,6 @@ public class Shooter extends SubsystemBase {
     public final static double GRAVITY = 386.2205;
     // inches
     public final static double TARGET_HEIGHT = 98.25;
-    public final static double CIRCUMFERENCE = DIAMETER * Math.PI * Math.PI;
     private final static double MAX_RPM = 5200;
     public final static double THETA = Math.toRadians(60);
     // RPM equal to 1ft/s
@@ -120,6 +112,8 @@ public class Shooter extends SubsystemBase {
             final double cosSide = Math.cos(THETA) * Math.cos(THETA);
 
             return Math.sqrt(gravitySide / tanSide / cosSide / 2);
+        } else {
+            return 0;
         }
     }
 }
