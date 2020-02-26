@@ -38,6 +38,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
 import frc.robot.triggers.EndGameTrigger;
+import io.github.oblarg.oblog.Logger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -77,6 +78,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        Logger.configureLoggingAndConfig(this, true);
         configureButtonBindings();
         nameEntry.setPersistent();
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
@@ -125,6 +127,7 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+        Logger.updateEntries();
     }
 
     /**
