@@ -8,9 +8,24 @@ import pyrealsense2 as rs2
 import cv2
 import numpy as np
 import time
+from cscore import CameraServer
 from networktables import NetworkTables
 
 ANGLE_THRESHOLD = 40
+
+# Resolution
+WIDTH = 640
+HEIGHT = 480
+POINT_SAMPLES = 5
+# Angle value of each pixel
+FOV_ANGLE = 82.5
+PIXEL_ANGLE = FOV_ANGLE/WIDTH
+
+# Enable CameraServer
+cs = CameraServer.getInstance()
+cs.enableLogging()
+
+outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
 
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
 
@@ -32,19 +47,12 @@ def newLine(filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2, X_TOTAL
 
     return X_TOTAL, Y_TOTAL
 
-NetworkTables.initialize(server='roborio-166-frc.local')
+NetworkTables.initialize(server='pi-166-frc.local')
 
 sd = NetworkTables.getTable('SmartDashboard')
 # sd.putNumber('someNumber', 1234)
 # otherNumber = sd.getNumber('otherNumber')
 
-# Resolution
-WIDTH = 640
-HEIGHT = 480
-POINT_SAMPLES = 5
-# Angle value of each pixel
-FOV_ANGLE = 82.5
-PIXEL_ANGLE = FOV_ANGLE/WIDTH
 
 # Camera settings
 pipe = rs2.pipeline()
@@ -144,7 +152,7 @@ while True:
                 Y_AVG=int(Y_AVG / POINT_SAMPLES)
 
                 offset = 2 * (X_AVG - (WIDTH/2)) / WIDTH
-                cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG),
+                cv2.circle(IMG, (X_AVG, Y_AVG),
                            5, [255, 255, 255], -1)
                 try:
                     dist_to_target = depth.get_distance(X_AVG, Y_AVG)
@@ -165,14 +173,16 @@ while True:
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
     # Open the gallery of all my filtered works
-    cv2.imshow("og lines", LINE_IMG)
-    cv2.imshow("lines", FILTERED_LINE_IMG)
-    cv2.imshow('OG', IMG)
-    cv2.imshow('Mask', MASK)
-    cv2.imshow('blur', BLUR_EDGES)
-    cv2.imshow('median', MEDIAN)
-    cv2.imshow('med', MED_EDGES)
-    cv2.imshow('Mask Edges', MASK_EDGES)
+    # cv2.imshow("og lines", LINE_IMG)
+    # cv2.imshow("lines", FILTERED_LINE_IMG)
+    # cv2.imshow('OG', IMG)
+    # cv2.imshow('Mask', MASK)
+    # cv2.imshow('blur', BLUR_EDGES)
+    # cv2.imshow('median', MEDIAN)
+    # cv2.imshow('med', MED_EDGES)
+    # cv2.imshow('Mask Edges', MASK_EDGES)
+
+    outputStream.putFrame(IMG)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
