@@ -13,7 +13,6 @@ from networktables import NetworkTables
 
 ANGLE_THRESHOLD = 40
 
-DRIVER_STATION_IP = '192.168.1.6'
 # Resolution
 WIDTH = 640
 HEIGHT = 480
@@ -32,9 +31,9 @@ outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
 
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
 
-def swapStream(isColor):
-    if isColor:
-        s.set_option(rs2.option.auto_exposure_mode, True)
+def swapStream(isShooting):
+    if not isShooting:
+        # s.set_option(rs2.option.auto_exposure_mode, True)
         s.set_option(rs2.option.brightness, 0)
         s.set_option(rs2.option.contrast, 50)
         s.set_option(rs2.option.exposure, 156)
@@ -45,7 +44,7 @@ def swapStream(isColor):
         s.set_option(rs2.option.sharpness, 50)
         s.set_option(rs2.option.white_balance, 4600)
     else:
-        s.set_option(rs2.option.auto_exposure_mode, False)
+        # s.set_option(rs2.option.auto_exposure_mode, False)
         s.set_option(rs2.option.brightness, 0)
         s.set_option(rs2.option.contrast, 100)
         s.set_option(rs2.option.exposure, 45)
@@ -74,7 +73,7 @@ def newLine(filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2, X_TOTAL
 
     return X_TOTAL, Y_TOTAL
 
-NetworkTables.initialize(server=DRIVER_STATION_IP)
+NetworkTables.initialize(server='roborio-166-frc.local')
 
 sd = NetworkTables.getTable('SmartDashboard')
 # sd.putNumber('someNumber', 1234)
@@ -112,11 +111,11 @@ while True:
 
     IMG = np.asanyarray(frame.get_data())
 
-    isColor = sd.getBoolean("Camera Toggle")
-    if not isColor == OldStream:
-        swapStream(isColor)
+    isShooting = sd.getBoolean("Is Shooting", defaultValue=False)
+    if not isShooting == OldStream:
+        swapStream(isShooting)
 
-    if not isColor:
+    if isShooting:
         # Convert from RGB to HSV, helps with filtering
         HSV = cv2.cvtColor(IMG, cv2.COLOR_BGR2HSV)
     
@@ -128,12 +127,12 @@ while True:
         MASK = cv2.inRange(HSV, LOWER_COLOR, UPPER_COLOR)
     
         # Various blur method testings (buffer for pixel imperfections)
-        BLUR = cv2.GaussianBlur(MASK, (3, 3), 0)
+        # BLUR = cv2.GaussianBlur(MASK, (3, 3), 0)
         MEDIAN = cv2.medianBlur(MASK, 5)
     
         # Edge detection on each test for use in line detection
-        BLUR_EDGES = cv2.Canny(BLUR, 100, 200)
-        MASK_EDGES = cv2.Canny(MASK, 100, 200)
+        # BLUR_EDGES = cv2.Canny(BLUR, 100, 200)
+        # MASK_EDGES = cv2.Canny(MASK, 100, 200)
         MED_EDGES = cv2.Canny(MEDIAN, 50, 150)
     
         # Empty image for drawing lines (testing)
