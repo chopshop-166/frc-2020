@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -47,6 +48,12 @@ public class ControlPanel extends SubsystemBase {
 
         RED, GREEN, BLUE, YELLOW, OTHER
 
+    }
+
+    public void controlPanelPeriodic() {
+
+        CommandScheduler.getInstance().run();
+        detectColor();
     }
 
     // Mapping the cases to the correct color due to the difference in what vision
