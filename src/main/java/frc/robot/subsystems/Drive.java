@@ -37,7 +37,12 @@ public class Drive extends SubsystemBase implements Loggable {
     private final SendableSpeedController rightMotorGroup;
     @Log.SpeedController
     private final SendableSpeedController leftMotorGroup;
+    @Log.Gyro
     private final GyroBase gyro;
+
+    @Log
+    double gyroVelocity;
+
     private final DifferentialDrive driveTrain;
     @Log.Encoder
     private final IEncoder driveRightEncoder;
@@ -59,6 +64,7 @@ public class Drive extends SubsystemBase implements Loggable {
         driveTrain.setRightSideInverted(false);
         driveRightEncoder = rightMotorGroup.getEncoder();
         driveLeftEncoder = leftMotorGroup.getEncoder();
+        gyroVelocity = gyro.getRate();
 
     }
 

@@ -42,7 +42,7 @@ public class Indexer extends SubsystemBase implements Loggable {
     public double ballCounting;
 
     private static final double SINGULATOR_MOTOR_SPEED = 1.0;
-    private static final double PIERRE_INDEX_SPEED = 0.7;
+    private static final double PIERRE_INDEX_SPEED = 0.5;
     private static final double PIERRE_SHOOT_SPEED = 1.0;
 
     public Indexer(final IndexMap map) {
