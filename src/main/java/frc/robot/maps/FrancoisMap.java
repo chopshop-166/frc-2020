@@ -22,6 +22,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+import io.github.oblarg.oblog.annotations.Log;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {

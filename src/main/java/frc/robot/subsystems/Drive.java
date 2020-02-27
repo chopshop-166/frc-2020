@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -12,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -28,12 +31,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * 
  * 6) Sensors? Encoders, Gyro
  */
-public class Drive extends SubsystemBase {
+public class Drive extends SubsystemBase implements Loggable {
 
+    @Log.SpeedController
     private final SendableSpeedController rightMotorGroup;
+    @Log.SpeedController
     private final SendableSpeedController leftMotorGroup;
     private final GyroBase gyro;
     private final DifferentialDrive driveTrain;
+    @Log.Encoder
+    private final IEncoder driveRightEncoder;
+    @Log.Encoder
+    private final IEncoder driveLeftEncoder;
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -48,6 +57,9 @@ public class Drive extends SubsystemBase {
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
+        driveRightEncoder = rightMotorGroup.getEncoder();
+        driveLeftEncoder = leftMotorGroup.getEncoder();
+
     }
 
     /**
@@ -63,8 +75,8 @@ public class Drive extends SubsystemBase {
             double yAxis = forward.getAsDouble();
             double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
-            SmartDashboard.putNumber("Left Drive Encoder", leftMotorGroup.getEncoder().getDistance());
-            SmartDashboard.putNumber("Right Drive Encoder", rightMotorGroup.getEncoder().getDistance());
+            SmartDashboard.putNumber("Left Drive Encoder", driveLeftEncoder.getDistance());
+            SmartDashboard.putNumber("Right Drive Encoder", driveRightEncoder.getDistance());
         }, this);
         cmd.setName("Drive");
         return cmd;
@@ -72,14 +84,14 @@ public class Drive extends SubsystemBase {
 
     public CommandBase driveDistance(double distance, double speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
-            leftMotorGroup.getEncoder().reset();
-            rightMotorGroup.getEncoder().reset();
+            driveLeftEncoder.reset();
+            driveRightEncoder.reset();
         }, () -> {
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            double avg = (leftMotorGroup.getEncoder().getDistance() + rightMotorGroup.getEncoder().getDistance()) / 2;
+            double avg = (driveLeftEncoder.getDistance() + driveRightEncoder.getDistance()) / 2;
             return (avg >= distance);
         }, this);
         cmd.setName("Drive Distance");

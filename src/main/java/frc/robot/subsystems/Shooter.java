@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * What does it do? Given a target and shooter height, it calculates velocity
@@ -20,8 +23,11 @@ import frc.robot.maps.RobotMap;
  * or X for shoot all. Does it store any state? No. Sensors? No.
  */
 
-public class Shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase implements Loggable {
+    @Log.SpeedController
     private final PIDSpeedController shooterWheelMotor;
+    @Log.Encoder
+    private IEncoder shooterEncoder;
     public static double distanceToTarget;
     public final double shooterHeight;
     public static double verticalDistance;
@@ -40,9 +46,10 @@ public class Shooter extends SubsystemBase {
         super();
         shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
+        shooterEncoder = shooterWheelMotor.getEncoder();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
-        SendableRegistry.add(shooterWheelMotor.getEncoder(), "Shooter");
-        SendableRegistry.enableLiveWindow(shooterWheelMotor.getEncoder());
+        SendableRegistry.add(shooterEncoder, "Shooter");
+        SendableRegistry.enableLiveWindow(shooterEncoder);
     }
 
     @Override
@@ -53,7 +60,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public CommandBase spinUp(final double speed) {
-        CommandBase cmd = new FunctionalCommand(() -> {
+        final CommandBase cmd = new FunctionalCommand(() -> {
             // TODO incorperate calculations
             // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
             shooterWheelMotor.setSetpoint(speed);
@@ -62,20 +69,20 @@ public class Shooter extends SubsystemBase {
         }, (interrupted) -> {
 
         }, () -> {
-            return shooterWheelMotor.getEncoder().getRate() >= speed;
+            return shooterEncoder.getRate() >= speed;
         }, this);
         cmd.setName("spinUp");
         return cmd;
     }
 
     public CommandBase spinDown() {
-        CommandBase cmd = new InstantCommand(shooterWheelMotor::stopMotor, this);
+        final CommandBase cmd = new InstantCommand(shooterWheelMotor::stopMotor, this);
         cmd.setName("spinDown");
         return cmd;
     }
 
     public CommandBase mandatoryEvacuation() {
-        CommandBase cmd = new StartEndCommand(() -> {
+        final CommandBase cmd = new StartEndCommand(() -> {
             shooterWheelMotor.set(0.3);
         }, () -> {
             spinDown();
@@ -99,7 +106,7 @@ public class Shooter extends SubsystemBase {
             SmartDashboard.putNumber("Last RPM", rpm);
             rpmSpeed = rpm;
         }
-        CommandBase cmd = new InstantCommand(() -> {
+        final CommandBase cmd = new InstantCommand(() -> {
             shooterWheelMotor.setSetpoint(rpmSpeed);
         }, this);
         cmd.setName("calculatedShoot");

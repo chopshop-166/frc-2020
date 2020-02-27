@@ -6,9 +6,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class ControlPanel extends SubsystemBase {
-
+public class ControlPanel extends SubsystemBase implements Loggable {
+    @Log.SpeedController
     private SendableSpeedController spinnerMotor;
 
     private static final double spinnerMotorSpeed = 1;

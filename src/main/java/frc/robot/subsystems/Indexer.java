@@ -5,12 +5,13 @@ import java.util.function.BooleanSupplier;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.IndexMap;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * The indexer lines up and transports the balls to the Shooter The indexer has
@@ -25,13 +26,19 @@ import frc.robot.maps.RobotMap.IndexMap;
  * 
  */
 
-public class Indexer extends SubsystemBase {
+public class Indexer extends SubsystemBase implements Loggable {
+    @Log.SpeedController
     final SendableSpeedController singulator;
-    private final SendableSpeedController pierreMotor;
+
+    @Log.SpeedController
+    final SendableSpeedController pierreMotor;
+
     final BooleanSupplier frontIntakeIR;
     final BooleanSupplier bottomPierreIR;
     final BooleanSupplier topPierreIR;
     final BooleanSupplier backIntakeIR;
+
+    @Log
     public double ballCounting;
 
     private static final double SINGULATOR_MOTOR_SPEED = 1.0;
@@ -115,7 +122,6 @@ public class Indexer extends SubsystemBase {
         }, (interrupted) -> {
             pierreMotor.set(0);
             singulator.set(0);
-            SmartDashboard.putNumber("Ball Count", ballCounting);
         }, () -> {
             return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
         }, this);
@@ -147,7 +153,6 @@ public class Indexer extends SubsystemBase {
         }, (interrupted) -> {
             pierreMotor.set(0);
             ballCounting--;
-            SmartDashboard.putNumber("Ball Count", ballCounting);
         }, () -> {
             return !topPierreIR.getAsBoolean();
         }, this);
@@ -174,7 +179,6 @@ public class Indexer extends SubsystemBase {
             if (interrupted == false) {
                 ballCounting++;
             }
-            SmartDashboard.putNumber("Ball Count", ballCounting);
         }, () -> {
             return !bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
         }, this);
