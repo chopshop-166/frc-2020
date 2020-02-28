@@ -228,7 +228,7 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
-        driveController.getButton(Button.kB).whileHeld(camToggle());
+        driveController.getButton(Button.kB).toggleWhenActive(camToggle());
 
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
