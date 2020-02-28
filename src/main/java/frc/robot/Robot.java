@@ -235,5 +235,6 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
         copilotController.getButton(Button.kB).whileHeld(camToggle());
+        copilotController.getButton(Button.kY).whenPressed(drive.arcadeTurning());
     }
 }

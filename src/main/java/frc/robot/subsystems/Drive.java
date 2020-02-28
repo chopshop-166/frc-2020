@@ -79,6 +79,19 @@ public class Drive extends SubsystemBase {
         return cmd;
     }
 
+    public CommandBase arcadeTurning() {
+        CommandBase cmd = new FunctionalCommand(() -> {
+        }, () -> {
+            driveTrain.arcadeDrive(0, SmartDashboard.getNumber("Ratio Offset", 0));
+        }, (interrupted) -> {
+
+        }, () -> {
+            return Math.abs(SmartDashboard.getNumber("Ratio Offset", 0)) <= 0.1;
+        }, this);
+        cmd.setName("Arcade Drive turning");
+        return cmd;
+    }
+
     public CommandBase driveDistance(double distance, double speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
             leftMotorGroup.getEncoder().reset();
