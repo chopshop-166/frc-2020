@@ -57,6 +57,14 @@ public class Lift extends SubsystemBase {
         lowerLimitSwitch = map.lowerLiftLimit();
     }
 
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Lift Cancel");
+        return cmd;
+    }
+
     // sets the ratchet to either be activated or deactivated depending on liftSpeed
     public void liftSpeed(double speed) {
         if (Math.abs(speed) <= .1) {
