@@ -14,7 +14,6 @@ import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.WDigitalInput;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -23,7 +22,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
-import frc.robot.subsystems.ControlPanel;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
@@ -125,8 +123,9 @@ public class FrancoisMap extends RobotMap {
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
             @Override
-            public SmartSpeedController spinner() {
-                return SmartSpeedController.wrap(controlPanel);
+            public SendableSpeedController spinner() {
+                BAGCurrentLimit(controlPanel);
+                return SendableSpeedController.wrap(controlPanel);
             }
         };
     }
@@ -142,12 +141,14 @@ public class FrancoisMap extends RobotMap {
             @Override
             public SmartSpeedController pierreMotor() {
                 final WPI_TalonSRX pierreMotor = new WPI_TalonSRX(40);
+                BAGCurrentLimit(pierreMotor);
                 return SendableSpeedController.wrap(pierreMotor);
             }
 
             public SmartSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
                 singulator.setInverted(true);
+                BAGCurrentLimit(singulator);
                 return SendableSpeedController.wrap(singulator);
             }
 
