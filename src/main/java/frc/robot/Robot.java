@@ -203,10 +203,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase camToggle() {
-        CommandBase camTogglecmd = new StartEndCommand(() -> {
-            SmartDashboard.putBoolean("Is Shooting", false);
-        }, () -> {
-            SmartDashboard.putBoolean("Is Shooting", false);
+        CommandBase camTogglecmd = new InstantCommand(() -> {
+            SmartDashboard.putBoolean("Is Shooting", true);
         });
         camTogglecmd.setName("camToggle");
         return camTogglecmd;
@@ -229,7 +227,7 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
-        copilotController.getButton(Button.kB).toggleWhenActive(camToggle());
+        copilotController.getButton(Button.kB).whileHeld(camToggle());
 
     }
 }

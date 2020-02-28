@@ -216,6 +216,8 @@ while True:
     # cv2.imshow('med', MED_EDGES)
     # cv2.imshow('Mask Edges', MASK_EDGES)
 
+    OldStream = isShooting
+
     outputStream.putFrame(IMG)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
