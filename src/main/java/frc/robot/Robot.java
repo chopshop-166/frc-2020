@@ -228,6 +228,7 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
+        driveController.getButton(Button.kB).whileHeld(camToggle());
 
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
@@ -236,7 +237,6 @@ public class Robot extends TimedRobot {
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
         copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
-        copilotController.getButton(Button.kB).whileHeld(camToggle());
         copilotController.getButton(Button.kY).whenPressed(drive.arcadeTurning());
     }
 }
