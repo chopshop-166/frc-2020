@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
@@ -205,6 +206,16 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
+    public CommandBase camToggle() {
+        CommandBase camTogglecmd = new StartEndCommand(() -> {
+            SmartDashboard.putBoolean("Is Shooting", true);
+        }, () -> {
+            SmartDashboard.putBoolean("Is Shooting", false);
+        });
+        camTogglecmd.setName("camToggle");
+        return camTogglecmd;
+    }
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -217,14 +228,15 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
+        driveController.getButton(Button.kB).toggleWhenActive(camToggle());
 
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+        copilotController.getButton(Button.kY).whenPressed(drive.arcadeTurning());
         copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
-
     }
 }
