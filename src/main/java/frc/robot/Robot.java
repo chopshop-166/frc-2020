@@ -200,8 +200,10 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase camToggle() {
-        CommandBase camTogglecmd = new InstantCommand(() -> {
+        CommandBase camTogglecmd = new StartEndCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", true);
+        }, () -> {
+            SmartDashboard.putBoolean("Is Shooting", false);
         });
         camTogglecmd.setName("camToggle");
         return camTogglecmd;
