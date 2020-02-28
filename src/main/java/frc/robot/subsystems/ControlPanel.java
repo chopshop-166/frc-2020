@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
@@ -16,6 +17,14 @@ public class ControlPanel extends SubsystemBase {
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
         spinnerMotor = map.spinner();
+    }
+
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Control Panel Cancel");
+        return cmd;
     }
 
     public CommandBase spinForwards() {

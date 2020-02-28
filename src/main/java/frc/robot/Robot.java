@@ -198,6 +198,13 @@ public class Robot extends TimedRobot {
         return endGameCmd;
     }
 
+    public CommandBase cancelAll() {
+        CommandBase cmd = new ParallelCommandGroup(controlPanel.cancel(), drive.cancel(), indexer.cancel(),
+                intake.cancel(), lift.cancel(), shooter.cancel());
+        cmd.setName("Cancel All");
+        return cmd;
+    }
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -209,6 +216,7 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kB).whenHeld(releaseBalls(5)).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
+        driveController.getButton(Button.kBack).whenPressed(cancelAll());
 
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
@@ -216,6 +224,7 @@ public class Robot extends TimedRobot {
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
         copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
+        copilotController.getButton(Button.kBack).whenPressed(cancelAll());
 
     }
 }

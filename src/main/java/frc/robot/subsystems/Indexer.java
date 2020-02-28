@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.IndexMap;
@@ -47,6 +48,14 @@ public class Indexer extends SubsystemBase {
         backIntakeIR = map.backIntakeIR();
         pierreMotor = map.pierreMotor();
 
+    }
+
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Indexer Cancel");
+        return cmd;
     }
 
     public CommandBase indexBall() {
