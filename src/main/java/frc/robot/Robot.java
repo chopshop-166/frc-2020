@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
@@ -201,6 +202,16 @@ public class Robot extends TimedRobot {
         return endGameCmd;
     }
 
+    public CommandBase camToggle() {
+        CommandBase camTogglecmd = new StartEndCommand(() -> {
+            SmartDashboard.putBoolean("Is Shooting", false);
+        }, () -> {
+            SmartDashboard.putBoolean("Is Shooting", false);
+        });
+        camTogglecmd.setName("camToggle");
+        return camTogglecmd;
+    }
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -218,5 +229,7 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
+        copilotController.getButton(Button.kB).toggleWhenActive(camToggle());
+
     }
 }

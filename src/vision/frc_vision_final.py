@@ -192,7 +192,7 @@ while True:
                     # Smart Dashboard variables
                     sd.putBoolean("Sees Target", True)
                     sd.putNumber("Ratio Offset", offset)
-                    sd.putNumber("Angle Offset", PIXEL_ANGLE * X_AVG)
+                    sd.putNumber("Angle Offset", (PIXEL_ANGLE * X_AVG) - (FOV_ANGLE / 2))
                     sd.putNumber("Distance To Target", dist_to_target)
     
                 else:
