@@ -61,7 +61,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public CommandBase indexBall() {
-        CommandBase cmd = new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
+        CommandBase cmd = new SequentialCommandGroup(pierrePossesionNEW(), runToClearBottomSensor());
         cmd.setName("Intake to Pierre");
         return cmd;
     }
@@ -86,10 +86,6 @@ public class Indexer extends SubsystemBase {
 
     // Will shoot all the balls. the only thing missing to this is the command to
     // spin up the shooter. that happens in robot
-
-    // run singulator when front intake is triggered, stop singulator when back
-    // intake IR is clear and until bottom pierre is covered
-    // run pierre when bottom pierre is covered
 
     public CommandBase indexMotor(final double motorSpeed) {
         CommandBase cmd = new FunctionalCommand(() -> {
@@ -142,6 +138,32 @@ public class Indexer extends SubsystemBase {
             return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
         }, this);
         cmd.setName("Pierre Possession");
+        return cmd;
+    }
+
+    // run singulator when front intake is triggered, stop singulator when back
+    // intake IR is clear and until bottom pierre is covered
+    // run pierre when bottom pierre is covered
+    public CommandBase pierrePossesionNEW() {
+        CommandBase cmd = new FunctionalCommand(() -> {
+        }, () -> {
+            if (frontIntakeIR.getAsBoolean()) {
+                singulator.set(SINGULATOR_MOTOR_SPEED);
+            }
+            // This checks to see if a ball is at the top of Pierre and doesn't not run
+            // because sometimes it will
+            if (bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean() && backIntakeIR.getAsBoolean()) {
+                pierreMotor.set(PIERRE_INDEX_SPEED);
+                singulator.set(SINGULATOR_MOTOR_SPEED);
+            }
+        }, (interrupted) -> {
+            pierreMotor.set(0);
+            singulator.set(0);
+            SmartDashboard.putNumber("Ball Count", ballCounting);
+        }, () -> {
+            return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
+        }, this);
+        cmd.setName("Pierre Possession NEW");
         return cmd;
     }
     // This command will make sure that pierre has possesion of the ball. It will be
