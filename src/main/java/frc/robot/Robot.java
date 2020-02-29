@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
-        controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() -> copilotController.getY(Hand.kLeft)));
+        controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() -> copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
 
         // protovision
