@@ -186,15 +186,16 @@ public class ControlPanel extends SubsystemBase {
 
     public CommandBase stageThreeRotation() {
         return new CommandBase() {
+            ColorStates desiredColor;
             {
                 addRequirements(ControlPanel.this);
             }
-            ColorStates desiredColor = getTargetColor();
 
             @Override
             public void initialize() {
                 super.initialize();
                 spinnerMotor.set(SPINNER_MOTOR_SPEED);
+                desiredColor = getTargetColor();
             }
 
             @Override
