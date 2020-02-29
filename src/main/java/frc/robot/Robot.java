@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
-        autoChooser.addOption("Pass the Line", drive.driveDistance(20, .5));
+        autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
         autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
@@ -180,7 +180,7 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase shootAuto() {
-        CommandBase cmd = new SequentialCommandGroup(releaseBalls(3), shooter.spinDown(), drive.driveDistance(20, .5));
+        CommandBase cmd = new SequentialCommandGroup(releaseBalls(3), shooter.spinDown(), drive.driveDistance(40, .5));
         cmd.setName("Shoot Auto");
         return cmd;
     }
