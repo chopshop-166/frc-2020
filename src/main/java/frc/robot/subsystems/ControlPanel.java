@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -35,7 +34,7 @@ public class ControlPanel extends SubsystemBase {
 
     private SendableSpeedController spinnerMotor;
 
-    private static final double spinnerMotorSpeed = .6;
+    private static final double SPINNER_MOTOR_SPEED = .6;
 
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
@@ -62,15 +61,15 @@ public class ControlPanel extends SubsystemBase {
 
     public CommandBase spinForwards() {
         return new StartEndCommand(() -> {
-            spinnerMotor.set(-spinnerMotorSpeed);
+            spinnerMotor.set(-SPINNER_MOTOR_SPEED);
         }, () -> {
             spinnerMotor.stopMotor();
         }, this);
     }
 
-    public void controlPanelPeriodic() {
+    @Override
+    public void periodic() {
 
-        CommandScheduler.getInstance().run();
         detectColor();
     }
 
@@ -146,6 +145,10 @@ public class ControlPanel extends SubsystemBase {
 
     public CommandBase stageTwoRotation() {
         return new CommandBase() {
+            {
+                addRequirements(ControlPanel.this);
+            }
+
             int i = 0;
             ColorStates firstColor = detectColor();
 
@@ -153,7 +156,7 @@ public class ControlPanel extends SubsystemBase {
             public void initialize() {
                 firstColor = detectColor();
                 super.initialize();
-                spinnerMotor.set(spinnerMotorSpeed);
+                spinnerMotor.set(SPINNER_MOTOR_SPEED);
             }
 
             @Override
@@ -168,7 +171,7 @@ public class ControlPanel extends SubsystemBase {
                 if (firstColor != secondColor) {
                     i++;
                 }
-                firstColor = detectColor();
+                firstColor = secondColor;
 
             }
 
@@ -183,12 +186,15 @@ public class ControlPanel extends SubsystemBase {
 
     public CommandBase stageThreeRotation() {
         return new CommandBase() {
+            {
+                addRequirements(ControlPanel.this);
+            }
             ColorStates desiredColor = getTargetColor();
 
             @Override
             public void initialize() {
                 super.initialize();
-                spinnerMotor.set(spinnerMotorSpeed);
+                spinnerMotor.set(SPINNER_MOTOR_SPEED);
             }
 
             @Override
@@ -199,7 +205,7 @@ public class ControlPanel extends SubsystemBase {
 
             @Override
             public void execute() {
-                spinnerMotor.set(spinnerMotorSpeed);
+                spinnerMotor.set(SPINNER_MOTOR_SPEED);
             }
 
             @Override
