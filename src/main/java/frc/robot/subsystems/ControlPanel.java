@@ -149,11 +149,12 @@ public class ControlPanel extends SubsystemBase {
                 addRequirements(ControlPanel.this);
             }
 
-            int i = 0;
-            ColorStates firstColor = detectColor();
+            int i;
+            ColorStates firstColor;
 
             @Override
             public void initialize() {
+                i = 0;
                 firstColor = detectColor();
                 super.initialize();
                 spinnerMotor.set(SPINNER_MOTOR_SPEED);
