@@ -191,5 +191,18 @@ public class Indexer extends SubsystemBase {
         return cmd;
     }
 
+    public CommandBase discharge() {
+        CommandBase cmd = new FunctionalCommand(() -> {
+
+        }, () -> {
+            singulator.set(-1);
+        }, (interrupted) -> {
+            singulator.stopMotor();
+        }, () -> {
+            return false;
+        }, this);
+        return cmd;
+    }
+
     // this will make space for another ball
 }
