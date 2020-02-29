@@ -34,7 +34,7 @@ public class ControlPanel extends SubsystemBase {
 
     private SendableSpeedController spinnerMotor;
 
-    private static final double SPINNER_MOTOR_SPEED = .6;
+    private static final double SPINNER_MOTOR_SPEED = -0.6;
 
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
@@ -61,7 +61,7 @@ public class ControlPanel extends SubsystemBase {
 
     public CommandBase spinForwards() {
         return new StartEndCommand(() -> {
-            spinnerMotor.set(-SPINNER_MOTOR_SPEED);
+            spinnerMotor.set(SPINNER_MOTOR_SPEED);
         }, () -> {
             spinnerMotor.stopMotor();
         }, this);
