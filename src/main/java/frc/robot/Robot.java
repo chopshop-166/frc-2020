@@ -173,9 +173,9 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public CommandBase regurgitateFC() {
-        CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
-        cmd.setName("Regurgitate FC");
+    public CommandBase regurgitate() {
+        CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.discharge());
+        cmd.setName("Regurgitate");
         return cmd;
     }
 
@@ -238,7 +238,7 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
-        copilotController.getButton(Button.kY).whenPressed(indexer.discharge());
+        copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
         copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
     }

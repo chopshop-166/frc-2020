@@ -95,7 +95,7 @@ public class Indexer extends SubsystemBase {
         return indexMotor(SINGULATOR_MOTOR_SPEED);
     }
 
-    public CommandBase reversePush() {
+    public CommandBase discharge() {
         return indexMotor(-SINGULATOR_MOTOR_SPEED);
     }
 
@@ -188,19 +188,6 @@ public class Indexer extends SubsystemBase {
             return !bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
         }, this);
         cmd.setName("Clear Bottom Sensor");
-        return cmd;
-    }
-
-    public CommandBase discharge() {
-        CommandBase cmd = new FunctionalCommand(() -> {
-
-        }, () -> {
-            singulator.set(-1);
-        }, (interrupted) -> {
-            singulator.stopMotor();
-        }, () -> {
-            return false;
-        }, this);
         return cmd;
     }
 
