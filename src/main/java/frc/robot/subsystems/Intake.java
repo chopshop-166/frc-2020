@@ -28,6 +28,14 @@ public class Intake extends SubsystemBase {
         deployPiston = map.deployIntake();
     }
 
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Intake Cancel");
+        return cmd;
+    }
+
     public CommandBase intake() {
         return new StartEndCommand(() -> {
             intakeMotor.set(INTAKE_MOTOR_SPEED);

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -47,6 +48,15 @@ public class Drive extends SubsystemBase {
         leftMotorGroup = map.getLeft();
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
+        driveTrain.setRightSideInverted(false);
+    }
+
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Drive Cancel");
+        return cmd;
     }
 
     /**
@@ -66,6 +76,19 @@ public class Drive extends SubsystemBase {
             SmartDashboard.putNumber("Right Drive Encoder", rightMotorGroup.getEncoder().getDistance());
         }, this);
         cmd.setName("Drive");
+        return cmd;
+    }
+
+    public CommandBase arcadeTurning() {
+        CommandBase cmd = new FunctionalCommand(() -> {
+        }, () -> {
+            driveTrain.arcadeDrive(0, (SmartDashboard.getNumber("Ratio Offset", 0) * .5));
+        }, (interrupted) -> {
+
+        }, () -> {
+            return Math.abs(SmartDashboard.getNumber("Ratio Offset", 0)) <= 0.05;
+        }, this);
+        cmd.setName("Arcade Drive turning");
         return cmd;
     }
 

@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 
@@ -48,6 +50,20 @@ public class ControlPanel extends SubsystemBase {
 
         RED, GREEN, BLUE, YELLOW, OTHER
 
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Control Panel Cancel");
+        return cmd;
+    }
+
+    public CommandBase spinForwards() {
+        return new StartEndCommand(() -> {
+            spinnerMotor.set(-spinnerMotorSpeed);
+        }, () -> {
+            spinnerMotor.stopMotor();
+        }, this);
     }
 
     public void controlPanelPeriodic() {
