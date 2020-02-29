@@ -238,7 +238,7 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
-        copilotController.getButton(Button.kY).whenPressed(drive.arcadeTurning());
+        copilotController.getButton(Button.kY).whenPressed(intake.discharge());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
         copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
     }
