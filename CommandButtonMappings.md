@@ -9,3 +9,6 @@ Lift | Elevator Up | Copilot Controller: Right Trigger
 Lift | Elevator Down | Copilot Controller: Left Trigger
 Shooter | Spin Up | Copilot Controller: Right Bumper
 Shooter | Spin Down | Copilot Controller: Left Bumper
+Control Panel | Spin Left and Right | Copilot Controller: Left Joystick (Y axis)
+Control Panel | Stage 2 Rotation | Copilot Controller: B
+Control Panel | Stage 3 Rotation | Copilot Controller: X

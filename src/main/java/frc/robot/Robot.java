@@ -100,6 +100,7 @@ public class Robot extends TimedRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
+        controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() -> copilotController.getY(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
 
         // protovision
@@ -230,13 +231,14 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kB).toggleWhenActive(camToggle());
 
+        copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
+        copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
         copilotController.getButton(Button.kY).whenPressed(drive.arcadeTurning());
-        copilotController.getButton(Button.kB).whenHeld(controlPanel.spinForwards());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
     }
 }
