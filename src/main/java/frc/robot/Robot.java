@@ -88,8 +88,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
 
-        // SmartDashboard.putNumber("Ball Count", indexer.ballCounting);
-
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
         autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
