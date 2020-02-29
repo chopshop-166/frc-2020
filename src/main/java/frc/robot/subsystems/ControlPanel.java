@@ -141,7 +141,7 @@ public class ControlPanel extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return 40 < i && i < 50;
+                return 40 < i;
             }
 
             @Override
@@ -151,13 +151,13 @@ public class ControlPanel extends SubsystemBase {
                 if (firstColor != secondColor) {
                     i++;
                 }
+                firstColor = detectColor();
 
             }
 
             @Override
             public void end(boolean interrupted) {
                 spinnerMotor.stopMotor();
-                super.end(interrupted);
             }
 
         };
@@ -188,7 +188,6 @@ public class ControlPanel extends SubsystemBase {
             @Override
             public void end(boolean interrupted) {
                 spinnerMotor.stopMotor();
-                super.end(interrupted);
             }
         };
     }
