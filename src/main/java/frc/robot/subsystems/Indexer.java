@@ -87,6 +87,10 @@ public class Indexer extends SubsystemBase {
     // Will shoot all the balls. the only thing missing to this is the command to
     // spin up the shooter. that happens in robot
 
+    // run singulator when front intake is triggered, stop singulator when back
+    // intake IR is clear and until bottom pierre is covered
+    // run pierre when bottom pierre is covered
+
     public CommandBase indexMotor(final double motorSpeed) {
         CommandBase cmd = new FunctionalCommand(() -> {
             singulator.set(motorSpeed);
@@ -127,7 +131,6 @@ public class Indexer extends SubsystemBase {
             // This checks to see if a ball is at the top of Pierre and doesn't not run
             // because sometimes it will
             if (backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
-                waitTime();
                 pierreMotor.set(PIERRE_INDEX_SPEED);
                 singulator.set(SINGULATOR_MOTOR_SPEED);
             }
