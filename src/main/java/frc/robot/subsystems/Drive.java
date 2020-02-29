@@ -86,7 +86,7 @@ public class Drive extends SubsystemBase {
         }, (interrupted) -> {
 
         }, () -> {
-            return Math.abs(SmartDashboard.getNumber("Ratio Offset", 0)) <= 0.05;
+            return Math.abs(SmartDashboard.getNumber("Ratio Offset", 0)) <= 0.03;
         }, this);
         cmd.setName("Arcade Drive turning");
         return cmd;
