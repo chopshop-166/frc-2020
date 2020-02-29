@@ -50,6 +50,8 @@ public class ControlPanel extends SubsystemBase {
 
         RED, GREEN, BLUE, YELLOW, OTHER
 
+    }
+
     public CommandBase cancel() {
         CommandBase cmd = new InstantCommand(() -> {
 
@@ -102,7 +104,6 @@ public class ControlPanel extends SubsystemBase {
 
     public CommandBase spinControlPanel(DoubleSupplier speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
-
         }, () -> {
             spinnerMotor.set(speed.getAsDouble());
         }, (interrupted) -> {
