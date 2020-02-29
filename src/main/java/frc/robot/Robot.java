@@ -240,5 +240,6 @@ public class Robot extends TimedRobot {
         endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
         copilotController.getButton(Button.kY).whenPressed(drive.arcadeTurning());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
+        copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards);
     }
 }
