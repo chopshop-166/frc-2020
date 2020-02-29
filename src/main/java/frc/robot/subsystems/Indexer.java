@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap.IndexMap;
 
 /**
@@ -38,6 +39,7 @@ public class Indexer extends SubsystemBase {
     private static final double SINGULATOR_MOTOR_SPEED = 1.0;
     private static final double PIERRE_INDEX_SPEED = 0.7;
     private static final double PIERRE_SHOOT_SPEED = 1.0;
+    private static final double WAITTIME = 10;
 
     public Indexer(final IndexMap map) {
         super();
@@ -75,6 +77,13 @@ public class Indexer extends SubsystemBase {
         cmd.setName("Shoot Ball");
         return cmd;
     }
+
+    public CommandBase waitTime() {
+        CommandBase cmd = new WaitCommand(WAITTIME);
+        cmd.setName("Wait for tIME");
+        return cmd;
+    }
+
     // Will shoot all the balls. the only thing missing to this is the command to
     // spin up the shooter. that happens in robot
 
@@ -118,6 +127,7 @@ public class Indexer extends SubsystemBase {
             // This checks to see if a ball is at the top of Pierre and doesn't not run
             // because sometimes it will
             if (backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
+                waitTime();
                 pierreMotor.set(PIERRE_INDEX_SPEED);
                 singulator.set(SINGULATOR_MOTOR_SPEED);
             }
