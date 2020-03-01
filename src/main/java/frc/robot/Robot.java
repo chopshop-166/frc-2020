@@ -89,6 +89,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
+        SmartDashboard.putData("Retract intake", intake.retractIntake());
         SmartDashboard.putData("vision on", led.visionGreenOn());
         SmartDashboard.putData("vision off", led.ledOff());
 
