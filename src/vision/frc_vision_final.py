@@ -44,7 +44,7 @@ def swapStream(isShooting):
         s.set_option(rs2.option.gain, 75)
         s.set_option(rs2.option.gamma, 100)
         s.set_option(rs2.option.hue, 0)
-        s.set_option(rs2.option.saturation, 50)
+        s.set_option(rs2.option.saturation, 75)
         s.set_option(rs2.option.sharpness, 0)
         s.set_option(rs2.option.white_balance, 2800)
     else:
