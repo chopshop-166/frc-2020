@@ -195,7 +195,7 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase fastReleaseBalls(int ballCount) {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(5500), indexer.shootAllBalls(ballCount));
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(5200), indexer.shootAllBalls(ballCount));
         cmd.setName("Shoot all Balls");
         return cmd;
     }
