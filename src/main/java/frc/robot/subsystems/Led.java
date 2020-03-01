@@ -33,7 +33,13 @@ public class Led extends SubsystemBase {
 
     public CommandBase ledOff() {
         CommandBase cmd = new InstantCommand(() -> {
-            visionLED.stop();
+            for (var i = 0; i < visionBuffer.getLength(); i++) {
+                // Sets the specified LED to the RGB values for green
+                visionBuffer.setRGB(i, 0, 0, 0);
+            }
+
+            visionLED.setData(visionBuffer);
+            visionLED.start();
         }, this);
         cmd.setName("LED Off");
         return cmd;
