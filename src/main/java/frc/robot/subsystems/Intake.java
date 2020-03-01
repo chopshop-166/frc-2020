@@ -69,4 +69,11 @@ public class Intake extends SubsystemBase {
             deployPiston.set(Value.kForward);
         }, this);
     }
+
+    public CommandBase retractIntake() {
+        return new InstantCommand(() -> {
+            deployPiston.set(Value.kReverse);
+        }, this);
+    }
+
 }
