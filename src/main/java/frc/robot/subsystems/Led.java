@@ -9,10 +9,12 @@ import frc.robot.maps.RobotMap.LEDMap;
 
 public class Led extends SubsystemBase {
     AddressableLED visionLED;
-    AddressableLEDBuffer visionBuffer = new AddressableLEDBuffer(6);
+    AddressableLEDBuffer visionBuffer;
 
     public Led(LEDMap map) {
+        visionBuffer = new AddressableLEDBuffer(6);
         visionLED = map.visionLED();
+        visionLED.setLength(visionBuffer.getLength());
     }
 
     public CommandBase visionGreenOn() {
