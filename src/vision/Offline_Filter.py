@@ -33,14 +33,14 @@ width = 640
 height = 480
 
 # Import source file
-img = cv2.imread('Realsense_6_Color.png')
+img = cv2.imread("connecticut_Color.png")
 
 # Convert from RGB to HSV, helps with filltering
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 # Define upper and lower bounds for HSV variables
-lower_color = np.array([70, 80, 255])
-upper_color = np.array([95, 180, 255])
+lower_color = np.array([50, 245, 50])
+upper_color = np.array([82, 255, 255])
 # Define kernel for morphologyEx
 kernel = np.ones((5, 5), np.uint8)
 
@@ -63,7 +63,7 @@ res_edges = cv2.Canny(res, 100, 200)
 
 # Create empty image for lines (testing)
 lineImg = np.zeros((height, width, 3), np.uint8)
-lines = cv2.HoughLinesP(med_edges, 1, radians(.5), 15, maxLineGap=20)
+lines = cv2.HoughLinesP(blur_edges, 1, radians(.5), 15, maxLineGap=20)
 # Find all lines in image
 
 
