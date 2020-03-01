@@ -242,8 +242,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(camOn(), led.visionGreenOn(), new WaitCommand(0.2),
-                drive.visionAlignDegrees(), led.ledOff(), camOff());
+        CommandBase cmd = new SequentialCommandGroup(led.visionGreenOn(), new WaitCommand(0.2),
+                drive.visionAlignDegrees(), led.ledOff());
         cmd.setName("Vision Alignment");
         return cmd;
     }
@@ -264,8 +264,8 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kB).toggleWhenActive(camToggle());
         driveController.getButton(Button.kStart).whenPressed(visionAlignment());
-        driveController.getButton(Button.kBumperRight).whenPressed(drive.turnDegrees(5, .3));
-        driveController.getButton(Button.kBumperLeft).whenPressed(drive.turnDegrees(-5, -0.3));
+        driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
+        driveController.getButton(Button.kBumperLeft).whenPressed(drive.slowTurn(false));
 
         copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());

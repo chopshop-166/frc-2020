@@ -129,6 +129,19 @@ public class Drive extends SubsystemBase {
         return cmd;
     }
 
+    public CommandBase slowTurn(boolean direction) {
+        CommandBase cmd = new RunCommand(() -> {
+            if (direction == true) {
+                driveTrain.arcadeDrive(0, 0.3);
+            } else if (direction == false) {
+                driveTrain.arcadeDrive(0, -0.3);
+
+            }
+        }, this);
+        cmd.setName("turing");
+        return cmd;
+    }
+
     public CommandBase visionAlignDegrees() {
         CommandBase cmd = new FunctionalCommand(() -> {
             gyro.reset();
