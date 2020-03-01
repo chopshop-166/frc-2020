@@ -33,14 +33,14 @@ width = 640
 height = 480
 
 # Import source file
-img = cv2.imread("connecticut_Color.png")
+img = cv2.imread("connecticut2.png")
 
 # Convert from RGB to HSV, helps with filltering
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 # Define upper and lower bounds for HSV variables
-lower_color = np.array([50, 245, 50])
-upper_color = np.array([82, 255, 255])
+lower_color = np.array([73, 39, 50])
+upper_color = np.array([94, 255, 255])
 # Define kernel for morphologyEx
 kernel = np.ones((5, 5), np.uint8)
 
