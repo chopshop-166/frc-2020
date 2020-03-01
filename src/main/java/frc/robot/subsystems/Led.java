@@ -9,10 +9,12 @@ import frc.robot.maps.RobotMap.LEDMap;
 
 public class Led extends SubsystemBase {
     AddressableLED visionLED;
-    AddressableLEDBuffer visionBuffer = new AddressableLEDBuffer(6);
+    AddressableLEDBuffer visionBuffer;
 
     public Led(LEDMap map) {
+        visionBuffer = new AddressableLEDBuffer(6);
         visionLED = map.visionLED();
+        visionLED.setLength(visionBuffer.getLength());
     }
 
     public CommandBase visionGreenOn() {
@@ -31,7 +33,13 @@ public class Led extends SubsystemBase {
 
     public CommandBase ledOff() {
         CommandBase cmd = new InstantCommand(() -> {
-            visionLED.stop();
+            for (var i = 0; i < visionBuffer.getLength(); i++) {
+                // Sets the specified LED to the RGB values for green
+                visionBuffer.setRGB(i, 0, 0, 0);
+            }
+
+            visionLED.setData(visionBuffer);
+            visionLED.start();
         }, this);
         cmd.setName("LED Off");
         return cmd;
