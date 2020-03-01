@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
@@ -224,8 +225,25 @@ public class Robot extends TimedRobot {
         return camTogglecmd;
     }
 
+    public CommandBase camOn() {
+        CommandBase cmd = new InstantCommand(() -> {
+            SmartDashboard.putBoolean("Is Shooting", true);
+        });
+        cmd.setName("Camera On");
+        return cmd;
+    }
+
+    public CommandBase camOff() {
+        CommandBase cmd = new InstantCommand(() -> {
+            SmartDashboard.putBoolean("Is Shooting", false);
+        });
+        cmd.setName("Camera Off");
+        return cmd;
+    }
+
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(led.visionGreenOn(), drive.visionAlignDegrees(), led.ledOff());
+        CommandBase cmd = new SequentialCommandGroup(camOn(), led.visionGreenOn(), new WaitCommand(0.2),
+                drive.visionAlignDegrees(), led.ledOff(), camOff());
         cmd.setName("Vision Alignment");
         return cmd;
     }
