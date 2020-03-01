@@ -19,6 +19,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
@@ -219,6 +220,17 @@ public class FrancoisMap extends RobotMap {
                 pidLeader.getEncoder().setPositionScaleFactor(distancePerRev);
                 return pidLeader.getEncoder();
             }
+        };
+    }
+
+    @Override
+    public LEDMap getLEDMap() {
+        return new LEDMap() {
+            @Override
+            public AddressableLED visionLED() {
+                return new AddressableLED(0);
+            }
+
         };
     }
 

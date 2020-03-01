@@ -35,8 +35,7 @@ public class Drive extends SubsystemBase {
     private final SendableSpeedController leftMotorGroup;
     private final GyroBase gyro;
     private final DifferentialDrive driveTrain;
-    public double ratioOffset = SmartDashboard.getNumber("Ratio Offset", 0);
-    public double speed = 0;
+    private double ratioOffset = SmartDashboard.getNumber("Ratio Offset", 0);
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -114,7 +113,11 @@ public class Drive extends SubsystemBase {
         CommandBase cmd = new FunctionalCommand(() -> {
             gyro.reset();
         }, () -> {
-            driveTrain.arcadeDrive(0, speed);
+            double realSpeed = speed;
+            if (degrees < 0 && speed > 0) {
+                realSpeed *= -1;
+            }
+            driveTrain.arcadeDrive(0, realSpeed);
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
@@ -124,28 +127,28 @@ public class Drive extends SubsystemBase {
         return cmd;
     }
 
-    public CommandBase visionAdjust() {
+    // public CommandBase visionAdjust() {
 
-        CommandBase cmd = new FunctionalCommand(() -> {
-            if (ratioOffset >= 0) {
-                speed = .5;
-            } else {
-                speed = -.5;
-                ratioOffset *= -1;
-            }
-            gyro.reset();
-        }, () -> {
+    // CommandBase cmd = new FunctionalCommand(() -> {
+    // if (ratioOffset >= 0) {
+    // speed = .5;
+    // } else {
+    // speed = -.5;
+    // ratioOffset *= -1;
+    // }
+    // gyro.reset();
+    // }, () -> {
 
-            if (gyro.getAngle() - ratioOffset != 0) {
-                turnDegrees(ratioOffset, speed);
-                // driveTrain.arcadeDrive(0, speed);
-            }
-        }, (interrupted) -> {
-            driveTrain.stopMotor();
-        }, () -> {
-            return Math.abs(gyro.getAngle()) >= Math.abs(ratioOffset);
-        }, this);
-        cmd.setName("Turn Vision good");
-        return cmd;
-    }
+    // if (gyro.getAngle() - ratioOffset != 0) {
+    // turnDegrees(ratioOffset, speed);
+    // // driveTrain.arcadeDrive(0, speed);
+    // }
+    // }, (interrupted) -> {
+    // driveTrain.stopMotor();
+    // }, () -> {
+    // return Math.abs(gyro.getAngle()) >= Math.abs(ratioOffset);
+    // }, this);
+    // cmd.setName("Turn Vision good");
+    // return cmd;
+    // }
 }

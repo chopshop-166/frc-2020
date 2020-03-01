@@ -36,9 +36,9 @@ import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Led;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
-import frc.robot.triggers.EndGameTrigger;
 import io.github.oblarg.oblog.Logger;
 
 /**
@@ -66,6 +66,7 @@ public class Robot extends TimedRobot {
     final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
     final private Indexer indexer = new Indexer(map.getIndexerMap());
+    final private Led led = new Led(map.getLEDMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -87,7 +88,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
-        SmartDashboard.putData("Vision Aim", drive.visionAdjust());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
@@ -216,6 +216,12 @@ public class Robot extends TimedRobot {
         return camTogglecmd;
     }
 
+    public CommandBase visionAlignment() {
+        CommandBase cmd = new SequentialCommandGroup(led.visionGreenOn(), drive.arcadeTurning(), led.ledOff());
+        cmd.setName("Vision Alignment");
+        return cmd;
+    }
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -229,7 +235,7 @@ public class Robot extends TimedRobot {
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kB).toggleWhenActive(camToggle());
-        driveController.getButton(Button.kX).whenPressed(drive.arcadeTurning());
+        driveController.getButton(Button.kX).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenPressed(drive.turnDegrees(5, .3));
         driveController.getButton(Button.kBumperLeft).whenPressed(drive.turnDegrees(-5, -0.3));
 
