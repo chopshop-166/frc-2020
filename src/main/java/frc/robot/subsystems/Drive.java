@@ -6,6 +6,7 @@ import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.GyroBase;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -35,7 +36,7 @@ public class Drive extends SubsystemBase {
     private final SendableSpeedController leftMotorGroup;
     private final GyroBase gyro;
     private final DifferentialDrive driveTrain;
-    private double ratioOffset = SmartDashboard.getNumber("Ratio Offset", 0);
+    private final PIDController pid;
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -50,6 +51,7 @@ public class Drive extends SubsystemBase {
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
+        pid = new PIDController(0, 0, 0);
     }
 
     public CommandBase cancel() {
@@ -83,11 +85,11 @@ public class Drive extends SubsystemBase {
     public CommandBase arcadeTurning() {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-            driveTrain.arcadeDrive(0, (SmartDashboard.getNumber("Ratio Offset", 0) * .5));
+            driveTrain.arcadeDrive(0, (SmartDashboard.getNumber("Ratio Offset", 0) * 0.5));
         }, (interrupted) -> {
-
+            driveTrain.stopMotor();
         }, () -> {
-            return Math.abs(SmartDashboard.getNumber("Ratio Offset", 0)) <= 0.03;
+            return Math.abs(SmartDashboard.getNumber("Ratio Offset", 0)) <= 0.1;
         }, this);
         cmd.setName("Arcade Drive turning");
         return cmd;
@@ -122,6 +124,24 @@ public class Drive extends SubsystemBase {
             driveTrain.stopMotor();
         }, () -> {
             return Math.abs(gyro.getAngle()) >= Math.abs(degrees);
+        }, this);
+        cmd.setName("Turn Degrees");
+        return cmd;
+    }
+
+    public CommandBase visionAlignDegrees() {
+        CommandBase cmd = new FunctionalCommand(() -> {
+            gyro.reset();
+            pid.setTolerance(2.5);
+            pid.setPID(0.005, 0, 0);
+        }, () -> {
+            pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
+            double turning = pid.calculate(gyro.getAngle());
+            driveTrain.arcadeDrive(0, turning);
+        }, (interrupted) -> {
+            driveTrain.stopMotor();
+        }, () -> {
+            return pid.atSetpoint();
         }, this);
         cmd.setName("Turn Degrees");
         return cmd;
