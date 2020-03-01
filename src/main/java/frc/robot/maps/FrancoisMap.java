@@ -126,7 +126,9 @@ public class FrancoisMap extends RobotMap {
         return new ControlPanelMap() {
             @Override
             public SendableSpeedController spinner() {
-                return SendableSpeedController.wrap(controlPanel);
+                SendableSpeedController motor = SendableSpeedController.wrap(controlPanel);
+                motor.setInverted(true);
+                return motor;
             }
         };
     }

@@ -51,6 +51,14 @@ public class Shooter extends SubsystemBase implements Loggable {
         verticalDistance = TARGET_HEIGHT - shooterHeight;
     }
 
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Shooter Cancel");
+        return cmd;
+    }
+
     @Override
     public void periodic() {
         distanceToTarget = SmartDashboard.getNumber("Distance To Target", 160);

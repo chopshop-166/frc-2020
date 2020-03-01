@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
@@ -63,6 +64,14 @@ public class Drive extends SubsystemBase implements Loggable {
         driveLeftEncoder = leftMotorGroup.getEncoder();
     }
 
+    public CommandBase cancel() {
+        CommandBase cmd = new InstantCommand(() -> {
+
+        }, this);
+        cmd.setName("Drive Cancel");
+        return cmd;
+    }
+
     /**
      * Maps the drive axises
      * 
@@ -78,6 +87,19 @@ public class Drive extends SubsystemBase implements Loggable {
             driveTrain.arcadeDrive(yAxis, xAxis);
         }, this);
         cmd.setName("Drive");
+        return cmd;
+    }
+
+    public CommandBase arcadeTurning() {
+        CommandBase cmd = new FunctionalCommand(() -> {
+        }, () -> {
+            driveTrain.arcadeDrive(0, (SmartDashboard.getNumber("Ratio Offset", 0) * .5));
+        }, (interrupted) -> {
+
+        }, () -> {
+            return Math.abs(SmartDashboard.getNumber("Ratio Offset", 0)) <= 0.05;
+        }, this);
+        cmd.setName("Arcade Drive turning");
         return cmd;
     }
 
