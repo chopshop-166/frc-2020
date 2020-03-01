@@ -193,6 +193,12 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
+    public CommandBase fastReleaseBalls(int ballCount) {
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(5500), indexer.shootAllBalls(ballCount));
+        cmd.setName("Shoot all Balls");
+        return cmd;
+    }
+
     // in the future we will add the vision lining up command to this.
     public CommandBase endGame() {
         CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(),
@@ -233,11 +239,13 @@ public class Robot extends TimedRobot {
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         driveController.getButton(Button.kB).whenHeld(releaseBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kX).whenHeld(fastReleaseBalls(5)).whenReleased(shooter.spinDown());
+
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kB).toggleWhenActive(camToggle());
-        driveController.getButton(Button.kX).whenPressed(visionAlignment());
+        driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenPressed(drive.turnDegrees(5, .3));
         driveController.getButton(Button.kBumperLeft).whenPressed(drive.turnDegrees(-5, -0.3));
 

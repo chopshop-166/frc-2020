@@ -133,7 +133,7 @@ public class Drive extends SubsystemBase {
         CommandBase cmd = new FunctionalCommand(() -> {
             gyro.reset();
             pid.setTolerance(2.5);
-            pid.setPID(0.005, 0, 0);
+            pid.setPID(0.01, 0.00012, 0);
         }, () -> {
             pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
             double turning = pid.calculate(gyro.getAngle());
@@ -141,7 +141,7 @@ public class Drive extends SubsystemBase {
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            return pid.atSetpoint();
+            return pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false);
         }, this);
         cmd.setName("Turn Degrees");
         return cmd;
