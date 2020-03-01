@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
-        SmartDashboard.putData("Vision Aim", drive.arcadeTurning());
+        SmartDashboard.putData("Vision Aim", drive.visionAdjust());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
@@ -230,6 +230,8 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kB).toggleWhenActive(camToggle());
         driveController.getButton(Button.kX).whenPressed(drive.arcadeTurning());
+        driveController.getButton(Button.kBumperRight).whenPressed(drive.turnDegrees(5, .3));
+        driveController.getButton(Button.kBumperLeft).whenPressed(drive.turnDegrees(-5, -0.3));
 
         copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
