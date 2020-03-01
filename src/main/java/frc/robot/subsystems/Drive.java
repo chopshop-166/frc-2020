@@ -40,9 +40,6 @@ public class Drive extends SubsystemBase implements Loggable {
     @Log.Gyro
     private final GyroBase gyro;
 
-    @Log
-    double gyroVelocity;
-
     private final DifferentialDrive driveTrain;
     @Log.Encoder
     private final IEncoder driveRightEncoder;
@@ -64,8 +61,6 @@ public class Drive extends SubsystemBase implements Loggable {
         driveTrain.setRightSideInverted(false);
         driveRightEncoder = rightMotorGroup.getEncoder();
         driveLeftEncoder = leftMotorGroup.getEncoder();
-        gyroVelocity = gyro.getRate();
-
     }
 
     /**
@@ -81,8 +76,6 @@ public class Drive extends SubsystemBase implements Loggable {
             double yAxis = forward.getAsDouble();
             double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
-            SmartDashboard.putNumber("Left Drive Encoder", driveLeftEncoder.getDistance());
-            SmartDashboard.putNumber("Right Drive Encoder", driveRightEncoder.getDistance());
         }, this);
         cmd.setName("Drive");
         return cmd;

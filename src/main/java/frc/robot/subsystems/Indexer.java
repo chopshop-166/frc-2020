@@ -29,13 +29,16 @@ import io.github.oblarg.oblog.annotations.Log;
 public class Indexer extends SubsystemBase implements Loggable {
     @Log.SpeedController
     final SendableSpeedController singulator;
-
     @Log.SpeedController
     final SendableSpeedController pierreMotor;
 
+    @Log
     final BooleanSupplier frontIntakeIR;
+    @Log
     final BooleanSupplier bottomPierreIR;
+    @Log
     final BooleanSupplier topPierreIR;
+    @Log
     final BooleanSupplier backIntakeIR;
 
     @Log

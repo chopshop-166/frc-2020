@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -28,6 +27,8 @@ public class Shooter extends SubsystemBase implements Loggable {
     private final PIDSpeedController shooterWheelMotor;
     @Log.Encoder
     private IEncoder shooterEncoder;
+    @Log
+    private static double velocity;
     public static double distanceToTarget;
     public final double shooterHeight;
     public static double verticalDistance;
@@ -48,8 +49,6 @@ public class Shooter extends SubsystemBase implements Loggable {
         shooterWheelMotor = map.shooterWheel();
         shooterEncoder = shooterWheelMotor.getEncoder();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
-        SendableRegistry.add(shooterEncoder, "Shooter");
-        SendableRegistry.enableLiveWindow(shooterEncoder);
     }
 
     @Override
@@ -126,10 +125,10 @@ public class Shooter extends SubsystemBase implements Loggable {
             final double tanSide = horizontalDistance * Math.tan(THETA) - verticalDistance;
             final double cosSide = Math.cos(THETA) * Math.cos(THETA);
 
-            return Math.sqrt(gravitySide / tanSide / cosSide / 2);
+            velocity = Math.sqrt(gravitySide / tanSide / cosSide / 2);
         } else {
-            return 0;
+            velocity = 0;
         }
-
+        return velocity;
     }
 }

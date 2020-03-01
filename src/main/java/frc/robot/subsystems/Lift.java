@@ -44,7 +44,9 @@ public class Lift extends SubsystemBase implements Loggable {
     private ISolenoid elevatorBrake;
     @Log.Encoder
     private IEncoder liftEncoder;
+    @Log
     private BooleanSupplier upperLimitSwitch;
+    @Log
     private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
     private static final double TOLERANCE_RANGE_INCHES = .5;
