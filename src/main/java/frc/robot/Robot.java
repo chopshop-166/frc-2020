@@ -93,6 +93,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("vision on", led.visionGreenOn());
         SmartDashboard.putData("vision off", led.ledOff());
         SmartDashboard.putData("cam toggle", camToggle());
+        SmartDashboard.putData("vision align", drive.visionAlignDegrees());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
@@ -196,6 +197,13 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
+    public CommandBase systemsCheck() {
+        CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesionNEW(),
+                shooter.spinUp(1000), indexer.shootAllBalls(1));
+        cmd.setName("SYSTEMS CHECK");
+        return cmd;
+    }
+
     public CommandBase fastReleaseBalls(int ballCount) {
         CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(5000), indexer.shootAllBalls(ballCount));
         cmd.setName("Shoot all Balls");
@@ -244,7 +252,7 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(led.visionGreenOn(), new WaitCommand(0.2),
+        CommandBase cmd = new SequentialCommandGroup(camToggle(), led.visionGreenOn(), new WaitCommand(0.2),
                 drive.visionAlignDegrees(), led.ledOff());
         cmd.setName("Vision Alignment");
         return cmd;
@@ -264,7 +272,6 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
-        driveController.getButton(Button.kB).toggleWhenActive(camToggle());
         driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));

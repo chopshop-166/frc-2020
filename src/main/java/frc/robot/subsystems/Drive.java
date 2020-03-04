@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -30,12 +32,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * 
  * 6) Sensors? Encoders, Gyro
  */
-public class Drive extends SubsystemBase {
+public class Drive extends SubsystemBase implements Loggable {
 
     private final SendableSpeedController rightMotorGroup;
     private final SendableSpeedController leftMotorGroup;
+    @Log.Gyro
     private final GyroBase gyro;
     private final DifferentialDrive driveTrain;
+    @Log
     private final PIDController pid;
 
     /**
@@ -145,11 +149,12 @@ public class Drive extends SubsystemBase {
     public CommandBase visionAlignDegrees() {
         CommandBase cmd = new FunctionalCommand(() -> {
             gyro.reset();
-            pid.setTolerance(2.5);
-            pid.setPID(0.01, 0.00012, 0);
-        }, () -> {
             pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
+            pid.setTolerance(2.5);
+            pid.setPID(0.01, 0.00015, 0);
+        }, () -> {
             double turning = pid.calculate(gyro.getAngle());
+            SmartDashboard.putNumber("pid Out", turning);
             driveTrain.arcadeDrive(0, turning);
         }, (interrupted) -> {
             driveTrain.stopMotor();

@@ -147,7 +147,7 @@ public class Indexer extends SubsystemBase {
     public CommandBase pierrePossesionNEW() {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-            if (frontIntakeIR.getAsBoolean()) {
+            if (frontIntakeIR.getAsBoolean() || backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
                 singulator.set(SINGULATOR_MOTOR_SPEED);
             }
             // This checks to see if a ball is at the top of Pierre and doesn't not run
