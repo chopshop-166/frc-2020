@@ -132,9 +132,9 @@ public class Drive extends SubsystemBase {
     public CommandBase slowTurn(boolean direction) {
         CommandBase cmd = new RunCommand(() -> {
             if (direction == true) {
-                driveTrain.arcadeDrive(0, 0.3);
+                driveTrain.arcadeDrive(0, 0.4);
             } else if (direction == false) {
-                driveTrain.arcadeDrive(0, -0.3);
+                driveTrain.arcadeDrive(0, -0.4);
 
             }
         }, this);

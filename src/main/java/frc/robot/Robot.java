@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Retract intake", intake.retractIntake());
         SmartDashboard.putData("vision on", led.visionGreenOn());
         SmartDashboard.putData("vision off", led.ledOff());
+        SmartDashboard.putData("cam toggle", camToggle());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
@@ -266,7 +267,7 @@ public class Robot extends TimedRobot {
         driveController.getButton(Button.kB).toggleWhenActive(camToggle());
         driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
-        driveController.getButton(Button.kBumperLeft).whenPressed(drive.slowTurn(false));
+        driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
 
         copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
