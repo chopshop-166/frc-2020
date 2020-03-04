@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class ControlPanel extends SubsystemBase {
+public class ControlPanel extends SubsystemBase implements Loggable {
     public final I2C.Port i2cPort = I2C.Port.kOnboard;
 
     public final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
@@ -31,7 +33,7 @@ public class ControlPanel extends SubsystemBase {
     public final ColorMatch m_colorMatcher = new ColorMatch();
     private String gameData;
     private ColorStates color;
-
+    @Log.SpeedController
     private SendableSpeedController spinnerMotor;
 
     private static final double SPINNER_MOTOR_SPEED = .6;
