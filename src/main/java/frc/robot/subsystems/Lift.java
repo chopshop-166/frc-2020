@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /*
  * SUB REVIEW Lift Subsystem What Does It Do? 1) Raises and lowers lift Manually
@@ -35,12 +37,16 @@ import frc.robot.maps.RobotMap;
  * Sensors? 1) Encoders 2) Limit Switches
  */
 
-public class Lift extends SubsystemBase {
+public class Lift extends SubsystemBase implements Loggable {
 
+    @Log.SpeedController
     private PIDSpeedController elevatorMotor;
     private ISolenoid elevatorBrake;
+    @Log.Encoder
     private IEncoder liftEncoder;
+
     private BooleanSupplier upperLimitSwitch;
+
     private BooleanSupplier lowerLimitSwitch;
     private static final double elevatorMotorSpeed = 1;
     private static final double TOLERANCE_RANGE_INCHES = .5;

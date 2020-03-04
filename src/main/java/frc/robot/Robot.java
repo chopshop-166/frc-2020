@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        Logger.configureLoggingAndConfig(this, true);
+        Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
