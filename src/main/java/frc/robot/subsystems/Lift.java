@@ -65,6 +65,13 @@ public class Lift extends SubsystemBase {
         return cmd;
     }
 
+    public CommandBase afterMatch() {
+        CommandBase cmd = new SequentialCommandGroup(moveTicks(30, 0.10, true), disengageRatchet(),
+                moveTicks(-10, 0.2, false), new WaitCommand(.5), moveTicks(20, .1, true));
+        cmd.setName("Lift After Match");
+        return cmd;
+    }
+
     // sets the ratchet to either be activated or deactivated depending on liftSpeed
     public void liftSpeed(double speed) {
         if (Math.abs(speed) <= .1) {
@@ -102,9 +109,8 @@ public class Lift extends SubsystemBase {
         }
     }
 
-    public CommandBase disengageRatchet(DoubleSupplier speed) {
-        CommandBase cmd = new SequentialCommandGroup(moveTicks(.1, 0.10), turnOffBrake(), new WaitCommand(.1),
-                moveLift(speed));
+    public CommandBase disengageRatchet() {
+        CommandBase cmd = new SequentialCommandGroup(moveTicks(.1, 0.10, false), turnOffBrake(), new WaitCommand(.1));
         cmd.setName("Disengage Ratchet");
         return cmd;
     }
@@ -113,12 +119,24 @@ public class Lift extends SubsystemBase {
         return new InstantCommand(() -> elevatorBrake.set(true), this);
     }
 
-    public CommandBase moveTicks(double ticks, double speed) {
+    public CommandBase moveTicks(double ticks, double speed, boolean checkStops) {
         CommandBase cmd = new FunctionalCommand(() -> {
             liftEncoder.reset();
         }, () -> {
+            double realSpeed = speed;
+            if (ticks < 0 && speed > 0) {
+                realSpeed *= -1;
+            }
+            if (checkStops) {
+                if (ticks < 0 && upperLimitSwitch.getAsBoolean()) {
+                    elevatorMotor.set(realSpeed);
+                } else if (ticks > 0 && lowerLimitSwitch.getAsBoolean()) {
+                    elevatorMotor.set(realSpeed);
+                }
+            } else {
+                elevatorMotor.set(realSpeed);
+            }
             SmartDashboard.putNumber("Lift Encoder", liftEncoder.getDistance());
-            elevatorMotor.set(speed);
         }, (interrupted) -> {
             elevatorMotor.stopMotor();
             // This command might be interrupted if it takes to move the expected amount
