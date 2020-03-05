@@ -53,7 +53,7 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-
+                // return sendLeader;
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
             }
@@ -67,7 +67,7 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-
+                // return sendLeader;
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
 

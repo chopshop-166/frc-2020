@@ -166,7 +166,6 @@ public class Indexer extends SubsystemBase implements Loggable {
         }, (interrupted) -> {
             pierreMotor.set(0);
             singulator.set(0);
-            SmartDashboard.putNumber("Ball Count", ballCounting);
         }, () -> {
             return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
         }, this);
