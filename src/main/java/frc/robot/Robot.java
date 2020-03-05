@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("vision off", led.ledOff());
         SmartDashboard.putData("cam toggle", camToggle());
         SmartDashboard.putData("vision align", drive.visionAlignDegrees());
-        SmartDashboard.putData("After Match Lift Sequence", lift.afterMatch());
+        SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
@@ -198,6 +198,12 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
+    public CommandBase afterMatchPit() {
+        CommandBase cmd = new SequentialCommandGroup(lift.afterMatch(), intake.retractIntake());
+        cmd.setName("After Match Pit");
+        return cmd;
+    }
+
     public CommandBase systemsCheck() {
         CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesionNEW(),
                 shooter.spinUp(1000), indexer.shootAllBalls(1));
@@ -213,8 +219,7 @@ public class Robot extends TimedRobot {
 
     // in the future we will add the vision lining up command to this.
     public CommandBase endGame() {
-        CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(), lift.disengageRatchet(),
-                lift.moveLift(() -> -copilotController.getTriggers()));
+        CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(), lift.disengageRatchet());
         endGameCmd.setName("End Game Lift");
         return endGameCmd;
     }
