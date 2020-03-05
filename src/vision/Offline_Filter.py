@@ -33,14 +33,14 @@ width = 640
 height = 480
 
 # Import source file
-img = cv2.imread("connecticut2.png")
+img = cv2.imread("Elbit3_Color.png")
 
 # Convert from RGB to HSV, helps with filltering
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 # Define upper and lower bounds for HSV variables
-lower_color = np.array([73, 39, 50])
-upper_color = np.array([94, 255, 255])
+lower_color = np.array([37, 101, 9])
+upper_color = np.array([76, 255, 101])
 # Define kernel for morphologyEx
 kernel = np.ones((5, 5), np.uint8)
 
@@ -76,7 +76,7 @@ if lines is not None:
         X1, Y1, X2, Y2 = line[0]
         # Calculate slope as degrees for ease of use
         deg_slope = degrees(np.arctan((Y2 - Y1)/(X2 - X1)))
-        if deg_slope < -40 or deg_slope > 40:
+        if 70 > abs(deg_slope) > 40:
             # Narrow slope range lines are found in
             # Add to list of verified lined
             filtered_lines.append(line)
