@@ -9,13 +9,16 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 // The Intake takes in the balls from the ground and it is raised and retracted by pneumatic pistons 
 // There is only one speed for the intake motor (Member: Motor) 
 // The intake interacts with the Indexer It uses motors, wheels, and pistons connected by belts and bands(The controller) 
 // The intake needs to make sure the balls pass through it and don't get jammed(Member: Motor)
 
-public class Intake extends SubsystemBase {
+public class Intake extends SubsystemBase implements Loggable {
+    @Log.SpeedController
     private final SendableSpeedController intakeMotor;
     private final IDSolenoid deployPiston;
 

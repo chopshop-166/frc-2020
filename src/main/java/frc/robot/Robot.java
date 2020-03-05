@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        Logger.configureLoggingAndConfig(this, true);
+        Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
@@ -93,8 +93,9 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("vision on", led.visionGreenOn());
         SmartDashboard.putData("vision off", led.ledOff());
         SmartDashboard.putData("cam toggle", camToggle());
-        SmartDashboard.putData("vision align", drive.visionAlignDegrees());
         SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
+        SmartDashboard.putData("vision align only", drive.visionAlignDegrees());
+        SmartDashboard.putData("vision align", visionAlignment());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.driveDistance(40, .5));
@@ -258,8 +259,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(camToggle(), led.visionGreenOn(), new WaitCommand(0.2),
-                drive.visionAlignDegrees(), led.ledOff());
+        CommandBase cmd = new SequentialCommandGroup(camToggle(), led.visionGreenOn(), drive.visionAlignDegrees(),
+                led.ledOff());
         cmd.setName("Vision Alignment");
         return cmd;
     }

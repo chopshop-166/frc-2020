@@ -1,141 +1,158 @@
-# PyLint please stop yelling at me I did nothing wrong...
-from math import radians, degrees
+# Final FRC 2020 vision program
+# Exposure setting should be tuned on a per-competition basis
+# They are currently tuned to the testing area
+# Tuning for the RealSense camera can be done easily through the ReaslSense Viewer app in a GUI
+
+from math import degrees, radians
+import pyrealsense2 as rs2
 import cv2
 import numpy as np
+import time
 
+debugging = True
 
-def equal(x, y, parallel):
-    # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
-    # Tests if slopes are within 5 degrees of each other
+ANGLE_LOW_THRESHOLD = 40
+ANGLE_HIGH_THRESHOLD = 70
+
+# Resolution
+WIDTH = 640
+HEIGHT = 480
+POINT_SAMPLES = 5
+
+# Angle value of each pixel
+FOV_ANGLE = 82.5
+PIXEL_ANGLE = FOV_ANGLE / WIDTH
+
+# Takes in slopes x and y, tests if they are equal to each other or any previously verified line
+
+def unequal(new, old_list):
     variance = 5
-    # Come to think of it that's probably way too small
-    Max = x + variance
-    Min = x - variance
-    # Please just trust me this thing somehow works
-    if parallel:
-        for i in parallel:
-            # Compare to previously verified lines
-            X1, Y1, X2, Y2 = i[0]
-            pSlope = degrees(np.arctan((Y2 - Y1)/(X2 - X1)))
-            # If the line's too similar with its partner or any previous line, fails test
-            if not Min < y < Max or Min < pSlope < Max:
-                return False
-            # If it doesn't fail, must have passed
-            return True
-    # And if there aren't previous lines, don't bother comparing
-    else:
-        if Min < y < Max:
-            return True
+    for i in old_list:
+        x1, y1, x2, y2 = i[0]
+        old_slope = degrees(np.arctan((y2 - y1) / (x2 - x1)))
+        if abs(new - old_slope) < variance:
+            return False
+    return True
 
 
-# Define width and height of frame
-width = 640
-height = 480
+def newLine(
+    filtered_lines, new_line, filtered_line_img, x1, y1, x2, y2, X_TOTAL, Y_TOTAL
+):
+    filtered_lines.append(new_line)
+    if debugging:
+        cv2.line(filtered_line_img, (x1, y1), (x2, y2), (0, 255, 0), 1)
+    X_TOTAL += x1 + x2
+    Y_TOTAL += y1 + y2
 
-# Import source file
-img = cv2.imread("connecticut2.png")
+    return X_TOTAL, Y_TOTAL
 
-# Convert from RGB to HSV, helps with filltering
-hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+VALS = []
+
+FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
+
+IMG = cv2.imread("Elbit3_Color.png")
+
+# Convert from RGB to HSV, helps with filtering
+HSV = cv2.cvtColor(IMG, cv2.COLOR_BGR2HSV)
 
 # Define upper and lower bounds for HSV variables
-lower_color = np.array([73, 39, 50])
-upper_color = np.array([94, 255, 255])
-# Define kernel for morphologyEx
-kernel = np.ones((5, 5), np.uint8)
+LOWER_COLOR = np.array([29, 144, 5])
+UPPER_COLOR = np.array([144, 255, 255])
 
 # Create mask within hsv range
-mask = cv2.inRange(hsv, lower_color, upper_color)
+MASK = cv2.inRange(HSV, LOWER_COLOR, UPPER_COLOR)
 
-morphMask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+# Blur image (buffer for pixel imperfections)
+MEDIAN = cv2.medianBlur(MASK, 5)
 
-# Create color result of mask over input image (testing)
-res = cv2.bitwise_and(img, img, mask=morphMask)
-# Various blur method testings
-blur = cv2.GaussianBlur(mask, (3, 3), 0)
-median = cv2.medianBlur(morphMask, 3)
+# Edge detection for use in line detection
+MED_EDGES = cv2.Canny(MEDIAN, 50, 150)
 
-# Edge detection on each test for use in line detection
-blur_edges = cv2.Canny(blur, 100, 200)
-mask_edges = cv2.Canny(mask, 100, 200)
-med_edges = cv2.Canny(median, 50, 150)
-res_edges = cv2.Canny(res, 100, 200)
+if debugging:
+    BLUR = cv2.GaussianBlur(MASK, (3, 3), 0)
 
-# Create empty image for lines (testing)
-lineImg = np.zeros((height, width, 3), np.uint8)
-lines = cv2.HoughLinesP(blur_edges, 1, radians(.5), 15, maxLineGap=20)
-# Find all lines in image
+    BLUR_EDGES = cv2.Canny(BLUR, 100, 200)
+    MASK_EDGES = cv2.Canny(MASK, 100, 200)
 
+    # Empty image for drawing lines (testing)
+    FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
+    LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
 
-# Make sure lines exist (crashes otherwise)
-if lines is not None:
-    # New empty list to fill with valid lines
-    filtered_lines = []
-    for line in lines:
-        # Extract points from line
-        X1, Y1, X2, Y2 = line[0]
-        # Calculate slope as degrees for ease of use
-        deg_slope = degrees(np.arctan((Y2 - Y1)/(X2 - X1)))
-        if deg_slope < -40 or deg_slope > 40:
-            # Narrow slope range lines are found in
-            # Add to list of verified lined
-            filtered_lines.append(line)
+# Find lines in selected image
+LINES = cv2.HoughLinesP(MED_EDGES, 1, radians(0.5), 25, maxLineGap=25)
 
-    # TODO: check if this and the next bunch can be combined to one step
+# If there are lines:
+if LINES is not None:
+    NUM_LINES = len(LINES)
+    FILTERED_LINES = []
+    X_TOTAL = 0
+    Y_TOTAL = 0
 
-    # Check new list of lines
-    numLines = len(filtered_lines)
-    if numLines > 1:
-        # new list to eliminate duplicate lines
-        parallel = []
-        Xtotal = 0
-        Ytotal = 0
-        # Iterate and compare
-        for i in range(numLines):
-            for j in range(i + 1, numLines):
-                # Extract points from lines x2
-                iPoints = filtered_lines[i]
-                X1, Y1, X2, Y2 = iPoints[0]
-                jPoints = filtered_lines[j]
-                X3, Y3, X4, Y4 = jPoints[0]
-                # Find slopes of lines in degrees
-                iSlope = degrees(np.arctan((Y2 - Y1)/(X2 - X1)))
-                # could be moved to equals function???
-                jSlope = degrees(np.arctan((Y4 - Y3)/(X4 - X3)))
+    for NEW_LINE in LINES:
+        x1, y1, x2, y2 = NEW_LINE[0]
+        new_slope = degrees(np.arctan((y2 - y1) / (x2 - x1)))
 
-                if equal(iSlope, jSlope, parallel):
-                    # Send to magic equals box
-                    # If verified, add *ONE* to final list (TODO: rename parallel, doesn't make sense)
-                    parallel.append(filtered_lines[i])
-                    # Draws lines on the empty line image, probably irrelevant, can use data points
-                    cv2.line(lineImg, (X1, Y1), (X2, Y2), (0, 255, 0), 1)
-                    # Add all X and Y values of ONE verified line
-                    Xtotal += X1
-                    Xtotal += X2
-                    # may work better alternating which set?
-                    Ytotal += Y1
-                    Ytotal += Y2
-        # Average ALL X and Y values to find midpoint of filtered lines
-        numLines = len(parallel)
-        if numLines:
-            Xcenter = Xtotal/(numLines*2)
-            Ycenter = Ytotal/(numLines*2)
-            lineImg[int(Ycenter), int(Xcenter)] = [255, 255, 255]
+        # Checks if we have verified lines, and makes a new line based on that.
+        if FILTERED_LINES:
+            if (
+                ANGLE_HIGH_THRESHOLD > abs(new_slope) > ANGLE_LOW_THRESHOLD
+            ) and unequal(new_slope, FILTERED_LINES):
+                X_TOTAL, Y_TOTAL = newLine(
+                    FILTERED_LINES,
+                    NEW_LINE,
+                    FILTERED_LINE_IMG,
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    X_TOTAL,
+                    Y_TOTAL,
+                )
+        elif ANGLE_HIGH_THRESHOLD > abs(new_slope) > ANGLE_LOW_THRESHOLD:
+            X_TOTAL, Y_TOTAL = newLine(
+                FILTERED_LINES,
+                NEW_LINE,
+                FILTERED_LINE_IMG,
+                x1,
+                y1,
+                x2,
+                y2,
+                X_TOTAL,
+                Y_TOTAL,
+            )
 
-    cv2.imshow('Lines', lineImg)
+    NUM_LINES = len(FILTERED_LINES)
+    if FILTERED_LINES:
+        VALS.append([X_TOTAL / (2 * NUM_LINES), Y_TOTAL / (2 * NUM_LINES)])
+        X_AVG = 0
+        Y_AVG = 0
+
+        for VAL in VALS:
+            X_VAL, Y_VAL = VAL
+            X_AVG += X_VAL
+            Y_AVG += Y_VAL
+
+        X_AVG = int(X_AVG)
+        Y_AVG = int(Y_AVG)
+            
+        cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
+
+    if debugging:
+        for LINE in LINES:
+            x1, y1, x2, y2 = LINE[0]
+            cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
 # Open the gallery of all my filtered works
-cv2.imshow('OG', img)
-cv2.imshow('Mask', mask)
-cv2.imshow('MorphMask', morphMask)
-cv2.imshow('Filtered', res)
-cv2.imshow('blur', blur_edges)
-cv2.imshow('median', median)
-cv2.imshow('med', med_edges)
-cv2.imshow('res', res_edges)
-cv2.imshow('Mask Edges', mask_edges)
+if debugging:
+    cv2.imshow("og lines", LINE_IMG)
+    cv2.imshow("lines", FILTERED_LINE_IMG)
+    cv2.imshow("OG", IMG)
+    cv2.imshow("Mask", MASK)
+    cv2.imshow("blur", BLUR_EDGES)
+    cv2.imshow("median", MEDIAN)
+    cv2.imshow("med", MED_EDGES)
+    cv2.imshow("Mask Edges", MASK_EDGES)
 
 cv2.waitKey(0)
-# Press any key to continue...
+
 cv2.destroyAllWindows()
-# Leave without a trace

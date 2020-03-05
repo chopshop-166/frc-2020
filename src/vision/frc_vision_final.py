@@ -13,7 +13,8 @@ from networktables import NetworkTables
 
 debugging = False
 
-ANGLE_THRESHOLD = 40
+ANGLE_HIGH_THRESHOLD = 70
+ANGLE_LOW_THRESHOLD = 40
 
 # Resolution
 WIDTH = 640
@@ -37,7 +38,7 @@ outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
 
 def swapStream(isShooting):
     if isShooting:
-        # s.set_option(rs2.option.auto_exposure_mode, False)
+        s.set_option(rs2.option.enable_auto_exposure, False)
         s.set_option(rs2.option.brightness, 0)
         s.set_option(rs2.option.contrast, 100)
         s.set_option(rs2.option.exposure, 156)
@@ -48,11 +49,9 @@ def swapStream(isShooting):
         s.set_option(rs2.option.sharpness, 50)
         s.set_option(rs2.option.white_balance, 6500)
     else:
-        # s.set_option(rs2.option.auto_exposure_mode, True)
+        s.set_option(rs2.option.enable_auto_exposure, True)
         s.set_option(rs2.option.brightness, 0)
         s.set_option(rs2.option.contrast, 50)
-        s.set_option(rs2.option.exposure, 156)
-        s.set_option(rs2.option.gain, 64)
         s.set_option(rs2.option.gamma, 300)
         s.set_option(rs2.option.hue, 0)
         s.set_option(rs2.option.saturation, 64)
@@ -170,7 +169,7 @@ while True:
                 # Checks if we have verified lines, and makes a new line based on that.
                 if FILTERED_LINES:
                     if (
-                        new_slope < -ANGLE_THRESHOLD or new_slope > ANGLE_THRESHOLD
+                        ANGLE_HIGH_THRESHOLD > abs(new_slope) > ANGLE_LOW_THRESHOLD
                     ) and unequal(new_slope, FILTERED_LINES):
                         X_TOTAL, Y_TOTAL = newLine(
                             FILTERED_LINES,
@@ -183,7 +182,7 @@ while True:
                             X_TOTAL,
                             Y_TOTAL,
                         )
-                elif new_slope < -ANGLE_THRESHOLD or new_slope > ANGLE_THRESHOLD:
+                elif ANGLE_HIGH_THRESHOLD > abs(new_slope) > ANGLE_LOW_THRESHOLD:
                     X_TOTAL, Y_TOTAL = newLine(
                         FILTERED_LINES,
                         NEW_LINE,
