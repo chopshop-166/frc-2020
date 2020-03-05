@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -14,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -30,13 +33,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * 
  * 6) Sensors? Encoders, Gyro
  */
-public class Drive extends SubsystemBase {
+public class Drive extends SubsystemBase implements Loggable {
 
+    @Log.SpeedController
     private final SendableSpeedController rightMotorGroup;
+    @Log.SpeedController
     private final SendableSpeedController leftMotorGroup;
+    @Log.Gyro
     private final GyroBase gyro;
+
     private final DifferentialDrive driveTrain;
+    @Log.Encoder
+    private final IEncoder driveRightEncoder;
+    @Log.Encoder
+    private final IEncoder driveLeftEncoder;
+    @Log
     private final PIDController pid;
+    static int i;
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -52,6 +65,8 @@ public class Drive extends SubsystemBase {
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
         pid = new PIDController(0, 0, 0);
+        driveRightEncoder = rightMotorGroup.getEncoder();
+        driveLeftEncoder = leftMotorGroup.getEncoder();
     }
 
     public CommandBase cancel() {
@@ -75,8 +90,6 @@ public class Drive extends SubsystemBase {
             double yAxis = forward.getAsDouble();
             double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
-            SmartDashboard.putNumber("Left Drive Encoder", leftMotorGroup.getEncoder().getDistance());
-            SmartDashboard.putNumber("Right Drive Encoder", rightMotorGroup.getEncoder().getDistance());
         }, this);
         cmd.setName("Drive");
         return cmd;
@@ -97,14 +110,14 @@ public class Drive extends SubsystemBase {
 
     public CommandBase driveDistance(double distance, double speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
-            leftMotorGroup.getEncoder().reset();
-            rightMotorGroup.getEncoder().reset();
+            driveLeftEncoder.reset();
+            driveRightEncoder.reset();
         }, () -> {
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            double avg = (leftMotorGroup.getEncoder().getDistance() + rightMotorGroup.getEncoder().getDistance()) / 2;
+            double avg = (driveLeftEncoder.getDistance() + driveRightEncoder.getDistance()) / 2;
             return (avg >= distance);
         }, this);
         cmd.setName("Drive Distance");
@@ -132,9 +145,9 @@ public class Drive extends SubsystemBase {
     public CommandBase slowTurn(boolean direction) {
         CommandBase cmd = new RunCommand(() -> {
             if (direction == true) {
-                driveTrain.arcadeDrive(0, 0.3);
+                driveTrain.arcadeDrive(0, 0.4);
             } else if (direction == false) {
-                driveTrain.arcadeDrive(0, -0.3);
+                driveTrain.arcadeDrive(0, -0.4);
 
             }
         }, this);
@@ -143,18 +156,65 @@ public class Drive extends SubsystemBase {
     }
 
     public CommandBase visionAlignDegrees() {
+        CommandBase cmd = new CommandBase() {
+
+            @Override
+            public void initialize() {
+                gyro.reset();
+                pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
+                pid.setTolerance(1.5);
+                pid.setPID(0.025, 0.015, 0);
+
+            }
+
+            @Override
+            public void execute() {
+                if (i % 20 == 0) {
+                    gyro.reset();
+                    pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
+                    i = 0;
+                }
+                double turning = pid.calculate(-gyro.getAngle());
+                SmartDashboard.putNumber("pid Out", turning);
+                driveTrain.arcadeDrive(0, turning);
+                i++;
+            }
+
+            @Override
+            public boolean isFinished() {
+                // TODO Auto-generated method stub
+                return pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false);
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                driveTrain.stopMotor();
+
+            }
+        };
+        cmd.setName("Turn Degrees");
+        return cmd;
+    }
+
+    public CommandBase vision() {
         CommandBase cmd = new FunctionalCommand(() -> {
+            // System.out.println("first");
             gyro.reset();
-            pid.setTolerance(2.5);
-            pid.setPID(0.01, 0.00012, 0);
-        }, () -> {
             pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
-            double turning = pid.calculate(gyro.getAngle());
+            pid.setTolerance(2.5);
+            pid.setPID(0.025, 0.015, 0);
+            // System.out.println("second");
+        }, () -> {
+
+            double turning = pid.calculate(-gyro.getAngle());
+            SmartDashboard.putNumber("pid Out", turning);
             driveTrain.arcadeDrive(0, turning);
+
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
             return pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false);
+
         }, this);
         cmd.setName("Turn Degrees");
         return cmd;
