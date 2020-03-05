@@ -36,7 +36,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
     @Log.SpeedController
     private SendableSpeedController spinnerMotor;
 
-    private static final double SPINNER_MOTOR_SPEED = -0.6;
+    private static final double SPINNER_MOTOR_SPEED = 0.6;
 
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
@@ -106,7 +106,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
     public CommandBase spinControlPanel(DoubleSupplier speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-            spinnerMotor.set(-Math.abs(speed.getAsDouble()));
+            spinnerMotor.set(Math.abs(speed.getAsDouble()));
         }, (interrupted) -> {
             spinnerMotor.stopMotor();
         }, () -> false, this);

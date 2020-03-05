@@ -157,6 +157,9 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public CommandBase visionAlignDegrees() {
         CommandBase cmd = new CommandBase() {
+            {
+                addRequirements(Drive.this);
+            }
 
             @Override
             public void initialize() {
@@ -182,7 +185,6 @@ public class Drive extends SubsystemBase implements Loggable {
 
             @Override
             public boolean isFinished() {
-                // TODO Auto-generated method stub
                 return pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false);
             }
 
@@ -219,29 +221,4 @@ public class Drive extends SubsystemBase implements Loggable {
         cmd.setName("Turn Degrees");
         return cmd;
     }
-
-    // public CommandBase visionAdjust() {
-
-    // CommandBase cmd = new FunctionalCommand(() -> {
-    // if (ratioOffset >= 0) {
-    // speed = .5;
-    // } else {
-    // speed = -.5;
-    // ratioOffset *= -1;
-    // }
-    // gyro.reset();
-    // }, () -> {
-
-    // if (gyro.getAngle() - ratioOffset != 0) {
-    // turnDegrees(ratioOffset, speed);
-    // // driveTrain.arcadeDrive(0, speed);
-    // }
-    // }, (interrupted) -> {
-    // driveTrain.stopMotor();
-    // }, () -> {
-    // return Math.abs(gyro.getAngle()) >= Math.abs(ratioOffset);
-    // }, this);
-    // cmd.setName("Turn Vision good");
-    // return cmd;
-    // }
 }

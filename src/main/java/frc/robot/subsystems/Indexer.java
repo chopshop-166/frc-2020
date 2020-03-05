@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap.IndexMap;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -47,7 +46,6 @@ public class Indexer extends SubsystemBase implements Loggable {
     private static final double SINGULATOR_MOTOR_SPEED = 1.0;
     private static final double PIERRE_INDEX_SPEED = 0.5;
     private static final double PIERRE_SHOOT_SPEED = 1.0;
-    private static final double WAITTIME = 10;
 
     public Indexer(final IndexMap map) {
         super();
@@ -69,7 +67,7 @@ public class Indexer extends SubsystemBase implements Loggable {
     }
 
     public CommandBase indexBall() {
-        CommandBase cmd = new SequentialCommandGroup(pierrePossesionNEW(), runToClearBottomSensor());
+        CommandBase cmd = new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
         cmd.setName("Intake to Pierre");
         return cmd;
     }
@@ -83,12 +81,6 @@ public class Indexer extends SubsystemBase implements Loggable {
     public CommandBase shootBall() {
         CommandBase cmd = new SequentialCommandGroup(loadBallToTop(), unloadBall());
         cmd.setName("Shoot Ball");
-        return cmd;
-    }
-
-    public CommandBase waitTime() {
-        CommandBase cmd = new WaitCommand(WAITTIME);
-        cmd.setName("Wait for tIME");
         return cmd;
     }
 
@@ -124,34 +116,10 @@ public class Indexer extends SubsystemBase implements Loggable {
         return indexMotor(-PIERRE_INDEX_SPEED);
     }
 
-    // This command will make sure that the singulator has possesion of the ball
-
-    public CommandBase pierrePossesion() {
-        CommandBase cmd = new FunctionalCommand(() -> {
-        }, () -> {
-            if (frontIntakeIR.getAsBoolean()) {
-                singulator.set(SINGULATOR_MOTOR_SPEED);
-            }
-            // This checks to see if a ball is at the top of Pierre and doesn't not run
-            // because sometimes it will
-            if (backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
-                pierreMotor.set(PIERRE_INDEX_SPEED);
-                singulator.set(SINGULATOR_MOTOR_SPEED);
-            }
-        }, (interrupted) -> {
-            pierreMotor.set(0);
-            singulator.set(0);
-        }, () -> {
-            return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
-        }, this);
-        cmd.setName("Pierre Possession");
-        return cmd;
-    }
-
     // run singulator when front intake is triggered, stop singulator when back
     // intake IR is clear and until bottom pierre is covered
     // run pierre when bottom pierre is covered
-    public CommandBase pierrePossesionNEW() {
+    public CommandBase pierrePossesion() {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
             if (frontIntakeIR.getAsBoolean() || backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
@@ -169,7 +137,7 @@ public class Indexer extends SubsystemBase implements Loggable {
         }, () -> {
             return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
         }, this);
-        cmd.setName("Pierre Possession NEW");
+        cmd.setName("Pierre Possession");
         return cmd;
     }
     // This command will make sure that pierre has possesion of the ball. It will be

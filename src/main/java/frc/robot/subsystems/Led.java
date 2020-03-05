@@ -12,16 +12,16 @@ public class Led extends SubsystemBase {
     AddressableLEDBuffer visionBuffer;
 
     public Led(LEDMap map) {
-        visionBuffer = new AddressableLEDBuffer(6);
+        visionBuffer = map.visionBuffer();
         visionLED = map.visionLED();
         visionLED.setLength(visionBuffer.getLength());
     }
 
-    public CommandBase visionGreenOn() {
+    public CommandBase visionLedOn(int hue) {
         CommandBase cmd = new InstantCommand(() -> {
             for (var i = 0; i < visionBuffer.getLength(); i++) {
                 // Sets the specified LED to the RGB values for green
-                visionBuffer.setRGB(i, 0, 255, 0);
+                visionBuffer.setHSV(i, hue, 100, 100);
             }
 
             visionLED.setData(visionBuffer);
@@ -31,7 +31,7 @@ public class Led extends SubsystemBase {
         return cmd;
     }
 
-    public CommandBase ledOff() {
+    public CommandBase visionLedOff() {
         CommandBase cmd = new InstantCommand(() -> {
             for (var i = 0; i < visionBuffer.getLength(); i++) {
                 // Sets the specified LED to the RGB values for green

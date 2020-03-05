@@ -20,6 +20,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
@@ -53,7 +54,6 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-                // return sendLeader;
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
             }
@@ -67,7 +67,6 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-                // return sendLeader;
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
 
@@ -128,7 +127,6 @@ public class FrancoisMap extends RobotMap {
             @Override
             public SendableSpeedController spinner() {
                 SendableSpeedController motor = SendableSpeedController.wrap(controlPanel);
-                motor.setInverted(true);
                 return motor;
             }
         };
@@ -229,6 +227,11 @@ public class FrancoisMap extends RobotMap {
             @Override
             public AddressableLED visionLED() {
                 return new AddressableLED(0);
+            }
+
+            @Override
+            public AddressableLEDBuffer visionBuffer() {
+                return new AddressableLEDBuffer(6);
             }
 
         };

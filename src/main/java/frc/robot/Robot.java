@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
@@ -71,6 +70,8 @@ public class Robot extends TimedRobot {
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+    final private int VisionGreen = 120;
+
     UsbCamera camera0;
     VideoSink videoSink;
     boolean camera0Active = true;
@@ -90,8 +91,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
-        SmartDashboard.putData("vision on", led.visionGreenOn());
-        SmartDashboard.putData("vision off", led.ledOff());
+        SmartDashboard.putData("vision on", led.visionLedOn(VisionGreen));
+        SmartDashboard.putData("vision off", led.visionLedOff());
         SmartDashboard.putData("cam toggle", camToggle());
         SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
         SmartDashboard.putData("vision align only", drive.visionAlignDegrees());
@@ -206,8 +207,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase systemsCheck() {
-        CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesionNEW(),
-                shooter.spinUp(1000), indexer.shootAllBalls(1));
+        CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesion(), shooter.spinUp(1000),
+                indexer.shootAllBalls(1));
         cmd.setName("SYSTEMS CHECK");
         return cmd;
     }
@@ -242,25 +243,25 @@ public class Robot extends TimedRobot {
         return camTogglecmd;
     }
 
-    public CommandBase camOn() {
+    public CommandBase enableTargeting() {
         CommandBase cmd = new InstantCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", true);
         });
-        cmd.setName("Camera On");
+        cmd.setName("Targeting On");
         return cmd;
     }
 
-    public CommandBase camOff() {
+    public CommandBase disableTargeting() {
         CommandBase cmd = new InstantCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", false);
         });
-        cmd.setName("Camera Off");
+        cmd.setName("Targeting Off");
         return cmd;
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(camToggle(), led.visionGreenOn(), drive.visionAlignDegrees(),
-                led.ledOff());
+        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.visionLedOn(VisionGreen),
+                drive.visionAlignDegrees(), led.visionLedOff(), disableTargeting());
         cmd.setName("Vision Alignment");
         return cmd;
     }
