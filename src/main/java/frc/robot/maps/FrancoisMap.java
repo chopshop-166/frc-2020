@@ -20,7 +20,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
@@ -228,9 +227,10 @@ public class FrancoisMap extends RobotMap {
             public AddressableLED visionLED() {
                 return new AddressableLED(0);
             }
+
             @Override
-            public AddressableLEDBuffer visionBuffer() {
-                return new AddressableLEDBuffer(6);
+            public int visionBufferLength() {
+                return 0;
             }
 
         };

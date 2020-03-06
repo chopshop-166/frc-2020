@@ -16,7 +16,6 @@ import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
 import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 
 public class RobotMap {
 
@@ -140,8 +139,20 @@ public class RobotMap {
             return new AddressableLED(0);
         }
 
-        public AddressableLEDBuffer visionBuffer() {
-            return new AddressableLEDBuffer(0);
+        public int visionBufferLength() {
+            return 0;
+        }
+
+        public ISolenoid visionRingLight() {
+            return new MockSolenoid();
+        }
+
+        public AddressableLED liftLED() {
+            return new AddressableLED(0);
+        }
+
+        public int liftBufferLength() {
+            return 0;
         }
 
     }
