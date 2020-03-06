@@ -49,7 +49,6 @@ public class Drive extends SubsystemBase implements Loggable {
     private final IEncoder driveLeftEncoder;
     @Log
     private final PIDController pid;
-    static int i;
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -64,7 +63,7 @@ public class Drive extends SubsystemBase implements Loggable {
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
-        pid = new PIDController(0, 0, 0);
+        pid = new PIDController(0.025, 0.015, 0);
         driveRightEncoder = rightMotorGroup.getEncoder();
         driveLeftEncoder = leftMotorGroup.getEncoder();
     }
@@ -146,11 +145,11 @@ public class Drive extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-    public CommandBase slowTurn(boolean direction) {
+    public CommandBase slowTurn(boolean isTurningRight) {
         CommandBase cmd = new RunCommand(() -> {
-            if (direction == true) {
+            if (isTurningRight == true) {
                 driveTrain.arcadeDrive(0, 0.4);
-            } else if (direction == false) {
+            } else if (isTurningRight == false) {
                 driveTrain.arcadeDrive(0, -0.4);
 
             }
@@ -164,13 +163,13 @@ public class Drive extends SubsystemBase implements Loggable {
             {
                 addRequirements(Drive.this);
             }
+            int i;
 
             @Override
             public void initialize() {
                 gyro.reset();
                 pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
                 pid.setTolerance(1.5);
-                pid.setPID(0.025, 0.015, 0);
 
             }
 
@@ -202,27 +201,4 @@ public class Drive extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-    public CommandBase vision() {
-        CommandBase cmd = new FunctionalCommand(() -> {
-            // System.out.println("first");
-            gyro.reset();
-            pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
-            pid.setTolerance(2.5);
-            pid.setPID(0.025, 0.015, 0);
-            // System.out.println("second");
-        }, () -> {
-
-            double turning = pid.calculate(-gyro.getAngle());
-            SmartDashboard.putNumber("pid Out", turning);
-            driveTrain.arcadeDrive(0, turning);
-
-        }, (interrupted) -> {
-            driveTrain.stopMotor();
-        }, () -> {
-            return pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false);
-
-        }, this);
-        cmd.setName("Turn Degrees");
-        return cmd;
-    }
 }
