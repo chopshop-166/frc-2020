@@ -30,7 +30,7 @@ public class Led extends SubsystemBase {
         CommandBase cmd = new InstantCommand(() -> {
             for (var i = 0; i < visionBuffer.getLength(); i++) {
                 // Sets the specified LED to the RGB values for green
-                visionBuffer.setHSV(i, VisionGreen, 100, 100);
+                visionBuffer.setHSV(i, hue, saturation, value);
             }
 
             visionLED.setData(visionBuffer);
