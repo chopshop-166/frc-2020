@@ -70,8 +70,6 @@ public class Robot extends TimedRobot {
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-    final private int VisionGreen = 120;
-
     UsbCamera camera0;
     VideoSink videoSink;
     boolean camera0Active = true;
@@ -91,7 +89,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
-        SmartDashboard.putData("vision on", led.visionLedOn(VisionGreen));
+        SmartDashboard.putData("vision on", led.visionLedOn());
         SmartDashboard.putData("vision off", led.visionLedOff());
         SmartDashboard.putData("cam toggle", camToggle());
         SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
@@ -260,8 +258,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.visionLedOn(VisionGreen),
-                drive.visionAlignDegrees(), led.visionLedOff(), disableTargeting());
+        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.visionLedOn(), drive.visionAlignDegrees(),
+                led.visionLedOff(), disableTargeting());
         cmd.setName("Vision Alignment");
         return cmd;
     }
