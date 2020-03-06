@@ -228,7 +228,6 @@ public class FrancoisMap extends RobotMap {
             public AddressableLED visionLED() {
                 return new AddressableLED(0);
             }
-
             @Override
             public AddressableLEDBuffer visionBuffer() {
                 return new AddressableLEDBuffer(6);
