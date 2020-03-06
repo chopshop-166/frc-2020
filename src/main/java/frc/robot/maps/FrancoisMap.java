@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
+import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
@@ -223,14 +224,9 @@ public class FrancoisMap extends RobotMap {
     @Override
     public LEDMap getLEDMap() {
         return new LEDMap() {
-            @Override
-            public AddressableLED visionLED() {
-                return new AddressableLED(0);
-            }
 
-            @Override
-            public int visionBufferLength() {
-                return 0;
+            public ISolenoid visionRingLight() {
+                return new WSolenoid(7);
             }
 
         };

@@ -89,12 +89,13 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
-        SmartDashboard.putData("vision on", led.visionLedGreen());
-        SmartDashboard.putData("vision off", led.visionLedOff());
+
         SmartDashboard.putData("cam toggle", camToggle());
         SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
         SmartDashboard.putData("vision align only", drive.visionAlignDegrees());
         SmartDashboard.putData("vision align", visionAlignment());
+        SmartDashboard.putData("ring light on", led.ringLightOn());
+        SmartDashboard.putData("ring light off", led.ringLightOff());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
         autoChooser.addOption("Pass the Line", drive.drivePastLine());
@@ -258,8 +259,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.visionLedGreen(),
-                drive.visionAlignDegrees(), led.visionLedOff(), disableTargeting());
+        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlignDegrees(),
+                led.ringLightOff(), disableTargeting());
         cmd.setName("Vision Alignment");
         return cmd;
     }
