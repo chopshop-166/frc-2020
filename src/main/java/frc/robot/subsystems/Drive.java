@@ -77,6 +77,10 @@ public class Drive extends SubsystemBase implements Loggable {
         return cmd;
     }
 
+    public CommandBase drivePastLine() {
+        return driveDistance(40, 0.5);
+    }
+
     /**
      * Maps the drive axises
      * 

@@ -106,6 +106,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
     public CommandBase spinControlPanel(DoubleSupplier speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
+            // Can spin forwards and backwards
             spinnerMotor.set(Math.abs(speed.getAsDouble()));
         }, (interrupted) -> {
             spinnerMotor.stopMotor();
