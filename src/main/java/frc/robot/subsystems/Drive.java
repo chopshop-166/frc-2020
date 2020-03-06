@@ -155,7 +155,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
             }
         }, this);
-        cmd.setName("turing");
+        cmd.setName("Turning");
         return cmd;
     }
 
