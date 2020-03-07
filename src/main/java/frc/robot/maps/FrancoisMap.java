@@ -108,10 +108,10 @@ public class FrancoisMap extends RobotMap {
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                pidLeader.setP(0.0002);
+                pidLeader.setP(0.00038);
                 pidLeader.setI(0);
                 pidLeader.setD(0);
-                pidLeader.setF(0.0002);
+                pidLeader.setF(0.00017);
 
                 // kp = .00045, kF = .0002
 

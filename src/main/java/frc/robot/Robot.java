@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
@@ -138,6 +139,7 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
         Logger.updateEntries();
+
     }
 
     /**
@@ -192,9 +194,16 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
+    public CommandBase shootAllBalls(int ballAmount) {
+        CommandBase cmd = CommandUtils.repeat(ballAmount,
+                new SequentialCommandGroup(shooter.linearSpeedUp(), indexer.shootBall()));
+        cmd.setName("Shoot All Balls");
+        return cmd;
+    }
+
     // will spin the shooter then shoot all the balls and then turn the shooter off.
     public CommandBase releaseBalls(int ballCount) {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(ballCount));
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(ballCount));
         cmd.setName("Shoot all Balls");
         return cmd;
     }
@@ -273,7 +282,7 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(releaseBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kB).whenHeld(shootAllBalls(5)).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kX).whenHeld(fastReleaseBalls(5)).whenReleased(shooter.spinDown());
 
         driveController.getButton(Button.kY).toggleWhenActive(

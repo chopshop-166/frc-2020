@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 
 /**
@@ -33,6 +34,10 @@ public class Shooter extends SubsystemBase implements Loggable {
     public final double shooterHeight;
     public static double verticalDistance;
     public static double horizontalDistance;
+    @Log
+    public double output;
+    @Config.NumberSlider
+    public double shooterSpeed = 4300;
 
     // inches/second/second
     public final static double GRAVITY = 386.2205;
@@ -41,6 +46,7 @@ public class Shooter extends SubsystemBase implements Loggable {
     public final static double THETA = Math.toRadians(60);
     // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
+    // y = 2878.7x^(0.3094)
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
@@ -69,13 +75,32 @@ public class Shooter extends SubsystemBase implements Loggable {
         final CommandBase cmd = new FunctionalCommand(() -> {
             // TODO incorperate calculations
             // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
-            shooterWheelMotor.setSetpoint(speed);
+            shooterWheelMotor.setSetpoint(shooterSpeed);
         }, () -> {
 
         }, (interrupted) -> {
 
         }, () -> {
-            return shooterEncoder.getRate() >= speed;
+            return shooterEncoder.getRate() >= shooterSpeed;
+        }, this);
+        cmd.setName("spinUp");
+        return cmd;
+    }
+
+    public CommandBase linearSpeedUp() {
+        final CommandBase cmd = new FunctionalCommand(() -> {
+            double dist = SmartDashboard.getNumber("Distance To Target", 160);
+            output = 2800.7 * (Math.pow(dist, 0.3094));
+
+            // TODO incorperate calculations
+            // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
+            shooterWheelMotor.setSetpoint(output);
+        }, () -> {
+
+        }, (interrupted) -> {
+
+        }, () -> {
+            return shooterEncoder.getRate() >= output;
         }, this);
         cmd.setName("spinUp");
         return cmd;
@@ -107,6 +132,24 @@ public class Shooter extends SubsystemBase implements Loggable {
         // If it doesn't see the target, it will just shoot at the last speed.
         if (SmartDashboard.getBoolean("Sees Target", false)) {
             rpmSpeed = SmartDashboard.getNumber("Last RPM", 0);
+        } else {
+            final double rpm = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
+            SmartDashboard.putNumber("Last RPM", rpm);
+            rpmSpeed = rpm;
+        }
+        final CommandBase cmd = new InstantCommand(() -> {
+            shooterWheelMotor.setSetpoint(rpmSpeed);
+        }, this);
+        cmd.setName("calculatedShoot");
+        return cmd;
+    }
+
+    public CommandBase linearShoot() {
+        final double rpmSpeed;
+
+        // If it doesn't see the target, it will just shoot at the last speed.
+        if (SmartDashboard.getBoolean("Sees Target", false)) {
+            rpmSpeed = SmartDashboard.getNumber("Distance To Target", 3.8);
         } else {
             final double rpm = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
             SmartDashboard.putNumber("Last RPM", rpm);
