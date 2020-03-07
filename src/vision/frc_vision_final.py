@@ -8,10 +8,9 @@ import pyrealsense2 as rs2
 import cv2
 import numpy as np
 import time
-from cscore import CameraServer
-from networktables import NetworkTables
+from visionfunctions import *
 
-debugging = False
+debugging = True
 
 ANGLE_HIGH_THRESHOLD = 70
 ANGLE_LOW_THRESHOLD = 40
@@ -25,39 +24,7 @@ POINT_SAMPLES = 5
 FOV_ANGLE = 82.5
 PIXEL_ANGLE = FOV_ANGLE / WIDTH
 
-OldStream = True
-
-# Enable CameraServer
-cs = CameraServer.getInstance()
-cs.enableLogging()
-
-outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
-
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
-
-
-def swapStream(isShooting):
-    if isShooting:
-        s.set_option(rs2.option.enable_auto_exposure, False)
-        s.set_option(rs2.option.brightness, 0)
-        s.set_option(rs2.option.contrast, 100)
-        s.set_option(rs2.option.exposure, 156)
-        s.set_option(rs2.option.gain, 75)
-        s.set_option(rs2.option.gamma, 300)
-        s.set_option(rs2.option.hue, 0)
-        s.set_option(rs2.option.saturation, 50)
-        s.set_option(rs2.option.sharpness, 50)
-        s.set_option(rs2.option.white_balance, 6500)
-    else:
-        s.set_option(rs2.option.enable_auto_exposure, True)
-        s.set_option(rs2.option.brightness, 0)
-        s.set_option(rs2.option.contrast, 50)
-        s.set_option(rs2.option.gamma, 300)
-        s.set_option(rs2.option.hue, 0)
-        s.set_option(rs2.option.saturation, 64)
-        s.set_option(rs2.option.sharpness, 50)
-        s.set_option(rs2.option.white_balance, 4600)
-
 
 def unequal(new, old_list):
     variance = 5
@@ -80,89 +47,70 @@ def newLine(
 
     return X_TOTAL, Y_TOTAL
 
+if not debugging:
+    from cscore import CameraServer
+    from networktables import NetworkTables
+    NetworkTables.initialize(server="roborio-166-frc.local")
 
-NetworkTables.initialize(server="roborio-166-frc.local")
+    sd = NetworkTables.getTable("SmartDashboard")
 
-sd = NetworkTables.getTable("SmartDashboard")
-# sd.putNumber('someNumber', 1234)
-# otherNumber = sd.getNumber('otherNumber')
+    OldStream = True
 
-# Camera settings
-pipe = rs2.pipeline()
-config = rs2.config()
-config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
-config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
-profile = pipe.start(config)
-s = profile.get_device().query_sensors()[1]
-s.set_option(rs2.option.brightness, 0)
-s.set_option(rs2.option.contrast, 100)
-s.set_option(rs2.option.exposure, 45)
-s.set_option(rs2.option.gain, 75)
-s.set_option(rs2.option.gamma, 100)
-s.set_option(rs2.option.hue, 0)
-s.set_option(rs2.option.saturation, 50)
-s.set_option(rs2.option.sharpness, 0)
-s.set_option(rs2.option.white_balance, 2800)
+    # Enable CameraServer
+    cs = CameraServer.getInstance()
+    cs.enableLogging()
+
+    outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
+
+    # Camera settings
+    pipe = rs2.pipeline()
+    config = rs2.config()
+    config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
+    config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
+    profile = pipe.start(config)
+    s = profile.get_device().query_sensors()[1]
+    swapStream(False, s)
 
 VALS = []
 
 FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
 
+# Define upper and lower bounds for HSV variables
+LOWER_COLOR = np.array([70, 80, 255])
+UPPER_COLOR = np.array([95, 180, 255])
+
 while True:
     start_time = time.time()
 
-    # Waits to get frames, and gets information about the frame.
-    frames = rs2.composite_frame(pipe.wait_for_frames())
-    frame = rs2.video_frame(frames.get_color_frame())
-    depth = rs2.depth_frame(frames.get_depth_frame())
+    if not debugging:
+        # Waits to get frames, and gets information about the frame.
+        frames = rs2.composite_frame(pipe.wait_for_frames())
+        frame = rs2.video_frame(frames.get_color_frame())
+        depth = rs2.depth_frame(frames.get_depth_frame())
 
-    if not frame:
-        continue
+        if not frame:
+            continue
 
-    IMG = np.asanyarray(frame.get_data())
+        IMG = np.asanyarray(frame.get_data())
 
-    isShooting = sd.getBoolean("Is Shooting", defaultValue=False)
-    if not isShooting == OldStream:
-        swapStream(isShooting)
+        isShooting = sd.getBoolean("Is Shooting", defaultValue=False)
+        if not isShooting == OldStream:
+            swapStream(isShooting, s)
+    else:
+        IMG = cv2.imread('Elbit3_Color.png')
+        isShooting = True
+
+    lines = imgfilter(IMG, LOWER_COLOR, UPPER_COLOR, debugging, WIDTH, HEIGHT)
 
     if isShooting:
-        # Convert from RGB to HSV, helps with filtering
-        HSV = cv2.cvtColor(IMG, cv2.COLOR_BGR2HSV)
-
-        # Define upper and lower bounds for HSV variables
-        LOWER_COLOR = np.array([70, 80, 255])
-        UPPER_COLOR = np.array([95, 180, 255])
-
-        # Create mask within hsv range
-        MASK = cv2.inRange(HSV, LOWER_COLOR, UPPER_COLOR)
-
-        # Blur image (buffer for pixel imperfections)
-        MEDIAN = cv2.medianBlur(MASK, 5)
-
-        # Edge detection for use in line detection
-        MED_EDGES = cv2.Canny(MEDIAN, 50, 150)
-
-        if debugging:
-            BLUR = cv2.GaussianBlur(MASK, (3, 3), 0)
-
-            BLUR_EDGES = cv2.Canny(BLUR, 100, 200)
-            MASK_EDGES = cv2.Canny(MASK, 100, 200)
-
-            # Empty image for drawing lines (testing)
-            FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
-            LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
-
-        # Find lines in selected image
-        LINES = cv2.HoughLinesP(MED_EDGES, 1, radians(0.5), 25, maxLineGap=25)
-
         # If there are lines:
-        if LINES is not None:
-            NUM_LINES = len(LINES)
+        if lines is not None:
+            NUM_LINES = len(lines)
             FILTERED_LINES = []
             X_TOTAL = 0
             Y_TOTAL = 0
 
-            for NEW_LINE in LINES:
+            for NEW_LINE in lines:
                 x1, y1, x2, y2 = NEW_LINE[0]
                 new_slope = degrees(np.arctan((y2 - y1) / (x2 - x1)))
 
@@ -201,6 +149,7 @@ while True:
                 Y_AVG = 0
 
                 if len(VALS) == POINT_SAMPLES:
+                    # Pop the first value, and append the new average if the list is full
                     VALS.pop(0)
                     VALS.append([X_TOTAL / (2 * NUM_LINES), Y_TOTAL / (2 * NUM_LINES)])
 
@@ -233,13 +182,11 @@ while True:
                     VALS.append([X_TOTAL / (2 * NUM_LINES), Y_TOTAL / (2 * NUM_LINES)])
 
             if debugging:
-                for LINE in LINES:
+                for LINE in lines:
                     x1, y1, x2, y2 = LINE[0]
                     cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
-        else:
-            sd.putBoolean("Sees Target", False)
-    else:
-        sd.putBoolean("Sees Target", False)
+        elif not debugging: sd.putBoolean("Sees Target", False)
+    elif not debugging: sd.putBoolean("Sees Target", False)
 
     # Open the gallery of all my filtered works
     if debugging:

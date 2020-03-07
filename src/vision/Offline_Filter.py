@@ -25,6 +25,7 @@ PIXEL_ANGLE = FOV_ANGLE / WIDTH
 
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
 
+
 def unequal(new, old_list):
     variance = 5
     for i in old_list:
@@ -45,6 +46,7 @@ def newLine(
     Y_TOTAL += y1 + y2
 
     return X_TOTAL, Y_TOTAL
+
 
 VALS = []
 
@@ -77,7 +79,6 @@ if debugging:
     # Empty image for drawing lines (testing)
     FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
     LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
-
 # Find lines in selected image
 LINES = cv2.HoughLinesP(MED_EDGES, 1, radians(0.5), 25, maxLineGap=25)
 
@@ -120,7 +121,6 @@ if LINES is not None:
                 X_TOTAL,
                 Y_TOTAL,
             )
-
     NUM_LINES = len(FILTERED_LINES)
     if FILTERED_LINES:
         VALS.append([X_TOTAL / (2 * NUM_LINES), Y_TOTAL / (2 * NUM_LINES)])
@@ -131,17 +131,14 @@ if LINES is not None:
             X_VAL, Y_VAL = VAL
             X_AVG += X_VAL
             Y_AVG += Y_VAL
-
         X_AVG = int(X_AVG)
         Y_AVG = int(Y_AVG)
-            
-        cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
 
+        cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
     if debugging:
         for LINE in LINES:
             x1, y1, x2, y2 = LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)
-
 # Open the gallery of all my filtered works
 if debugging:
     cv2.imshow("og lines", LINE_IMG)
@@ -152,7 +149,6 @@ if debugging:
     cv2.imshow("median", MEDIAN)
     cv2.imshow("med", MED_EDGES)
     cv2.imshow("Mask Edges", MASK_EDGES)
-
 cv2.waitKey(0)
 
 cv2.destroyAllWindows()
