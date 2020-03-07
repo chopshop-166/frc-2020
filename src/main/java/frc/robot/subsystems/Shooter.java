@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.ThresholdCheck;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -36,6 +39,7 @@ public class Shooter extends SubsystemBase implements Loggable {
     public static double horizontalDistance;
     @Log
     public double output;
+    @Log
     public double shooterSpeed = 4300;
 
     // inches/second/second
@@ -56,7 +60,7 @@ public class Shooter extends SubsystemBase implements Loggable {
     }
 
     @Config
-    public void setSpeed(double speed) {
+    public void setshooterSpeed(double speed) {
         shooterSpeed = speed;
     }
 
@@ -105,6 +109,45 @@ public class Shooter extends SubsystemBase implements Loggable {
             return shooterEncoder.getRate() >= output;
         }, this);
         cmd.setName("spinUp");
+        return cmd;
+    }
+
+    public CommandBase linearSpinUp() {
+        CommandBase cmd = new CommandBase() {
+            {
+                addRequirements(Shooter.this);
+            }
+            int i;
+            ThresholdCheck check = new ThresholdCheck(10, () -> {
+                return (shooterEncoder.getRate() >= output * .98) && (shooterEncoder.getRate() <= output * 1.02);
+
+            });
+
+            @Override
+            public void initialize() {
+
+                double dist = SmartDashboard.getNumber("Distance To Target", 160);
+                output = 2800.7 * (Math.pow(dist, 0.3094));
+                shooterWheelMotor.setSetpoint(output);
+
+            }
+
+            @Override
+            public void execute() {
+
+            }
+
+            @Override
+            public boolean isFinished() {
+                return check.getAsBoolean();
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+
+            }
+        };
+        cmd.setName("Turn Degrees");
         return cmd;
     }
 

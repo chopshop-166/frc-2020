@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.ThresholdCheck;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -164,11 +165,15 @@ public class Drive extends SubsystemBase implements Loggable {
                 addRequirements(Drive.this);
             }
             int i;
+            ThresholdCheck check = new ThresholdCheck(10, () -> {
+                return (pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false));
+
+            });
 
             @Override
             public void initialize() {
                 gyro.reset();
-                pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
+                pid.setSetpoint(SmartDashboard.getNumber("Angle Offset", 0));
                 pid.setTolerance(1.5);
 
             }
@@ -180,6 +185,7 @@ public class Drive extends SubsystemBase implements Loggable {
                     pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
                     i = 0;
                 }
+
                 double turning = pid.calculate(-gyro.getAngle());
                 SmartDashboard.putNumber("pid Out", turning);
                 driveTrain.arcadeDrive(0, turning);
@@ -188,7 +194,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
             @Override
             public boolean isFinished() {
-                return pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false);
+                return check.getAsBoolean();
             }
 
             @Override
@@ -197,8 +203,10 @@ public class Drive extends SubsystemBase implements Loggable {
 
             }
         };
-        cmd.setName("Turn Degrees");
-        return cmd;
-    }
 
+        cmd.setName("Turn Degrees");
+
+        return cmd;
+
+    }
 }
