@@ -49,6 +49,8 @@ public class Shooter extends SubsystemBase implements Loggable {
     public final static double THETA = Math.toRadians(60);
     // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
+
+    private final static double MAX_SHOOTER_SPEED = 5400;
     // y = 2878.7x^(0.3094)
 
     public Shooter(final RobotMap.ShooterMap map) {
@@ -130,6 +132,7 @@ public class Shooter extends SubsystemBase implements Loggable {
             public void initialize() {
                 double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
                 output = 2800.7 * (Math.pow(dist, 0.3094));
+                output = Math.max(output, MAX_SHOOTER_SPEED)
                 shooterWheelMotor.setSetpoint(output);
             }
 
