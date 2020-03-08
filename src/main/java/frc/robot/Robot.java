@@ -268,8 +268,7 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlignDegrees(),
-                led.ringLightOff(), disableTargeting());
+        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlignDegrees());
         cmd.setName("Vision Alignment");
         return cmd;
     }

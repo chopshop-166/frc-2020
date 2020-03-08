@@ -66,7 +66,7 @@ public class Drive extends SubsystemBase implements Loggable {
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
-        pid = new PIDController(0.0106, 0.0008, 0.008);
+        pid = new PIDController(0.0106, 0.0004, 0.008);
         driveRightEncoder = rightMotorGroup.getEncoder();
         driveLeftEncoder = leftMotorGroup.getEncoder();
     }

@@ -24,6 +24,8 @@ POINT_SAMPLES = 5
 FOV_ANGLE = 82.5
 PIXEL_ANGLE = FOV_ANGLE / WIDTH
 
+connected = False
+
 # Takes in slopes x and y, tests if they are equal to each other or any previously verified line
 
 def unequal(new, old_list):
@@ -47,39 +49,46 @@ def newLine(
 
     return X_TOTAL, Y_TOTAL
 
-if not debugging:
-    from cscore import CameraServer
-    from networktables import NetworkTables
-    NetworkTables.initialize(server="roborio-166-frc.local")
+def configure():
+    if not debugging:
+        from cscore import CameraServer
+        from networktables import NetworkTables
+        NetworkTables.initialize(server="roborio-166-frc.local")
 
-    sd = NetworkTables.getTable("SmartDashboard")
+        if NetworkTables.isConnected():
+            connected = True
 
-    OldStream = True
+        sd = NetworkTables.getTable("SmartDashboard")
 
-    # Enable CameraServer
-    cs = CameraServer.getInstance()
-    cs.enableLogging()
+        OldStream = True
 
-    outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
+        # Enable CameraServer
+        cs = CameraServer.getInstance()
+        cs.enableLogging()
 
-    # Camera settings
-    pipe = rs2.pipeline()
-    config = rs2.config()
-    config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
-    config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
-    profile = pipe.start(config)
-    s = profile.get_device().query_sensors()[1]
-    swapStream(False, s)
+        outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
+
+        # Camera settings
+        pipe = rs2.pipeline()
+        config = rs2.config()
+        config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
+        config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
+        profile = pipe.start(config)
+        s = profile.get_device().query_sensors()[1]
+        swapStream(False, s)
+        
 
 VALS = []
 
 FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
 
 # Define upper and lower bounds for HSV variables
-LOWER_COLOR = np.array([70, 80, 255])
-UPPER_COLOR = np.array([95, 180, 255])
+LOWER_COLOR = np.array([27, 92, 18])
+UPPER_COLOR = np.array([95, 255, 150])
 
 while True:
+    if not connected:
+        configure()
     start_time = time.time()
 
     if not debugging:
