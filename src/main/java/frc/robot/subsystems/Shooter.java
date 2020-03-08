@@ -98,7 +98,7 @@ public class Shooter extends SubsystemBase implements Loggable {
     public CommandBase linearSpeedUp() {
         final CommandBase cmd = new FunctionalCommand(() -> {
             double dist = SmartDashboard.getNumber("Distance To Target", 160);
-            output = 2800.7 * (Math.pow(dist, 0.3094));
+            output = ((119.1 * (Math.pow(dist, 2))) - (888.69 * dist) + 5972.4);
 
             shooterWheelMotor.setSetpoint(output);
         }, () -> {
@@ -119,17 +119,14 @@ public class Shooter extends SubsystemBase implements Loggable {
             }
             int i;
             ThresholdCheck check = new ThresholdCheck(10, () -> {
-                return (shooterEncoder.getRate() >= output * .98) && (shooterEncoder.getRate() <= output * 1.02);
-
+                return (shooterEncoder.getRate() >= output * .95) && (shooterEncoder.getRate() <= output * 1.05);
             });
 
             @Override
             public void initialize() {
-
                 double dist = SmartDashboard.getNumber("Distance To Target", 160);
                 output = 2800.7 * (Math.pow(dist, 0.3094));
                 shooterWheelMotor.setSetpoint(output);
-
             }
 
             @Override

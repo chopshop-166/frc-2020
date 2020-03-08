@@ -109,7 +109,7 @@ public class FrancoisMap extends RobotMap {
                 follower.follow(leader, true);
 
                 pidLeader.setP(0.00038);
-                pidLeader.setI(0);
+                pidLeader.setI(0.0000001);
                 pidLeader.setD(0);
                 pidLeader.setF(0.00017);
 
@@ -148,7 +148,7 @@ public class FrancoisMap extends RobotMap {
 
             public SendableSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
-                singulator.setInverted(true);
+                singulator.setInverted(false);
                 return SendableSpeedController.wrap(singulator);
             }
 

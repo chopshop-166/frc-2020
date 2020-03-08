@@ -51,6 +51,8 @@ public class Drive extends SubsystemBase implements Loggable {
     @Log
     private final PIDController pid;
 
+    private final double ALIGN_PID_FEED = 0.2;
+
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
      * differential drive
@@ -64,7 +66,7 @@ public class Drive extends SubsystemBase implements Loggable {
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
-        pid = new PIDController(0.025, 0.015, 0);
+        pid = new PIDController(0.0106, 0.0008, 0.008);
         driveRightEncoder = rightMotorGroup.getEncoder();
         driveLeftEncoder = leftMotorGroup.getEncoder();
     }
@@ -165,7 +167,7 @@ public class Drive extends SubsystemBase implements Loggable {
                 addRequirements(Drive.this);
             }
             int i;
-            ThresholdCheck check = new ThresholdCheck(10, () -> {
+            ThresholdCheck check = new ThresholdCheck(25, () -> {
                 return (pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false));
 
             });
@@ -174,19 +176,20 @@ public class Drive extends SubsystemBase implements Loggable {
             public void initialize() {
                 gyro.reset();
                 pid.setSetpoint(SmartDashboard.getNumber("Angle Offset", 0));
-                pid.setTolerance(1.5);
-
+                pid.setTolerance(0.75);
             }
 
             @Override
             public void execute() {
-                if (i % 20 == 0) {
+
+                if (pid.getPositionError() <= 5 && (i % 50 == 0)) {
                     gyro.reset();
                     pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
                     i = 0;
                 }
 
                 double turning = pid.calculate(-gyro.getAngle());
+                turning += (turning < 0) ? -ALIGN_PID_FEED : ALIGN_PID_FEED;
                 SmartDashboard.putNumber("pid Out", turning);
                 driveTrain.arcadeDrive(0, turning);
                 i++;
