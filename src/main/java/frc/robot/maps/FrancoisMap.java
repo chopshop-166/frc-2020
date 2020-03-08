@@ -5,7 +5,6 @@ import java.util.function.BooleanSupplier;
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
-import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
@@ -20,7 +19,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;

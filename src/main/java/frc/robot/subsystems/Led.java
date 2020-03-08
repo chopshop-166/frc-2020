@@ -23,20 +23,6 @@ public class Led extends SubsystemBase {
 
     }
 
-    // public CommandBase visionLedColor(int hue, int saturation, int value) {
-    // CommandBase cmd = new InstantCommand(() -> {
-    // for (var i = 0; i < visionBuffer.getLength(); i++) {
-    // // Sets the specified LED to the RGB values for green
-    // visionBuffer.setHSV(i, hue, saturation, value);
-    // }
-
-    // visionLED.setData(visionBuffer);
-    // visionLED.start();
-    // }, this);
-    // cmd.setName("Vision Green");
-    // return cmd;
-    // }
-
     public CommandBase ringLightOn() {
         CommandBase cmd = new InstantCommand(() -> {
             ringLight.set(true);

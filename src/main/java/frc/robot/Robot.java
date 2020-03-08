@@ -254,6 +254,7 @@ public class Robot extends TimedRobot {
     public CommandBase enableTargeting() {
         CommandBase cmd = new InstantCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", true);
+
         });
         cmd.setName("Targeting On");
         return cmd;

@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.ThresholdCheck;
@@ -123,7 +121,6 @@ public class Shooter extends SubsystemBase implements Loggable {
             {
                 addRequirements(Shooter.this);
             }
-            int i;
             ThresholdCheck check = new ThresholdCheck(25, () -> {
                 return (shooterEncoder.getRate() >= output * .95) && (shooterEncoder.getRate() <= output * 1.05);
             });
@@ -132,7 +129,7 @@ public class Shooter extends SubsystemBase implements Loggable {
             public void initialize() {
                 double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
                 output = 2800.7 * (Math.pow(dist, 0.3094));
-                output = Math.max(output, MAX_SHOOTER_SPEED)
+                output = Math.max(output, MAX_SHOOTER_SPEED);
                 shooterWheelMotor.setSetpoint(output);
             }
 

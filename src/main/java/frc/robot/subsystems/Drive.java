@@ -150,9 +150,9 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public CommandBase slowTurn(boolean isTurningRight) {
         CommandBase cmd = new RunCommand(() -> {
-            if (isTurningRight == true) {
+            if (isTurningRight) {
                 driveTrain.arcadeDrive(0, 0.4);
-            } else if (isTurningRight == false) {
+            } else {
                 driveTrain.arcadeDrive(0, -0.4);
 
             }

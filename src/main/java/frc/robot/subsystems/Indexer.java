@@ -122,12 +122,12 @@ public class Indexer extends SubsystemBase implements Loggable {
     public CommandBase pierrePossesion() {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-            if (frontIntakeIR.getAsBoolean() || backIntakeIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
+            if ((frontIntakeIR.getAsBoolean() || backIntakeIR.getAsBoolean()) && !topPierreIR.getAsBoolean()) {
                 singulator.set(SINGULATOR_MOTOR_SPEED);
             }
             // This checks to see if a ball is at the top of Pierre and doesn't not run
             // because sometimes it will
-            if (bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean() && backIntakeIR.getAsBoolean()) {
+            if ((bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean() && backIntakeIR.getAsBoolean())) {
                 pierreMotor.set(PIERRE_INDEX_SPEED);
                 singulator.set(SINGULATOR_MOTOR_SPEED);
             }
@@ -135,7 +135,7 @@ public class Indexer extends SubsystemBase implements Loggable {
             pierreMotor.set(0);
             singulator.set(0);
         }, () -> {
-            return (bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean()) || topPierreIR.getAsBoolean();
+            return ((bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean())) || topPierreIR.getAsBoolean();
         }, this);
         cmd.setName("Pierre Possession");
         return cmd;
