@@ -223,7 +223,7 @@ public class FrancoisMap extends RobotMap {
     public LEDMap getLEDMap() {
         return new LEDMap() {
 
-            public ISolenoid visionRingLight() {
+            public ISolenoid visionRingLightSolenoid() {
                 return new WSolenoid(7);
             }
 

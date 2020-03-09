@@ -136,7 +136,7 @@ public class RobotMap {
 
     public static class LEDMap {
 
-        public ISolenoid visionRingLight() {
+        public ISolenoid visionRingLightSolenoid() {
             return new MockSolenoid();
         }
 

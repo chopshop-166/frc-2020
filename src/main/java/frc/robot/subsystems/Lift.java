@@ -150,25 +150,29 @@ public class Lift extends SubsystemBase implements Loggable {
     }
 
     public CommandBase moveTicks(double ticks, double speed) {
+        BooleanSupplier limittmp = () -> true;
+        if (ticks < 0) {
+            limittmp = upperLimitSwitch::getAsBoolean;
+        } else if (ticks > 0) {
+            limittmp = lowerLimitSwitch::getAsBoolean;
+        }
+        final BooleanSupplier limit = limittmp;
         CommandBase cmd = new FunctionalCommand(() -> {
             liftEncoder.reset();
-        }, () -> {
             double realSpeed = speed;
             if (ticks < 0 && speed > 0) {
                 realSpeed *= -1;
             }
 
-            if (ticks < 0 && !upperLimitSwitch.getAsBoolean()) {
-                elevatorMotor.set(realSpeed);
-            } else if (ticks > 0 && !lowerLimitSwitch.getAsBoolean()) {
+            if (!limit.getAsBoolean()) {
                 elevatorMotor.set(realSpeed);
             }
+        }, () -> {
             SmartDashboard.putNumber("Lift Encoder", liftEncoder.getDistance());
         }, (interrupted) -> {
             elevatorMotor.stopMotor();
         }, () -> {
-            return Math.abs(liftEncoder.getDistance()) >= Math.abs(ticks)
-                    || (ticks < 0 && upperLimitSwitch.getAsBoolean() || (ticks > 0 && lowerLimitSwitch.getAsBoolean()));
+            return Math.abs(liftEncoder.getDistance()) >= Math.abs(ticks) || limit.getAsBoolean();
         }, this);
         cmd.setName("Move Ticks");
         return cmd;
