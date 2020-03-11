@@ -12,8 +12,8 @@ from visionfunctions import *
 
 debugging = True
 
-ANGLE_HIGH_THRESHOLD = 70
-ANGLE_LOW_THRESHOLD = 40
+ANGLE_HIGH_THRESHOLD = 80
+ANGLE_LOW_THRESHOLD = 30
 
 # Resolution
 WIDTH = 640
@@ -76,8 +76,8 @@ VALS = []
 FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
 
 # Define upper and lower bounds for HSV variables
-LOWER_COLOR = np.array([70, 80, 255])
-UPPER_COLOR = np.array([95, 180, 255])
+LOWER_COLOR = np.array([39, 92, 18])
+UPPER_COLOR = np.array([89, 255, 255])
 
 while True:
     start_time = time.time()
@@ -97,10 +97,17 @@ while True:
         if not isShooting == OldStream:
             swapStream(isShooting, s)
     else:
-        IMG = cv2.imread('Elbit3_Color.png')
-        isShooting = True
+        try:
+            cap = cv2.VideoCapture('http://10.1.66.84:1181/?action=stream')
+            _, IMG = cap.read()
+            isShooting = True
+        except:
+            continue
 
-    lines = imgfilter(IMG, LOWER_COLOR, UPPER_COLOR, debugging, WIDTH, HEIGHT)
+    lines= img_filter(debugging)
+    # Empty image for drawing lines (testing)
+    FILTERED_LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
+    LINE_IMG = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
 
     if isShooting:
         # If there are lines:
@@ -117,7 +124,7 @@ while True:
                 # Checks if we have verified lines, and makes a new line based on that.
                 if FILTERED_LINES:
                     if (
-                        ANGLE_HIGH_THRESHOLD > abs(new_slope) > ANGLE_LOW_THRESHOLD
+                        ANGLE_HIGH_THRESHOLD > new_slope > ANGLE_LOW_THRESHOLD
                     ) and unequal(new_slope, FILTERED_LINES):
                         X_TOTAL, Y_TOTAL = newLine(
                             FILTERED_LINES,
@@ -164,19 +171,20 @@ while True:
                     Y_AVG = int(Y_AVG / POINT_SAMPLES)
 
                     offset = 2 * (X_AVG - (WIDTH / 2)) / WIDTH
-                    cv2.circle(IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
+                    cv2.circle(FILTERED_LINE_IMG, (X_AVG, Y_AVG), 5, [255, 255, 255], -1)
                     try:
                         dist_to_target = depth.get_distance(X_AVG, Y_AVG)
                     except:
                         None
 
-                    # Smart Dashboard variables
-                    sd.putBoolean("Sees Target", True)
-                    sd.putNumber("Ratio Offset", offset)
-                    sd.putNumber(
-                        "Angle Offset", (PIXEL_ANGLE * X_AVG) - (FOV_ANGLE / 2)
-                    )
-                    sd.putNumber("Distance To Target", dist_to_target)
+                    if not debugging:
+                        # Smart Dashboard variables
+                        sd.putBoolean("Sees Target", True)
+                        sd.putNumber("Ratio Offset", offset)
+                        sd.putNumber(
+                            "Angle Offset", (PIXEL_ANGLE * X_AVG) - (FOV_ANGLE / 2)
+                        )
+                        sd.putNumber("Distance To Target", dist_to_target)
 
                 else:
                     VALS.append([X_TOTAL / (2 * NUM_LINES), Y_TOTAL / (2 * NUM_LINES)])
@@ -189,24 +197,18 @@ while True:
     elif not debugging: sd.putBoolean("Sees Target", False)
 
     # Open the gallery of all my filtered works
+
     if debugging:
         cv2.imshow("og lines", LINE_IMG)
         cv2.imshow("lines", FILTERED_LINE_IMG)
-        cv2.imshow("OG", IMG)
-        cv2.imshow("Mask", MASK)
-        cv2.imshow("blur", BLUR_EDGES)
-        cv2.imshow("median", MEDIAN)
-        cv2.imshow("med", MED_EDGES)
-        cv2.imshow("Mask Edges", MASK_EDGES)
-
-    OldStream = isShooting
-
-    outputStream.putFrame(IMG)
+    else:
+        OldStream = isShooting
+        outputStream.putFrame(IMG)
+        end_time = time.time()
+        sd.putNumber("FPS", 1 / (end_time - start_time))
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
-    end_time = time.time()
-    sd.putNumber("FPS", 1 / (end_time - start_time))
 
 cv2.destroyAllWindows()
 pipe.stop()
