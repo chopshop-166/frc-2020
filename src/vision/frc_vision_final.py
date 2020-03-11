@@ -49,33 +49,31 @@ def newLine(
 
     return X_TOTAL, Y_TOTAL
 
-def configure():
-    if not debugging:
-        from cscore import CameraServer
-        from networktables import NetworkTables
-        NetworkTables.initialize(server="roborio-166-frc.local")
+from cscore import CameraServer
+from networktables import NetworkTables
+NetworkTables.initialize(server="roborio-166-frc.local")
 
-        if NetworkTables.isConnected():
-            connected = True
+if NetworkTables.isConnected():
+    connected = True
 
-        sd = NetworkTables.getTable("SmartDashboard")
+sd = NetworkTables.getTable("SmartDashboard")
 
-        OldStream = True
+OldStream = True
 
-        # Enable CameraServer
-        cs = CameraServer.getInstance()
-        cs.enableLogging()
+# Enable CameraServer
+cs = CameraServer.getInstance()
+cs.enableLogging()
 
-        outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
+outputStream = cs.putVideo("Color", WIDTH, HEIGHT)
 
-        # Camera settings
-        pipe = rs2.pipeline()
-        config = rs2.config()
-        config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
-        config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
-        profile = pipe.start(config)
-        s = profile.get_device().query_sensors()[1]
-        swapStream(False, s)
+# Camera settings
+pipe = rs2.pipeline()
+config = rs2.config()
+config.enable_stream(rs2.stream.color, WIDTH, HEIGHT, rs2.format.bgr8, 30)
+config.enable_stream(rs2.stream.depth, WIDTH, HEIGHT, rs2.format.z16, 30)
+profile = pipe.start(config)
+s = profile.get_device().query_sensors()[1]
+swapStream(False, s)
         
 
 VALS = []
@@ -87,8 +85,6 @@ LOWER_COLOR = np.array([27, 92, 18])
 UPPER_COLOR = np.array([95, 255, 150])
 
 while True:
-    if not connected:
-        configure()
     start_time = time.time()
 
     if not debugging:
