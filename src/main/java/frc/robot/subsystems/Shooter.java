@@ -41,8 +41,8 @@ public class Shooter extends SubsystemBase implements Loggable {
     @Log
     public double output;
     @Log
-    public double shooterSpeed = 4300;
-    private final static double DEFAULT_SHOOTER_SPEED = 4400;
+    public double shooterSpeed = INITIATION_LINE_SPEED;
+    private final static double INITIATION_LINE_SPEED = 4400;
 
     // inches/second/second
     public final static double GRAVITY = 386.2205;
@@ -86,7 +86,7 @@ public class Shooter extends SubsystemBase implements Loggable {
         return linearSpinUp(() -> {
             double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
             if (!SmartDashboard.getBoolean("Sees Target", false)) {
-                output = DEFAULT_SHOOTER_SPEED;
+                output = INITIATION_LINE_SPEED;
             } else {
                 output = 2800.7 * (Math.pow(dist, 0.3094));
             }
