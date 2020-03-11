@@ -196,7 +196,7 @@ public class Robot extends TimedRobot {
 
     public CommandBase shootAllBalls(int ballAmount) {
         CommandBase cmd = CommandUtils.repeat(ballAmount,
-                new SequentialCommandGroup(shooter.linearSpeedUp(), indexer.shootBall()));
+                new SequentialCommandGroup(shooter.shooterMath(), indexer.shootBall()));
         cmd.setName("Shoot All Balls");
         return cmd;
     }

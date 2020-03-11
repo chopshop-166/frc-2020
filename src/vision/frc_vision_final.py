@@ -99,7 +99,7 @@ while True:
         IMG = np.asanyarray(frame.get_data())
 
         isShooting = sd.getBoolean("Is Shooting", defaultValue=False)
-        if not isShooting == OldStream:
+        if isShooting != OldStream:
             swapStream(isShooting, s)
     else:
         IMG = cv2.imread('Elbit3_Color.png')

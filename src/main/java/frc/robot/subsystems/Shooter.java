@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+
+import java.util.function.DoubleSupplier;
+
 import com.chopshop166.chopshoplib.ThresholdCheck;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,7 +52,6 @@ public class Shooter extends SubsystemBase implements Loggable {
     public final static double BALL_SPEED_RATIO = 27.358;
 
     private final static double MAX_SHOOTER_SPEED = 5400;
-    // y = 2878.7x^(0.3094)
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
@@ -79,10 +81,23 @@ public class Shooter extends SubsystemBase implements Loggable {
         super.periodic();
     }
 
+    public CommandBase shooterMath() {
+        return linearSpinUp(() -> {
+            double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
+            if (!SmartDashboard.getBoolean("Sees Target", false)) {
+                output = 4700;
+            } else {
+                output = 2800.7 * (Math.pow(dist, 0.3094));
+            }
+            output = Math.max(output, MAX_SHOOTER_SPEED);
+
+            return output;
+        });
+
+    }
+
     public CommandBase spinUp(final double speed) {
         final CommandBase cmd = new FunctionalCommand(() -> {
-            // TODO incorperate calculations
-            // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
             shooterWheelMotor.setSetpoint(shooterSpeed);
         }, () -> {
 
@@ -95,60 +110,28 @@ public class Shooter extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-    public CommandBase linearSpeedUp() {
-        final CommandBase cmd = new FunctionalCommand(() -> {
-            double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
-            // If we don't see the target then default to the Initiation line speed
-            if (!SmartDashboard.getBoolean("Sees Target", false)) {
-                output = 4700;
-            }
-            output = ((119.1 * (Math.pow(dist, 2))) - (1000 * dist) + 6300);
-
-            shooterWheelMotor.setSetpoint(output);
-        }, () -> {
-
-        }, (interrupted) -> {
-
-        }, () -> {
-            return shooterEncoder.getRate() >= output;
-        }, this);
-        cmd.setName("spinUp");
-        return cmd;
-    }
-
-    public CommandBase linearSpinUp() {
+    public CommandBase linearSpinUp(DoubleSupplier speed) {
         CommandBase cmd = new CommandBase() {
             {
                 addRequirements(Shooter.this);
             }
             ThresholdCheck check = new ThresholdCheck(25, () -> {
-                return (shooterEncoder.getRate() >= output * .95) && (shooterEncoder.getRate() <= output * 1.05);
+                return (Math.abs(shooterEncoder.getRate() - speed.getAsDouble()) <= .05);
+
             });
 
             @Override
             public void initialize() {
-                double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
-                output = 2800.7 * (Math.pow(dist, 0.3094));
-                output = Math.max(output, MAX_SHOOTER_SPEED);
-                shooterWheelMotor.setSetpoint(output);
-            }
 
-            @Override
-            public void execute() {
-
+                shooterWheelMotor.setSetpoint(speed.getAsDouble());
             }
 
             @Override
             public boolean isFinished() {
                 return check.getAsBoolean();
             }
-
-            @Override
-            public void end(boolean interrupted) {
-
-            }
         };
-        cmd.setName("Turn Degrees");
+        cmd.setName("linear spin up");
         return cmd;
     }
 
