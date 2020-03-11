@@ -72,8 +72,8 @@ public class Lift extends SubsystemBase implements Loggable {
     }
 
     public CommandBase resetLift() {
-        CommandBase cmd = new SequentialCommandGroup(moveTicks(30, 0.10), disengageRatchet(), moveTicks(-10, 0.2),
-                new WaitCommand(.5), moveTicks(20, .1));
+        CommandBase cmd = new SequentialCommandGroup(moveDistance(30, 0.10), disengageRatchet(), moveDistance(-10, 0.2),
+                new WaitCommand(.5), moveDistance(20, .1));
         cmd.setName("Lift After Match");
         return cmd;
     }
@@ -143,24 +143,24 @@ public class Lift extends SubsystemBase implements Loggable {
                 CommandScheduler.getInstance().requiring(this).cancel();
             }
         }, () -> {
-            return Math.abs(liftEncoder.getDistance()) >= Math.abs(0.10);
+            return Math.abs(liftEncoder.getDistance()) >= 0.10;
         }, this);
         cmd.setName("Move Disengage");
         return cmd.withTimeout(0.2);
     }
 
-    public CommandBase moveTicks(double ticks, double speed) {
+    public CommandBase moveDistance(double distance, double speed) {
         BooleanSupplier limittmp = () -> true;
-        if (ticks < 0) {
+        if (distance < 0) {
             limittmp = upperLimitSwitch::getAsBoolean;
-        } else if (ticks > 0) {
+        } else if (distance > 0) {
             limittmp = lowerLimitSwitch::getAsBoolean;
         }
         final BooleanSupplier limit = limittmp;
         CommandBase cmd = new FunctionalCommand(() -> {
             liftEncoder.reset();
             double realSpeed = speed;
-            if (ticks < 0 && speed > 0) {
+            if (distance < 0 && speed > 0) {
                 realSpeed *= -1;
             }
 
@@ -172,7 +172,7 @@ public class Lift extends SubsystemBase implements Loggable {
         }, (interrupted) -> {
             elevatorMotor.stopMotor();
         }, () -> {
-            return Math.abs(liftEncoder.getDistance()) >= Math.abs(ticks) || limit.getAsBoolean();
+            return Math.abs(liftEncoder.getDistance()) >= Math.abs(distance) || limit.getAsBoolean();
         }, this);
         cmd.setName("Move Ticks");
         return cmd;
