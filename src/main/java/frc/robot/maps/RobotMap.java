@@ -136,15 +136,15 @@ public class RobotMap {
 
     public static class LEDMap {
 
-        public ISolenoid visionRingLight() {
+        public ISolenoid visionRingLightSolenoid() {
             return new MockSolenoid();
         }
 
-        public AddressableLED liftLED() {
+        public AddressableLED robotLED() {
             return new AddressableLED(1);
         }
 
-        public int liftBufferLength() {
+        public int RobotBufferLength() {
             return 0;
         }
 

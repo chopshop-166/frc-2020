@@ -3,6 +3,10 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
+import java.util.function.DoubleSupplier;
+
+import com.chopshop166.chopshoplib.ThresholdCheck;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -11,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 
 /**
@@ -33,6 +38,11 @@ public class Shooter extends SubsystemBase implements Loggable {
     public final double shooterHeight;
     public static double verticalDistance;
     public static double horizontalDistance;
+    @Log
+    public double output;
+    @Log
+    public double testSpeed = INITIATION_LINE_SPEED;
+    private final static double INITIATION_LINE_SPEED = 4400;
 
     // inches/second/second
     public final static double GRAVITY = 386.2205;
@@ -42,12 +52,19 @@ public class Shooter extends SubsystemBase implements Loggable {
     // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
 
+    private final static double MAX_SHOOTER_SPEED = 5400;
+
     public Shooter(final RobotMap.ShooterMap map) {
         super();
         shooterHeight = map.shooterHeight();
         shooterWheelMotor = map.shooterWheel();
         shooterEncoder = shooterWheelMotor.getEncoder();
         verticalDistance = TARGET_HEIGHT - shooterHeight;
+    }
+
+    @Config
+    public void setshooterSpeed(double speed) {
+        testSpeed = speed;
     }
 
     public CommandBase cancel() {
@@ -65,19 +82,50 @@ public class Shooter extends SubsystemBase implements Loggable {
         super.periodic();
     }
 
-    public CommandBase spinUp(final double speed) {
-        final CommandBase cmd = new FunctionalCommand(() -> {
-            // TODO incorperate calculations
-            // shooterWheelMotor.set(calculateRPM() / MAX_RPM);
-            shooterWheelMotor.setSetpoint(speed);
-        }, () -> {
+    public CommandBase shooterMath() {
+        return linearSpinUp(() -> {
+            double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
+            if (!SmartDashboard.getBoolean("Sees Target", false)) {
+                output = INITIATION_LINE_SPEED;
+            } else {
+                output = 2800.7 * (Math.pow(dist, 0.3094));
+            }
 
-        }, (interrupted) -> {
+            return output;
+        });
 
-        }, () -> {
-            return shooterEncoder.getRate() >= speed;
-        }, this);
-        cmd.setName("spinUp");
+    }
+
+    public CommandBase testShoot() {
+        return linearSpinUp(() -> testSpeed);
+    }
+
+    public CommandBase spinUp(double speed) {
+        return linearSpinUp(() -> speed);
+    }
+
+    public CommandBase linearSpinUp(DoubleSupplier speed) {
+        CommandBase cmd = new CommandBase() {
+            {
+                addRequirements(Shooter.this);
+            }
+            ThresholdCheck check = new ThresholdCheck(25, () -> {
+                return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED)) <= .05);
+
+            });
+
+            @Override
+            public void initialize() {
+                output = Math.min(output, MAX_SHOOTER_SPEED);
+                shooterWheelMotor.setSetpoint(Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED));
+            }
+
+            @Override
+            public boolean isFinished() {
+                return check.getAsBoolean();
+            }
+        };
+        cmd.setName("linear spin up");
         return cmd;
     }
 

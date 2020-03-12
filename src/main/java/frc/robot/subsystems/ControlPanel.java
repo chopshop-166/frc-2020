@@ -109,6 +109,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
             // Can spin forwards and only forward because any other way will make it spin
             // out of the bearings
             spinnerMotor.set(Math.abs(speed.getAsDouble()));
+            // we only want to spin this in one direction since it matters for points
         }, (interrupted) -> {
             spinnerMotor.stopMotor();
         }, () -> false, this);

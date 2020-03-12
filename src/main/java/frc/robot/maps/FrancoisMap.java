@@ -5,7 +5,6 @@ import java.util.function.BooleanSupplier;
 import com.chopshop166.chopshoplib.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
-import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
@@ -20,7 +19,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
@@ -108,10 +106,10 @@ public class FrancoisMap extends RobotMap {
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                pidLeader.setP(0.0002);
-                pidLeader.setI(0);
+                pidLeader.setP(0.00038);
+                pidLeader.setI(0.0000001);
                 pidLeader.setD(0);
-                pidLeader.setF(0.0002);
+                pidLeader.setF(0.00017);
 
                 // kp = .00045, kF = .0002
 
@@ -148,7 +146,7 @@ public class FrancoisMap extends RobotMap {
 
             public SendableSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
-                singulator.setInverted(true);
+                singulator.setInverted(false);
                 return SendableSpeedController.wrap(singulator);
             }
 
@@ -225,7 +223,7 @@ public class FrancoisMap extends RobotMap {
     public LEDMap getLEDMap() {
         return new LEDMap() {
 
-            public ISolenoid visionRingLight() {
+            public ISolenoid visionRingLightSolenoid() {
                 return new WSolenoid(7);
             }
 

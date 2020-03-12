@@ -40,43 +40,41 @@ public class Intake extends SubsystemBase implements Loggable {
     }
 
     public CommandBase intake() {
-        return new StartEndCommand(() -> {
+        CommandBase cmd = new StartEndCommand(() -> {
             intakeMotor.set(INTAKE_MOTOR_SPEED);
             deployPiston.set(Value.kForward);
         }, () -> {
             intakeMotor.stopMotor();
             deployPiston.set(Value.kReverse);
         }, this);
+        cmd.setName("Run Intake");
+        return cmd;
     }
 
-    public CommandBase pushBalls() {
-        return new StartEndCommand(() -> {
-            intakeMotor.set(INTAKE_DISCHARGE);
-            deployPiston.set(Value.kForward);
-        }, () -> {
-            intakeMotor.stopMotor();
-            deployPiston.set(Value.kReverse);
-        }, this);
-    }
-
-    public StartEndCommand discharge() {
-        return new StartEndCommand(() -> {
+    public CommandBase discharge() {
+        CommandBase cmd = new StartEndCommand(() -> {
             intakeMotor.set(INTAKE_DISCHARGE);
         }, () -> {
             intakeMotor.stopMotor();
         }, this);
+        cmd.setName("Discharge Intake");
+        return cmd;
     }
 
     public CommandBase deployIntake() {
-        return new InstantCommand(() -> {
+        CommandBase cmd = new InstantCommand(() -> {
             deployPiston.set(Value.kForward);
         }, this);
+        cmd.setName("Deploy Intake");
+        return cmd;
     }
 
     public CommandBase retractIntake() {
-        return new InstantCommand(() -> {
+        CommandBase cmd = new InstantCommand(() -> {
             deployPiston.set(Value.kReverse);
         }, this);
+        cmd.setName("Retract Intake");
+        return cmd;
     }
 
 }
