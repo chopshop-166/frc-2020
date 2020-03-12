@@ -144,7 +144,7 @@ public class RobotMap {
             return new AddressableLED(1);
         }
 
-        public int liftBufferLength() {
+        public int RobotBufferLength() {
             return 0;
         }
 

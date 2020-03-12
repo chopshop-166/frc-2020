@@ -16,7 +16,7 @@ public class Led extends SubsystemBase {
 
     public Led(LEDMap map) {
 
-        robotLedBuffer = new AddressableLEDBuffer(map.liftBufferLength());
+        robotLedBuffer = new AddressableLEDBuffer(map.RobotBufferLength());
         robotLED = map.robotLED();
         ringLight = map.visionRingLightSolenoid();
 
