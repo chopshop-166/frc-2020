@@ -202,8 +202,6 @@ public class Robot extends TimedRobot {
         return cmd;
     }
 
-    // will spin the shooter then shoot all the balls and then turn the shooter off.
-
     public CommandBase afterMatchPit() {
         CommandBase cmd = new SequentialCommandGroup(lift.resetLift(), intake.retractIntake());
         cmd.setName("After Match Pit");
