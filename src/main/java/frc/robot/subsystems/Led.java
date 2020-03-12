@@ -39,39 +39,14 @@ public class Led extends SubsystemBase {
         return cmd;
     }
 
-    public CommandBase visionLedStream() {
+    public CommandBase robotLedColor(int hue, int saturation, int value) {
         CommandBase cmd = new InstantCommand(() -> {
             for (var i = 0; i < liftBuffer.getLength(); i++) {
                 // Calculate the hue - hue is easier for rainbows because the color
                 // shape is a circle so only one value needs to precess
-                final var hue = (0 + (i * 180 / liftBuffer.getLength())) % 180;
-                // Set the value
-                liftBuffer.setHSV(i, hue, 255, 255);
-            }
-            // Increase by to make the rainbow "move"
-            firstHue += 3;
-            // Check bounds
-            firstHue %= 180;
-
-        }, this);
-        cmd.setName("Vision Stream");
-        return cmd;
-    }
-
-    public CommandBase visionLedColor(int saturation, int value) {
-        CommandBase cmd = new InstantCommand(() -> {
-            for (var i = 0; i < liftBuffer.getLength(); i++) {
-                // Calculate the hue - hue is easier for rainbows because the color
-                // shape is a circle so only one value needs to precess
-                final var hue = (0 + (i * 180 / liftBuffer.getLength())) % 180;
                 // Set the value
                 liftBuffer.setHSV(i, hue, saturation, value);
             }
-            // Increase by to make the rainbow "move"
-            firstHue += 3;
-            // Check bounds
-            firstHue %= 180;
-
         }, this);
         cmd.setName("Vision Stream");
         return cmd;
