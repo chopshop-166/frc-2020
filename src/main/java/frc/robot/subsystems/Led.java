@@ -10,14 +10,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.LEDMap;
 
 public class Led extends SubsystemBase {
-    AddressableLED liftLED;
+    AddressableLED robotLED;
     ISolenoid ringLight;
-    AddressableLEDBuffer liftBuffer;
+    AddressableLEDBuffer robotLedBuffer;
 
     public Led(LEDMap map) {
 
-        liftBuffer = new AddressableLEDBuffer(map.liftBufferLength());
-        liftLED = map.liftLED();
+        robotLedBuffer = new AddressableLEDBuffer(map.liftBufferLength());
+        robotLED = map.robotLED();
         ringLight = map.visionRingLightSolenoid();
 
     }
@@ -40,8 +40,9 @@ public class Led extends SubsystemBase {
 
     public CommandBase robotLedColor(int hue, int saturation, int value) {
         CommandBase cmd = new InstantCommand(() -> {
-            for (var i = 0; i < liftBuffer.getLength(); i++) {
-                liftBuffer.setHSV(i, hue, saturation, value);
+            for (var i = 0; i < robotLedBuffer.getLength(); i++) {
+
+                robotLedBuffer.setHSV(i, hue, saturation, value);
             }
         }, this);
         cmd.setName("Vision Stream");

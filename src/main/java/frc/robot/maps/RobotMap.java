@@ -140,7 +140,7 @@ public class RobotMap {
             return new MockSolenoid();
         }
 
-        public AddressableLED liftLED() {
+        public AddressableLED robotLED() {
             return new AddressableLED(1);
         }
 
