@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase implements Loggable {
     @Log
     public double output;
     @Log
-    public double shooterSpeed = INITIATION_LINE_SPEED;
+    public double testSpeed = INITIATION_LINE_SPEED;
     private final static double INITIATION_LINE_SPEED = 4400;
 
     // inches/second/second
@@ -64,7 +64,7 @@ public class Shooter extends SubsystemBase implements Loggable {
 
     @Config
     public void setshooterSpeed(double speed) {
-        shooterSpeed = speed;
+        testSpeed = speed;
     }
 
     public CommandBase cancel() {
@@ -97,18 +97,12 @@ public class Shooter extends SubsystemBase implements Loggable {
 
     }
 
-    public CommandBase spinUp(final double speed) {
-        final CommandBase cmd = new FunctionalCommand(() -> {
-            shooterWheelMotor.setSetpoint(shooterSpeed);
-        }, () -> {
+    public CommandBase testShoot() {
+        return linearSpinUp(() -> testSpeed);
+    }
 
-        }, (interrupted) -> {
-
-        }, () -> {
-            return shooterEncoder.getRate() >= shooterSpeed;
-        }, this);
-        cmd.setName("spinUp");
-        return cmd;
+    public CommandBase spinUp(double speed) {
+        return linearSpinUp(() -> speed);
     }
 
     public CommandBase linearSpinUp(DoubleSupplier speed) {

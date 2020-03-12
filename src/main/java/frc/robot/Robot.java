@@ -189,7 +189,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase shootAuto() {
-        CommandBase cmd = new SequentialCommandGroup(releaseBalls(3), shooter.spinDown(), drive.drivePastLine());
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(3), shooter.spinDown(),
+                drive.drivePastLine());
         cmd.setName("Shoot Auto");
         return cmd;
     }
@@ -202,11 +203,6 @@ public class Robot extends TimedRobot {
     }
 
     // will spin the shooter then shoot all the balls and then turn the shooter off.
-    public CommandBase releaseBalls(int ballCount) {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(ballCount));
-        cmd.setName("Shoot all Balls");
-        return cmd;
-    }
 
     public CommandBase afterMatchPit() {
         CommandBase cmd = new SequentialCommandGroup(lift.resetLift(), intake.retractIntake());
@@ -218,12 +214,6 @@ public class Robot extends TimedRobot {
         CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesion(), shooter.spinUp(1000),
                 indexer.shootAllBalls(1));
         cmd.setName("SYSTEMS CHECK");
-        return cmd;
-    }
-
-    public CommandBase fastReleaseBalls(int ballCount) {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(5000), indexer.shootAllBalls(ballCount));
-        cmd.setName("Shoot all Balls");
         return cmd;
     }
 
@@ -283,7 +273,6 @@ public class Robot extends TimedRobot {
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         driveController.getButton(Button.kB).whenHeld(shootAllBalls(5)).whenReleased(shooter.spinDown());
-        driveController.getButton(Button.kX).whenHeld(fastReleaseBalls(5)).whenReleased(shooter.spinDown());
 
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
@@ -295,7 +284,7 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.whenActive(endGame());
