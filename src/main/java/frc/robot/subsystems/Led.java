@@ -13,7 +13,6 @@ public class Led extends SubsystemBase {
     AddressableLED liftLED;
     ISolenoid ringLight;
     AddressableLEDBuffer liftBuffer;
-    double firstHue;
 
     public Led(LEDMap map) {
 
@@ -42,9 +41,6 @@ public class Led extends SubsystemBase {
     public CommandBase robotLedColor(int hue, int saturation, int value) {
         CommandBase cmd = new InstantCommand(() -> {
             for (var i = 0; i < liftBuffer.getLength(); i++) {
-                // Calculate the hue - hue is easier for rainbows because the color
-                // shape is a circle so only one value needs to precess
-                // Set the value
                 liftBuffer.setHSV(i, hue, saturation, value);
             }
         }, this);
