@@ -71,6 +71,13 @@ public class Lift extends SubsystemBase implements Loggable {
         return cmd;
     }
 
+    public CommandBase resetLift() {
+        CommandBase cmd = new SequentialCommandGroup(moveDistance(30, 0.10), disengageRatchet(), moveDistance(-10, 0.2),
+                new WaitCommand(.5), moveDistance(20, .1));
+        cmd.setName("Lift After Match");
+        return cmd;
+    }
+
     // sets the ratchet to either be activated or deactivated depending on liftSpeed
     public void liftSpeed(double speed) {
         if (Math.abs(speed) <= .1) {
@@ -108,9 +115,8 @@ public class Lift extends SubsystemBase implements Loggable {
         }
     }
 
-    public CommandBase disengageRatchet(DoubleSupplier speed) {
-        CommandBase cmd = new SequentialCommandGroup(moveTicks(.1, 0.10), turnOffBrake(), new WaitCommand(.1),
-                moveLift(speed));
+    public CommandBase disengageRatchet() {
+        CommandBase cmd = new SequentialCommandGroup(moveToDisengage(), turnOffBrake(), new WaitCommand(.1));
         cmd.setName("Disengage Ratchet");
         return cmd;
     }
@@ -119,12 +125,12 @@ public class Lift extends SubsystemBase implements Loggable {
         return new InstantCommand(() -> elevatorBrake.set(true), this);
     }
 
-    public CommandBase moveTicks(double ticks, double speed) {
+    public CommandBase moveToDisengage() {
         CommandBase cmd = new FunctionalCommand(() -> {
             liftEncoder.reset();
         }, () -> {
+            elevatorMotor.set(0.1);
             SmartDashboard.putNumber("Lift Encoder", liftEncoder.getDistance());
-            elevatorMotor.set(speed);
         }, (interrupted) -> {
             elevatorMotor.stopMotor();
             // This command might be interrupted if it takes to move the expected amount
@@ -137,15 +143,43 @@ public class Lift extends SubsystemBase implements Loggable {
                 CommandScheduler.getInstance().requiring(this).cancel();
             }
         }, () -> {
-            return Math.abs(liftEncoder.getDistance()) >= ticks;
+            return Math.abs(liftEncoder.getDistance()) >= 0.10;
+        }, this);
+        cmd.setName("Move Disengage");
+        return cmd.withTimeout(0.2);
+    }
+
+    public CommandBase moveDistance(double distance, double speed) {
+        BooleanSupplier limittmp = () -> true;
+        if (distance < 0) {
+            limittmp = upperLimitSwitch::getAsBoolean;
+        } else if (distance > 0) {
+            limittmp = lowerLimitSwitch::getAsBoolean;
+        }
+        final BooleanSupplier limit = limittmp;
+        CommandBase cmd = new FunctionalCommand(() -> {
+            liftEncoder.reset();
+            double realSpeed = speed;
+            if (distance < 0 && speed > 0) {
+                realSpeed *= -1;
+            }
+
+            if (!limit.getAsBoolean()) {
+                elevatorMotor.set(realSpeed);
+            }
+        }, () -> {
+            SmartDashboard.putNumber("Lift Encoder", liftEncoder.getDistance());
+        }, (interrupted) -> {
+            elevatorMotor.stopMotor();
+        }, () -> {
+            return Math.abs(liftEncoder.getDistance()) >= Math.abs(distance) || limit.getAsBoolean();
         }, this);
         cmd.setName("Move Ticks");
-        return cmd.withTimeout(0.2);
+        return cmd;
     }
 
     public CommandBase moveLift(DoubleSupplier speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
-            liftSpeed(0);
         }, () -> {
             liftSpeed(speed.getAsDouble());
         }, (Boolean interrupted) -> {

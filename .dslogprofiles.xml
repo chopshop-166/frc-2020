@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfGroupProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <GroupProfile>
+    <Name>Default</Name>
+    <Groups>
+      <SeriesGroupNode>
+        <Name>grouppdp03</Name>
+        <Text>PDP (0-3) 40A</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp0</Name>
+            <Text>PDP 0</Text>
+            <Color>-36495</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp1</Name>
+            <Text>PDP 1</Text>
+            <Color>-14759</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp2</Name>
+            <Text>PDP 2</Text>
+            <Color>-6750328</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp3</Name>
+            <Text>PDP 3</Text>
+            <Color>-7824641</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>grouppdp47</Name>
+        <Text>PDP (4-7) 30A</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp4</Name>
+            <Text>PDP 4</Text>
+            <Color>-52182</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp5</Name>
+            <Text>PDP 5</Text>
+            <Color>-20438</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp6</Name>
+            <Text>PDP 6</Text>
+            <Color>-16711927</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp7</Name>
+            <Text>PDP 7</Text>
+            <Color>-16739329</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>grouppdp811</Name>
+        <Text>PDP (8-11) 30A</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp8</Name>
+            <Text>PDP 8</Text>
+            <Color>-1176576</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp9</Name>
+            <Text>PDP 9</Text>
+            <Color>-1078528</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp10</Name>
+            <Text>PDP 10</Text>
+            <Color>-13706240</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp11</Name>
+            <Text>PDP 11</Text>
+            <Color>-13030657</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>grouppdp1215</Name>
+        <Text>PDP (12-15) 40A</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp12</Name>
+            <Text>PDP 12</Text>
+            <Color>-4978688</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp13</Name>
+            <Text>PDP 13</Text>
+            <Color>-3636224</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp14</Name>
+            <Text>PDP 14</Text>
+            <Color>-13984000</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp15</Name>
+            <Text>PDP 15</Text>
+            <Color>-16764945</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+    </Groups>
+  </GroupProfile>
+  <GroupProfile>
+    <Name>Francois</Name>
+    <Groups>
+      <SeriesGroupNode>
+        <Name>grouppdp47</Name>
+        <Text>PDP (4-7) 30A</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp4</Name>
+            <Text>Control Panel</Text>
+            <Color>-52182</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp5</Name>
+            <Text>PDP 5</Text>
+            <Color>-20438</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp6</Name>
+            <Text>PDP 6</Text>
+            <Color>-16711927</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp7</Name>
+            <Text>Singulator</Text>
+            <Color>-16739329</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>grouppdp811</Name>
+        <Text>PDP (8-11) 30A</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp8</Name>
+            <Text>PDP 8</Text>
+            <Color>-1176576</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp9</Name>
+            <Text>PDP 9</Text>
+            <Color>-1078528</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp10</Name>
+            <Text>Pierre</Text>
+            <Color>-13706240</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp11</Name>
+            <Text>Intake</Text>
+            <Color>-32513</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>group</Name>
+        <Text>Drive Right</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp13</Name>
+            <Text>Drive Right A</Text>
+            <Color>-3636224</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp15</Name>
+            <Text>Drive Right B</Text>
+            <Color>-16764945</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>total0</Name>
+            <Text>Drive Right Total</Text>
+            <Color>-8586240</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>group</Name>
+        <Text>Drive Left</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp1</Name>
+            <Text>Drive Left A</Text>
+            <Color>-14759</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp3</Name>
+            <Text>Drive Left B</Text>
+            <Color>-7824641</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>total1</Name>
+            <Text>Drive Left Total</Text>
+            <Color>-8586240</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>group</Name>
+        <Text>Shooter</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp0</Name>
+            <Text>Left Shooter</Text>
+            <Color>-36495</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp12</Name>
+            <Text>Right Shooter</Text>
+            <Color>-4978688</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>total2</Name>
+            <Text>Shooter Total</Text>
+            <Color>-8586240</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+      <SeriesGroupNode>
+        <Name>group</Name>
+        <Text>Lift</Text>
+        <Color>-1</Color>
+        <Childern>
+          <SeriesChildNode>
+            <Name>pdp2</Name>
+            <Text>Left Lift</Text>
+            <Color>-6750328</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>pdp14</Name>
+            <Text>Right Lift</Text>
+            <Color>-13984000</Color>
+          </SeriesChildNode>
+          <SeriesChildNode>
+            <Name>total3</Name>
+            <Text>Lift Total</Text>
+            <Color>-8586240</Color>
+          </SeriesChildNode>
+        </Childern>
+      </SeriesGroupNode>
+    </Groups>
+  </GroupProfile>
+</ArrayOfGroupProfile>

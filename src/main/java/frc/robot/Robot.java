@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
@@ -36,9 +37,9 @@ import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Led;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
-import frc.robot.triggers.EndGameTrigger;
 import io.github.oblarg.oblog.Logger;
 
 /**
@@ -66,6 +67,7 @@ public class Robot extends TimedRobot {
     final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
     final private Indexer indexer = new Indexer(map.getIndexerMap());
+    final private Led led = new Led(map.getLEDMap());
 
     final private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -87,9 +89,17 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
+        SmartDashboard.putData("Retract intake", intake.retractIntake());
+
+        SmartDashboard.putData("cam toggle", camToggle());
+        SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
+        SmartDashboard.putData("vision align only", drive.visionAlignDegrees());
+        SmartDashboard.putData("vision align", visionAlignment());
+        SmartDashboard.putData("ring light on", led.ringLightOn());
+        SmartDashboard.putData("ring light off", led.ringLightOff());
 
         autoChooser.setDefaultOption("Nothing", new InstantCommand());
-        autoChooser.addOption("Pass the Line", drive.driveDistance(20, .5));
+        autoChooser.addOption("Pass the Line", drive.drivePastLine());
         autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
@@ -98,7 +108,7 @@ public class Robot extends TimedRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
-        controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() -> copilotController.getY(Hand.kLeft)));
+        controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() -> copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
 
         // protovision
@@ -129,6 +139,7 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
         Logger.updateEntries();
+
     }
 
     /**
@@ -171,29 +182,42 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public CommandBase regurgitateFC() {
-        CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.reversePush());
-        cmd.setName("Regurgitate FC");
+    public CommandBase regurgitate() {
+        CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.discharge());
+        cmd.setName("Regurgitate");
         return cmd;
     }
 
     public CommandBase shootAuto() {
-        CommandBase cmd = new SequentialCommandGroup(releaseBalls(3), shooter.spinDown(), drive.driveDistance(20, .5));
+        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(3), shooter.spinDown(),
+                drive.drivePastLine());
         cmd.setName("Shoot Auto");
         return cmd;
     }
 
-    // will spin the shooter then shoot all the balls and then turn the shooter off.
-    public CommandBase releaseBalls(int ballCount) {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), indexer.shootAllBalls(ballCount));
-        cmd.setName("Shoot all Balls");
+    public CommandBase shootAllBalls(int ballAmount) {
+        CommandBase cmd = CommandUtils.repeat(ballAmount,
+                new SequentialCommandGroup(shooter.shooterMath(), indexer.shootBall()));
+        cmd.setName("Shoot All Balls");
+        return cmd;
+    }
+
+    public CommandBase afterMatchPit() {
+        CommandBase cmd = new SequentialCommandGroup(lift.resetLift(), intake.retractIntake());
+        cmd.setName("After Match Pit");
+        return cmd;
+    }
+
+    public CommandBase systemsCheck() {
+        CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesion(), shooter.spinUp(1000),
+                indexer.shootAllBalls(1));
+        cmd.setName("SYSTEMS CHECK");
         return cmd;
     }
 
     // in the future we will add the vision lining up command to this.
     public CommandBase endGame() {
-        CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(),
-                lift.disengageRatchet(() -> -copilotController.getTriggers()));
+        CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(), lift.disengageRatchet());
         endGameCmd.setName("End Game Lift");
         return endGameCmd;
     }
@@ -215,6 +239,29 @@ public class Robot extends TimedRobot {
         return camTogglecmd;
     }
 
+    public CommandBase enableTargeting() {
+        CommandBase cmd = new InstantCommand(() -> {
+            SmartDashboard.putBoolean("Is Shooting", true);
+
+        });
+        cmd.setName("Targeting On");
+        return cmd;
+    }
+
+    public CommandBase disableTargeting() {
+        CommandBase cmd = new InstantCommand(() -> {
+            SmartDashboard.putBoolean("Is Shooting", false);
+        });
+        cmd.setName("Targeting Off");
+        return cmd;
+    }
+
+    public CommandBase visionAlignment() {
+        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlignDegrees());
+        cmd.setName("Vision Alignment");
+        return cmd;
+    }
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -223,20 +270,24 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(releaseBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kB).whenHeld(shootAllBalls(5)).whenReleased(shooter.spinDown());
+
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
-        driveController.getButton(Button.kB).toggleWhenActive(camToggle());
+        driveController.getButton(Button.kStart).whenPressed(visionAlignment());
+        driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
+        driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
 
         copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(5000));
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
-        endTrigger.and(new EndGameTrigger(120)).whenActive(endGame());
-        copilotController.getButton(Button.kY).whenPressed(drive.arcadeTurning());
+        endTrigger.whenActive(endGame());
+        copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
+        copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
     }
 }

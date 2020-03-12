@@ -15,6 +15,8 @@ import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+
 public class RobotMap {
 
     public DifferentialDriveMap getDriveMap() {
@@ -130,6 +132,26 @@ public class RobotMap {
 
     public IndexMap getIndexerMap() {
         return new IndexMap();
+    }
+
+    public static class LEDMap {
+
+        public ISolenoid visionRingLightSolenoid() {
+            return new MockSolenoid();
+        }
+
+        public AddressableLED robotLED() {
+            return new AddressableLED(1);
+        }
+
+        public int RobotBufferLength() {
+            return 0;
+        }
+
+    }
+
+    public LEDMap getLEDMap() {
+        return new LEDMap();
     }
 
 }

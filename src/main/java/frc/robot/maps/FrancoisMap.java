@@ -52,7 +52,6 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
             }
@@ -66,7 +65,6 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
 
@@ -108,10 +106,10 @@ public class FrancoisMap extends RobotMap {
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                pidLeader.setP(0.0002);
-                pidLeader.setI(0);
+                pidLeader.setP(0.00038);
+                pidLeader.setI(0.0000001);
                 pidLeader.setD(0);
-                pidLeader.setF(0.0002);
+                pidLeader.setF(0.00017);
 
                 // kp = .00045, kF = .0002
 
@@ -127,7 +125,6 @@ public class FrancoisMap extends RobotMap {
             @Override
             public SendableSpeedController spinner() {
                 SendableSpeedController motor = SendableSpeedController.wrap(controlPanel);
-                motor.setInverted(true);
                 return motor;
             }
         };
@@ -149,7 +146,7 @@ public class FrancoisMap extends RobotMap {
 
             public SendableSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
-                singulator.setInverted(true);
+                singulator.setInverted(false);
                 return SendableSpeedController.wrap(singulator);
             }
 
@@ -219,6 +216,17 @@ public class FrancoisMap extends RobotMap {
                 pidLeader.getEncoder().setPositionScaleFactor(distancePerRev);
                 return pidLeader.getEncoder();
             }
+        };
+    }
+
+    @Override
+    public LEDMap getLEDMap() {
+        return new LEDMap() {
+
+            public ISolenoid visionRingLightSolenoid() {
+                return new WSolenoid(7);
+            }
+
         };
     }
 

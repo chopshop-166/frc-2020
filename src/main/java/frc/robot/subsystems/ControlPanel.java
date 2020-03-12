@@ -36,7 +36,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
     @Log.SpeedController
     private SendableSpeedController spinnerMotor;
 
-    private static final double SPINNER_MOTOR_SPEED = .6;
+    private static final double SPINNER_MOTOR_SPEED = 0.6;
 
     public ControlPanel(RobotMap.ControlPanelMap map) {
         super();
@@ -63,7 +63,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
 
     public CommandBase spinForwards() {
         return new StartEndCommand(() -> {
-            spinnerMotor.set(-SPINNER_MOTOR_SPEED);
+            spinnerMotor.set(SPINNER_MOTOR_SPEED);
         }, () -> {
             spinnerMotor.stopMotor();
         }, this);
@@ -106,7 +106,10 @@ public class ControlPanel extends SubsystemBase implements Loggable {
     public CommandBase spinControlPanel(DoubleSupplier speed) {
         CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
-            spinnerMotor.set(speed.getAsDouble());
+            // Can spin forwards and only forward because any other way will make it spin
+            // out of the bearings
+            spinnerMotor.set(Math.abs(speed.getAsDouble()));
+            // we only want to spin this in one direction since it matters for points
         }, (interrupted) -> {
             spinnerMotor.stopMotor();
         }, () -> false, this);
