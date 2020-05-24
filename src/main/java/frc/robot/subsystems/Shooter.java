@@ -111,7 +111,6 @@ public class Shooter extends SubsystemBase implements Loggable {
             }
             ThresholdCheck check = new ThresholdCheck(25, () -> {
                 return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED)) <= .05);
-
             });
 
             @Override

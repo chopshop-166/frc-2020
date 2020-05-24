@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "com.github.spotbugs" version "3.0.0"
+    id "com.github.spotbugs" version "4.2.1"
     id "pmd"
     id "edu.wpi.first.GradleRIO" version "2020.3.2"
     id "com.chopshop166.plugin" version "0.5"
@@ -80,8 +80,22 @@ dependencies {
 // knows where to look for our Robot Class.
 jar { manifest chopshop.manifest(ROBOT_MAIN_CLASS) }
 
-ext {
-    SpotBugsTask = com.github.spotbugs.SpotBugsTask
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+    reports {
+        xml.enabled false
+        html.enabled true
+        html.stylesheet resources.text.fromFile('config/xsl/fancy.xsl')
+    }
 }
 
-apply from: 'checks.gradle'
+spotbugs {
+    ignoreFailures = true
+    excludeFilter = file("$rootProject.projectDir/config/findbugs-ignore.xml")
+}
+
+pmd {
+    toolVersion = "6.23.0"
+    ignoreFailures = true
+    ruleSets = []
+    ruleSetFiles = files("$rootProject.projectDir/config/pmd-ruleset.xml")
+}
