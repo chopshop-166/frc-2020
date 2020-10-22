@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.DriveKinematics;
+import frc.robot.logger.RobotLogger;
+import frc.robot.logger.SubsystemLogger;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -188,7 +190,9 @@ public class Drive extends SubsystemBase implements Loggable {
         final CommandBase cmd = new RunCommand(() -> {
             final double yAxis = forward.getAsDouble();
             final double xAxis = turn.getAsDouble();
+
             driveTrain.arcadeDrive(yAxis, xAxis);
+
         }, this);
         cmd.setName("Drive");
         return cmd;

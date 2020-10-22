@@ -67,6 +67,8 @@ dependencies {
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
     compile 'com.google.guava:guava:30.1-jre'
+    compile group: 'org.influxdb', name: 'influxdb-java', version: "2.20"
+
     testImplementation 'junit:junit:4.12'
 
     // Enable simulation gui support. Must check the box in vscode to enable support

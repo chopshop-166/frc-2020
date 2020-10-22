@@ -1,5 +1,6 @@
 package frc.robot.maps;
 
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
@@ -18,8 +19,15 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import frc.robot.logger.RobotLogger;
+import frc.robot.logger.SubsystemLogger;
 
 public class RobotMap {
+    public final RobotLogger logger;
+
+    public RobotMap(final RobotLogger logger) {
+        this.logger = logger;
+    }
 
     public void setBAGCurrentLimits(TalonSRX talon) {
         talon.configContinuousCurrentLimit(15, 0);
@@ -37,15 +45,20 @@ public class RobotMap {
 
     public DriveKinematics getDriveMap() {
         return new DriveKinematics() {
+            final SubsystemLogger driveLogger = logger.addSubsystem("Drive");
 
             @Override
             public SmartSpeedController getRight() {
-                return new MockSpeedController();
+                MockSpeedController right = new MockSpeedController();
+                driveLogger.register(right, Map.of("Side", "Right", "Motor", "A"));
+                return right;
             }
 
             @Override
             public SmartSpeedController getLeft() {
-                return new MockSpeedController();
+                MockSpeedController left = new MockSpeedController();
+                driveLogger.register(left, Map.of("Side", "Left", "Motor", "A"));
+                return left;
             }
         };
     }
