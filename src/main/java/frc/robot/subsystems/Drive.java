@@ -59,7 +59,7 @@ public class Drive extends SubsystemBase implements Loggable {
      * 
      * @param map represents the drive map
      */
-    public Drive(DifferentialDriveMap map) {
+    public Drive(final DifferentialDriveMap map) {
         super();
         rightMotorGroup = map.getRight();
         leftMotorGroup = map.getLeft();
@@ -72,7 +72,7 @@ public class Drive extends SubsystemBase implements Loggable {
     }
 
     public CommandBase cancel() {
-        CommandBase cmd = new InstantCommand(() -> {
+        final CommandBase cmd = new InstantCommand(() -> {
 
         }, this);
         cmd.setName("Drive Cancel");
@@ -91,10 +91,10 @@ public class Drive extends SubsystemBase implements Loggable {
      * @return returns a run command so drive will stay running as long as drive is
      *         being called
      */
-    public CommandBase drive(DoubleSupplier forward, DoubleSupplier turn) {
-        CommandBase cmd = new RunCommand(() -> {
-            double yAxis = forward.getAsDouble();
-            double xAxis = turn.getAsDouble();
+    public CommandBase drive(final DoubleSupplier forward, final DoubleSupplier turn) {
+        final CommandBase cmd = new RunCommand(() -> {
+            final double yAxis = forward.getAsDouble();
+            final double xAxis = turn.getAsDouble();
             driveTrain.arcadeDrive(yAxis, xAxis);
         }, this);
         cmd.setName("Drive");
@@ -102,7 +102,7 @@ public class Drive extends SubsystemBase implements Loggable {
     }
 
     public CommandBase arcadeTurning() {
-        CommandBase cmd = new FunctionalCommand(() -> {
+        final CommandBase cmd = new FunctionalCommand(() -> {
         }, () -> {
             driveTrain.arcadeDrive(0, (SmartDashboard.getNumber("Ratio Offset", 0) * 0.5));
         }, (interrupted) -> {
@@ -114,8 +114,8 @@ public class Drive extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-    public CommandBase driveDistance(double distance, double speed) {
-        CommandBase cmd = new FunctionalCommand(() -> {
+    public CommandBase driveDistance(final double distance, final double speed) {
+        final CommandBase cmd = new FunctionalCommand(() -> {
             driveLeftEncoder.reset();
             driveRightEncoder.reset();
         }, () -> {
@@ -123,15 +123,15 @@ public class Drive extends SubsystemBase implements Loggable {
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            double avg = (driveLeftEncoder.getDistance() + driveRightEncoder.getDistance()) / 2;
+            final double avg = (driveLeftEncoder.getDistance() + driveRightEncoder.getDistance()) / 2;
             return (avg >= distance);
         }, this);
         cmd.setName("Drive Distance");
         return cmd;
     }
 
-    public CommandBase turnDegrees(double degrees, double speed) {
-        CommandBase cmd = new FunctionalCommand(() -> {
+    public CommandBase turnDegrees(final double degrees, final double speed) {
+        final CommandBase cmd = new FunctionalCommand(() -> {
             gyro.reset();
         }, () -> {
             double realSpeed = speed;
@@ -148,8 +148,8 @@ public class Drive extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-    public CommandBase slowTurn(boolean isTurningRight) {
-        CommandBase cmd = new RunCommand(() -> {
+    public CommandBase slowTurn(final boolean isTurningRight) {
+        final CommandBase cmd = new RunCommand(() -> {
             if (isTurningRight) {
                 driveTrain.arcadeDrive(0, 0.4);
             } else {
@@ -162,7 +162,7 @@ public class Drive extends SubsystemBase implements Loggable {
     }
 
     public CommandBase visionAlignDegrees() {
-        CommandBase cmd = new CommandBase() {
+        final CommandBase cmd = new CommandBase() {
             {
                 addRequirements(Drive.this);
             }
@@ -201,7 +201,7 @@ public class Drive extends SubsystemBase implements Loggable {
             }
 
             @Override
-            public void end(boolean interrupted) {
+            public void end(final boolean interrupted) {
                 driveTrain.stopMotor();
 
             }

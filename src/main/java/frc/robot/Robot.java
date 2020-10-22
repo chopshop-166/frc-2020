@@ -183,54 +183,54 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase regurgitate() {
-        CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.discharge());
+        final CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.discharge());
         cmd.setName("Regurgitate");
         return cmd;
     }
 
     public CommandBase shootAuto() {
-        CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(3), shooter.spinDown(),
+        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(3), shooter.spinDown(),
                 drive.drivePastLine());
         cmd.setName("Shoot Auto");
         return cmd;
     }
 
-    public CommandBase shootAllBalls(int ballAmount) {
-        CommandBase cmd = CommandUtils.repeat(ballAmount,
+    public CommandBase shootAllBalls(final int ballAmount) {
+        final CommandBase cmd = CommandUtils.repeat(ballAmount,
                 new SequentialCommandGroup(shooter.shooterMath(), indexer.shootBall()));
         cmd.setName("Shoot All Balls");
         return cmd;
     }
 
     public CommandBase afterMatchPit() {
-        CommandBase cmd = new SequentialCommandGroup(lift.resetLift(), intake.retractIntake());
+        final CommandBase cmd = new SequentialCommandGroup(lift.resetLift(), intake.retractIntake());
         cmd.setName("After Match Pit");
         return cmd;
     }
 
     public CommandBase systemsCheck() {
-        CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesion(), shooter.spinUp(1000),
-                indexer.shootAllBalls(1));
+        final CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesion(),
+                shooter.spinUp(1000), indexer.shootAllBalls(1));
         cmd.setName("SYSTEMS CHECK");
         return cmd;
     }
 
     // in the future we will add the vision lining up command to this.
     public CommandBase endGame() {
-        CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(), lift.disengageRatchet());
+        final CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(), lift.disengageRatchet());
         endGameCmd.setName("End Game Lift");
         return endGameCmd;
     }
 
     public CommandBase cancelAll() {
-        CommandBase cmd = new ParallelCommandGroup(controlPanel.cancel(), drive.cancel(), indexer.cancel(),
+        final CommandBase cmd = new ParallelCommandGroup(controlPanel.cancel(), drive.cancel(), indexer.cancel(),
                 intake.cancel(), lift.cancel(), shooter.cancel());
         cmd.setName("Cancel All");
         return cmd;
     }
 
     public CommandBase camToggle() {
-        CommandBase camTogglecmd = new StartEndCommand(() -> {
+        final CommandBase camTogglecmd = new StartEndCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", true);
         }, () -> {
             SmartDashboard.putBoolean("Is Shooting", false);
@@ -240,7 +240,7 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase enableTargeting() {
-        CommandBase cmd = new InstantCommand(() -> {
+        final CommandBase cmd = new InstantCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", true);
 
         });
@@ -249,7 +249,7 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase disableTargeting() {
-        CommandBase cmd = new InstantCommand(() -> {
+        final CommandBase cmd = new InstantCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", false);
         });
         cmd.setName("Targeting Off");
@@ -257,7 +257,8 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase visionAlignment() {
-        CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlignDegrees());
+        final CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.ringLightOn(),
+                drive.visionAlignDegrees());
         cmd.setName("Vision Alignment");
         return cmd;
     }
@@ -284,7 +285,7 @@ public class Robot extends TimedRobot {
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
-        XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
+        final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.whenActive(endGame());
         copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
