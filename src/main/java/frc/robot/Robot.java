@@ -189,15 +189,22 @@ public class Robot extends TimedRobot {
     }
 
     public CommandBase shootAuto() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(3), shooter.spinDown(),
+        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.spinDown(),
                 drive.drivePastLine());
         cmd.setName("Shoot Auto");
         return cmd;
     }
 
-    public CommandBase shootAllBalls(final int ballAmount) {
+    public CommandBase shootNBalls(final int ballAmount) {
         final CommandBase cmd = CommandUtils.repeat(ballAmount,
-                new SequentialCommandGroup(shooter.shooterMath(), indexer.shootBall()));
+                new SequentialCommandGroup(shooter.spinUpForDistance(), indexer.shootBall()));
+        cmd.setName("Shoot All Balls");
+        return cmd;
+    }
+
+    public CommandBase maxSpeedNBalls(final int ballAmount) {
+        final CommandBase cmd = CommandUtils.repeat(ballAmount,
+                new SequentialCommandGroup(shooter.linearSpinUp(() -> Shooter.MAX_SPEED), indexer.shootBall()));
         cmd.setName("Shoot All Balls");
         return cmd;
     }
@@ -271,8 +278,8 @@ public class Robot extends TimedRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(shootAllBalls(5)).whenReleased(shooter.spinDown());
-
+        driveController.getButton(Button.kB).whenHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kX).whenPressed(maxSpeedNBalls(5));
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
