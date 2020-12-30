@@ -9,7 +9,6 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,7 +51,7 @@ public class Shooter extends SubsystemBase implements Loggable {
     // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
 
-    private final static double MAX_SHOOTER_SPEED = 5400;
+    public final static double MAX_SPEED = 5400;
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
@@ -82,12 +81,13 @@ public class Shooter extends SubsystemBase implements Loggable {
         super.periodic();
     }
 
-    public CommandBase shooterMath() {
+    public CommandBase spinUpForDistance() {
         return linearSpinUp(() -> {
             double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
             if (!SmartDashboard.getBoolean("Sees Target", false)) {
                 output = INITIATION_LINE_SPEED;
             } else {
+                // calculated through linear regression in an excel spreadsheet
                 output = 2800.7 * (Math.pow(dist, 0.3094));
             }
 
