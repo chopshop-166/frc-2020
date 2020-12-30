@@ -115,8 +115,8 @@ public class Shooter extends SubsystemBase implements Loggable {
 
             @Override
             public void initialize() {
-                output = Math.min(output, MAX_SHOOTER_SPEED);
-                shooterWheelMotor.setSetpoint(Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED));
+                output = Math.min(output, MAX_SPEED);
+                shooterWheelMotor.setSetpoint(Math.min(speed.getAsDouble(), MAX_SPEED));
             }
 
             @Override
