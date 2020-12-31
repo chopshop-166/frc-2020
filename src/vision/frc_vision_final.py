@@ -9,7 +9,10 @@ import cv2
 import numpy as np
 import time
 from visionfunctions import *
+from cscore import CameraServer
+from networktables import NetworkTables
 
+# TODO put this as a smartdashboard value
 debugging = True
 
 ANGLE_HIGH_THRESHOLD = 70
@@ -49,8 +52,6 @@ def newLine(
 
     return X_TOTAL, Y_TOTAL
 
-from cscore import CameraServer
-from networktables import NetworkTables
 NetworkTables.initialize(server="roborio-166-frc.local")
 
 if NetworkTables.isConnected():
@@ -165,6 +166,7 @@ while True:
                         X_AVG += X_VAL
                         Y_AVG += Y_VAL
 
+                    # Takes a rolling average
                     X_AVG = int(X_AVG / POINT_SAMPLES)
                     Y_AVG = int(Y_AVG / POINT_SAMPLES)
 
@@ -181,10 +183,12 @@ while True:
                     sd.putNumber(
                         "Angle Offset", (PIXEL_ANGLE * X_AVG) - (FOV_ANGLE / 2)
                     )
+                    # Distance is measured in meters
                     sd.putNumber("Distance To Target", dist_to_target)
 
                 else:
                     VALS.append([X_TOTAL / (2 * NUM_LINES), Y_TOTAL / (2 * NUM_LINES)])
+                    sd.putNumber("Sees Target", False)
 
             if debugging:
                 for LINE in lines:

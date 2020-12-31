@@ -157,11 +157,13 @@ while True:
                 sd.putBoolean("Sees Target", True)
                 sd.putNumber("Ratio Offset", offset)
                 sd.putNumber("Angle Offset", PIXEL_ANGLE * X_AVG)
+                # Distance is in Meters
                 sd.putNumber("Distance To Target", dist_to_target)
 
             else:
                 VALS.append([X_TOTAL/(2*NUM_LINES), Y_TOTAL/(2*NUM_LINES)])
-
+        else:
+            sd.putBoolean("Sees Target", False)
         for LINE in LINES:
             x1, y1, x2, y2=LINE[0]
             cv2.line(LINE_IMG, (x1, y1), (x2, y2), (0, 255, 0), 1)

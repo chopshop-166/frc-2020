@@ -76,13 +76,15 @@ public class Shooter extends SubsystemBase implements Loggable {
 
     @Override
     public void periodic() {
-        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 160);
+        // Distance is measured in meters
+        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 3.8);
         horizontalDistance = Math.sqrt((verticalDistance * verticalDistance) - (distanceToTarget * distanceToTarget));
         super.periodic();
     }
 
     public CommandBase spinUpForDistance() {
         return linearSpinUp(() -> {
+            // Distance is measured in meters
             double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
             if (!SmartDashboard.getBoolean("Sees Target", false)) {
                 output = INITIATION_LINE_SPEED;
@@ -90,8 +92,8 @@ public class Shooter extends SubsystemBase implements Loggable {
                 // calculated through linear regression in an excel spreadsheet
                 output = 2800.7 * (Math.pow(dist, 0.3094));
             }
-
-            return output;
+            // Caps speed to ensure we can achieve the speed
+            return Math.min(MAX_SPEED, output);
         });
 
     }

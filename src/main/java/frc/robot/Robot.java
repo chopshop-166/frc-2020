@@ -277,7 +277,7 @@ public class Robot extends CommandRobot {
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         driveController.getButton(Button.kB).whenHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
-        driveController.getButton(Button.kX).whenPressed(maxSpeedNBalls(5));
+        driveController.getButton(Button.kX).whenPressed(maxSpeedNBalls(5)).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
