@@ -2,7 +2,7 @@ package frc.robot.maps;
 
 import java.util.function.BooleanSupplier;
 
-import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;

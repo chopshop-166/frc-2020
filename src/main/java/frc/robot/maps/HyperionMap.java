@@ -1,6 +1,6 @@
 package frc.robot.maps;
 
-import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
