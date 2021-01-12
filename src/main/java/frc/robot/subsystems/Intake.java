@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.IDSolenoid;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -19,7 +19,7 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class Intake extends SubsystemBase implements Loggable {
     @Log.SpeedController
-    private final SendableSpeedController intakeMotor;
+    private final SmartSpeedController intakeMotor;
     private final IDSolenoid deployPiston;
 
     private static final double INTAKE_MOTOR_SPEED = 0.85;

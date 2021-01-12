@@ -7,8 +7,8 @@
 
 package frc.robot;
 
-import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.triggers.XboxTrigger;
@@ -59,7 +59,8 @@ public class Robot extends TimedRobot {
             .getEntry();
     final private String robotName = nameEntry.getString("Unknown");
 
-    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
+    final private RobotMap map = CommandRobot.getMapForName(robotName, RobotMap.class, "frc.robot.maps",
+            new RobotMap());
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
@@ -103,8 +104,6 @@ public class Robot extends TimedRobot {
         autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
-
-        DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));

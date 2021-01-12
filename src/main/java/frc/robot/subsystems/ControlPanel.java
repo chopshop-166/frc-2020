@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
@@ -34,7 +34,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
     private String gameData;
     private ColorStates color;
     @Log.SpeedController
-    private SendableSpeedController spinnerMotor;
+    private SmartSpeedController spinnerMotor;
 
     private static final double SPINNER_MOTOR_SPEED = 0.6;
 
@@ -81,21 +81,21 @@ public class ControlPanel extends SubsystemBase implements Loggable {
         gameData = DriverStation.getInstance().getGameSpecificMessage();
         if (gameData.length() > 0) {
             switch (gameData.charAt(0)) {
-            case 'R':
-                color = ColorStates.BLUE;
-                break;
-            case 'Y':
-                color = ColorStates.GREEN;
-                break;
-            case 'B':
-                color = ColorStates.RED;
-                break;
-            case 'G':
-                color = ColorStates.YELLOW;
-                break;
-            default:
-                color = ColorStates.OTHER;
-                break;
+                case 'R':
+                    color = ColorStates.BLUE;
+                    break;
+                case 'Y':
+                    color = ColorStates.GREEN;
+                    break;
+                case 'B':
+                    color = ColorStates.RED;
+                    break;
+                case 'G':
+                    color = ColorStates.YELLOW;
+                    break;
+                default:
+                    color = ColorStates.OTHER;
+                    break;
             }
         } else {
             color = ColorStates.OTHER;

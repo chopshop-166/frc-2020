@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.commands.CommandUtils;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -29,9 +29,9 @@ import io.github.oblarg.oblog.annotations.Log;
 
 public class Indexer extends SubsystemBase implements Loggable {
     @Log.SpeedController
-    final SendableSpeedController singulator;
+    final SmartSpeedController singulator;
     @Log.SpeedController
-    final SendableSpeedController pierreMotor;
+    final SmartSpeedController pierreMotor;
 
     final BooleanSupplier frontIntakeIR;
 
