@@ -19,7 +19,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -49,7 +48,7 @@ import io.github.oblarg.oblog.Logger;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends CommandRobot {
 
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
@@ -59,8 +58,7 @@ public class Robot extends TimedRobot {
             .getEntry();
     final private String robotName = nameEntry.getString("Unknown");
 
-    final private RobotMap map = CommandRobot.getMapForName(robotName, RobotMap.class, "frc.robot.maps",
-            new RobotMap());
+    final private RobotMap map = getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
@@ -83,6 +81,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         Logger.configureLoggingAndConfig(this, false);
+        super.robotInit();
         configureButtonBindings();
         nameEntry.setPersistent();
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
