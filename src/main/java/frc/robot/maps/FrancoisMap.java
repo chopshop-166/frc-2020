@@ -122,11 +122,6 @@ public class FrancoisMap extends RobotMap {
     @Override
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
-            @Override
-            public SmartSpeedController spinner() {
-                SmartSpeedController motor = SmartSpeedController.wrap(controlPanel);
-                return motor;
-            }
         };
     }
 

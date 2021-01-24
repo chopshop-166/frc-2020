@@ -80,8 +80,8 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void robotInit() {
-        Logger.configureLoggingAndConfig(this, false);
         super.robotInit();
+        Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
