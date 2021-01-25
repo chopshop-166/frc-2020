@@ -112,7 +112,7 @@ public class Shooter extends SubsystemBase implements Loggable {
                 addRequirements(Shooter.this);
             }
             PersistenceCheck check = new PersistenceCheck(25, () -> {
-                return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED)) <= .05);
+                return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SPEED)) <= .05);
             });
 
             @Override
