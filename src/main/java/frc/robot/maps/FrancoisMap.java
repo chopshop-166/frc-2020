@@ -122,6 +122,10 @@ public class FrancoisMap extends RobotMap {
     @Override
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
+            @Override
+            public SmartSpeedController spinner() {
+                return SmartSpeedController.wrap(controlPanel);
+            }
         };
     }
 
