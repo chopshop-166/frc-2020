@@ -10,7 +10,7 @@ import com.chopshop166.chopshoplib.outputs.MockPIDSpeedController;
 import com.chopshop166.chopshoplib.outputs.MockSolenoid;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
@@ -23,12 +23,12 @@ public class RobotMap {
         return new DifferentialDriveMap() {
 
             @Override
-            public SendableSpeedController getRight() {
+            public SmartSpeedController getRight() {
                 return new MockSpeedController();
             }
 
             @Override
-            public SendableSpeedController getLeft() {
+            public SmartSpeedController getLeft() {
                 return new MockSpeedController();
             }
         };
@@ -36,7 +36,7 @@ public class RobotMap {
 
     public static class IntakeMap {
 
-        public SendableSpeedController intake() {
+        public SmartSpeedController intake() {
             return new MockSpeedController();
         }
 
@@ -67,7 +67,7 @@ public class RobotMap {
     }
 
     public static class ControlPanelMap {
-        public SendableSpeedController spinner() {
+        public SmartSpeedController spinner() {
             return new MockSpeedController();
         }
     }
@@ -105,11 +105,11 @@ public class RobotMap {
     }
 
     public static class IndexMap {
-        public SendableSpeedController singulator() {
+        public SmartSpeedController singulator() {
             return new MockSpeedController();
         }
 
-        public SendableSpeedController pierreMotor() {
+        public SmartSpeedController pierreMotor() {
             return new MockSpeedController();
         }
 

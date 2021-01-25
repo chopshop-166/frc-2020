@@ -2,11 +2,11 @@ package frc.robot.maps;
 
 import java.util.function.BooleanSupplier;
 
-import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.outputs.SwPIDSpeedController;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -25,12 +25,12 @@ public class TempestMap extends RobotMap {
         final double distancePerPulse = (1.0 / 256.0) * (4.0 * Math.PI);
         return new DifferentialDriveMap() {
             @Override
-            public SendableSpeedController getLeft() {
-                return SendableSpeedController.group(new WPI_TalonSRX(4), new WPI_TalonSRX(1));
+            public SmartSpeedController getLeft() {
+                return SmartSpeedController.group(new WPI_TalonSRX(4), new WPI_TalonSRX(1));
             }
 
             @Override
-            public SendableSpeedController getRight() {
+            public SmartSpeedController getRight() {
                 final WEncoder encoder = new WEncoder(1, 0);
                 encoder.setDistancePerPulse(distancePerPulse);
 
@@ -50,9 +50,9 @@ public class TempestMap extends RobotMap {
             AnalogTrigger backIntakeIR = new AnalogTrigger(3);
 
             @Override
-            public SendableSpeedController pierreMotor() {
+            public SmartSpeedController pierreMotor() {
                 final Victor pierreMotor = new Victor(5);
-                return SendableSpeedController.wrap(pierreMotor);
+                return SmartSpeedController.wrap(pierreMotor);
             }
 
             public BooleanSupplier frontIntakeIR() {
@@ -85,7 +85,7 @@ public class TempestMap extends RobotMap {
             public PIDSpeedController shooterWheel() {
                 final Talon rollerMotor = new Talon(0);
                 final Talon rollerMotor2 = new Talon(1);
-                final SendableSpeedController bothRollers = SendableSpeedController.group(rollerMotor, rollerMotor2);
+                final SmartSpeedController bothRollers = SmartSpeedController.group(rollerMotor, rollerMotor2);
                 final PIDController pid = new PIDController(0, 0, 0);
                 return SwPIDSpeedController.velocity(bothRollers, pid);
             }
@@ -96,9 +96,9 @@ public class TempestMap extends RobotMap {
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
             @Override
-            public SendableSpeedController intake() {
+            public SmartSpeedController intake() {
                 final Victor intakeMotor = new Victor(3);
-                return SendableSpeedController.wrap(intakeMotor);
+                return SmartSpeedController.wrap(intakeMotor);
             }
 
         };

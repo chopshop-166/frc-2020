@@ -5,7 +5,7 @@ import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.ThresholdCheck;
+import com.chopshop166.chopshoplib.PersistenceCheck;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -109,7 +109,7 @@ public class Shooter extends SubsystemBase implements Loggable {
             {
                 addRequirements(Shooter.this);
             }
-            ThresholdCheck check = new ThresholdCheck(25, () -> {
+            PersistenceCheck check = new PersistenceCheck(25, () -> {
                 return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED)) <= .05);
             });
 

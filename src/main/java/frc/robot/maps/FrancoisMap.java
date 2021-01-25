@@ -2,17 +2,17 @@ package frc.robot.maps;
 
 import java.util.function.BooleanSupplier;
 
-import com.chopshop166.chopshoplib.RobotMapFor;
+import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
 import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.sensors.InvertDigitalInput;
+import com.chopshop166.chopshoplib.sensors.WDigitalInput;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -42,7 +42,7 @@ public class FrancoisMap extends RobotMap {
             CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
 
             @Override
-            public SendableSpeedController getRight() {
+            public SmartSpeedController getRight() {
                 // We invert the motor so the controller outputs are aligned
                 rightLeader.setInverted(true);
                 rightFollower.follow(rightLeader);
@@ -57,7 +57,7 @@ public class FrancoisMap extends RobotMap {
             }
 
             @Override
-            public SendableSpeedController getLeft() {
+            public SmartSpeedController getLeft() {
                 leftFollower.follow(leftLeader);
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
@@ -81,8 +81,8 @@ public class FrancoisMap extends RobotMap {
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
             @Override
-            public SendableSpeedController intake() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(42));
+            public SmartSpeedController intake() {
+                return SmartSpeedController.wrap(new WPI_TalonSRX(42));
             }
 
             @Override
@@ -123,9 +123,8 @@ public class FrancoisMap extends RobotMap {
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
             @Override
-            public SendableSpeedController spinner() {
-                SendableSpeedController motor = SendableSpeedController.wrap(controlPanel);
-                return motor;
+            public SmartSpeedController spinner() {
+                return SmartSpeedController.wrap(controlPanel);
             }
         };
     }
@@ -139,15 +138,15 @@ public class FrancoisMap extends RobotMap {
             AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
 
             @Override
-            public SendableSpeedController pierreMotor() {
+            public SmartSpeedController pierreMotor() {
                 final WPI_TalonSRX pierreMotor = new WPI_TalonSRX(40);
-                return SendableSpeedController.wrap(pierreMotor);
+                return SmartSpeedController.wrap(pierreMotor);
             }
 
-            public SendableSpeedController singulator() {
+            public SmartSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
                 singulator.setInverted(false);
-                return SendableSpeedController.wrap(singulator);
+                return SmartSpeedController.wrap(singulator);
             }
 
             public BooleanSupplier topPierreIR() {
@@ -179,8 +178,8 @@ public class FrancoisMap extends RobotMap {
             CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
             CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
             PIDSparkMax pidLeader = new PIDSparkMax(leader);
-            InvertDigitalInput upperLimit = new InvertDigitalInput(0);
-            InvertDigitalInput lowerLimit = new InvertDigitalInput(1);
+            WDigitalInput upperLimit = new WDigitalInput(0);
+            WDigitalInput lowerLimit = new WDigitalInput(1);
             double distancePerRev = (1.0 / 81.0) * (2.551 * Math.PI);
 
             @Override

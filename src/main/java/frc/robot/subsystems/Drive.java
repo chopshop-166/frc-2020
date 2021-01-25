@@ -3,9 +3,9 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.ThresholdCheck;
+import com.chopshop166.chopshoplib.PersistenceCheck;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -37,9 +37,9 @@ import io.github.oblarg.oblog.annotations.Log;
 public class Drive extends SubsystemBase implements Loggable {
 
     @Log.SpeedController
-    private final SendableSpeedController rightMotorGroup;
+    private final SmartSpeedController rightMotorGroup;
     @Log.SpeedController
-    private final SendableSpeedController leftMotorGroup;
+    private final SmartSpeedController leftMotorGroup;
     @Log.Gyro
     private final GyroBase gyro;
 
@@ -167,7 +167,7 @@ public class Drive extends SubsystemBase implements Loggable {
                 addRequirements(Drive.this);
             }
             int i;
-            ThresholdCheck check = new ThresholdCheck(25, () -> {
+            PersistenceCheck check = new PersistenceCheck(25, () -> {
                 return (pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false));
 
             });

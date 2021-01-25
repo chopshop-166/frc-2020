@@ -7,8 +7,8 @@
 
 package frc.robot;
 
-import com.chopshop166.chopshoplib.DashboardUtils;
 import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.triggers.XboxTrigger;
@@ -19,7 +19,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -49,7 +48,7 @@ import io.github.oblarg.oblog.Logger;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends CommandRobot {
 
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
@@ -59,7 +58,7 @@ public class Robot extends TimedRobot {
             .getEntry();
     final private String robotName = nameEntry.getString("Unknown");
 
-    final private RobotMap map = RobotUtils.getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
+    final private RobotMap map = getMapForName(robotName, RobotMap.class, "frc.robot.maps", new RobotMap());
 
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
@@ -81,6 +80,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        super.robotInit();
         Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
@@ -103,8 +103,6 @@ public class Robot extends TimedRobot {
         autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
-
-        DashboardUtils.logTelemetry();
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
