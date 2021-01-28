@@ -150,7 +150,7 @@ public class Shooter extends SubsystemBase implements Loggable {
      * Calculates RPM with some gear ratio mathematics. (returns inches/second) Also
      * applies a 15% increase.
      */
-    public CommandBase calculatedShoot() {
+    /*public CommandBase calculatedShoot() {
         final double rpmSpeed;
 
         // If it doesn't see the target, it will just shoot at the last speed.
@@ -167,12 +167,11 @@ public class Shooter extends SubsystemBase implements Loggable {
         cmd.setName("calculatedShoot");
         return cmd;
     }
-
-    /*
+     *
      * Finds the needed velocity to reach a target (x, y) or (horizontalDistance,
      * verticalDistance). The formula takes takes theta or launch angle, target and
      * gravity.
-     */
+    
     public static double calculateVelocity() {
         // Checks if the target is within reach, plus a 12.5% leniency rate- incase lift
         // gets it there or something.
@@ -186,5 +185,5 @@ public class Shooter extends SubsystemBase implements Loggable {
             velocity = 0;
         }
         return velocity;
-    }
+    } */
 }
