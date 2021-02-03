@@ -123,9 +123,9 @@ public class FrancoisMap extends RobotMap {
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
             @Override
-            public SendableSpeedController spinner() {
-                setBAGCurrentLimit(controlPanel);
-                return SendableSpeedController.wrap(controlPanel);
+            public SmartSpeedController spinner() {
+                setBAGCurrentLimits(controlPanel);
+                return SmartSpeedController.wrap(controlPanel);
             }
         };
     }
@@ -141,15 +141,15 @@ public class FrancoisMap extends RobotMap {
             @Override
             public SmartSpeedController pierreMotor() {
                 final WPI_TalonSRX pierreMotor = new WPI_TalonSRX(40);
-                setBAGCurrentLimit(pierreMotor);
-                return SendableSpeedController.wrap(pierreMotor);
+                setBAGCurrentLimits(pierreMotor);
+                return SmartSpeedController.wrap(pierreMotor);
             }
 
             public SmartSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
                 singulator.setInverted(true);
-                setBAGCurrentLimit(singulator);
-                return SendableSpeedController.wrap(singulator);
+                setBAGCurrentLimits(singulator);
+                return SmartSpeedController.wrap(singulator);
             }
 
             public BooleanSupplier topPierreIR() {
