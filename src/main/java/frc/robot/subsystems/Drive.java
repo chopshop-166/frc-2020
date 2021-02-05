@@ -9,14 +9,20 @@ import com.chopshop166.chopshoplib.sensors.IEncoder;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.DriveKinematics;
@@ -107,8 +113,18 @@ public class Drive extends SubsystemBase implements Loggable {
         return odometry.getPoseMeters();
     }
 
+    public void resetOdometry(Pose2d pose) {
+        resetEncoders();
+        odometry.resetPosition(pose, gyro.getRotation2d());
+    }
+
     private double encoderAvg() {
         return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+    }
+
+    public void resetEncoders() {
+        leftEncoder.reset();
+        rightEncoder.reset();
     }
 
     public void resetGyro() {
@@ -117,6 +133,10 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public double getTurnRate() {
         return gyro.getRate();
+    }
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
     }
 
     public void tankDriveVolts(double left, double right) {
@@ -170,8 +190,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public CommandBase driveDistance(final double distance, final double speed) {
         final CommandBase cmd = new FunctionalCommand(() -> {
-            leftEncoder.reset();
-            rightEncoder.reset();
+            resetEncoders();
         }, () -> {
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
@@ -207,7 +226,6 @@ public class Drive extends SubsystemBase implements Loggable {
                 driveTrain.arcadeDrive(0, 0.4);
             } else {
                 driveTrain.arcadeDrive(0, -0.4);
-
             }
         }, this);
         cmd.setName("Turning");
@@ -256,7 +274,6 @@ public class Drive extends SubsystemBase implements Loggable {
             @Override
             public void end(final boolean interrupted) {
                 driveTrain.stopMotor();
-
             }
         };
 
@@ -264,5 +281,34 @@ public class Drive extends SubsystemBase implements Loggable {
 
         return cmd;
 
+    }
+
+    public Command autonomousCommand() {
+        TrajectoryConfig config = new TrajectoryConfig(MAX_SPEED_MPS, MAX_ACCELERATION)
+                .setKinematics(trajectoryKinematics);
+
+        Trajectory autoTrajectory = null;
+
+        RamseteCommand ramseteCommand = new RamseteCommand(autoTrajectory,
+                // Gets pose
+                this::getPose,
+                // Creates our ramsete controller
+                new RamseteController(RAMSETE_B, RAMSETE_ZETA),
+                // TODO Uses info from our characterization
+                new SimpleMotorFeedforward(0, 0, 0),
+                // Describes how the drivetrain is influenced by motor speed
+                trajectoryKinematics,
+                // Gets the speed of the wheels
+                this::getWheelSpeeds,
+                // Left Controller
+                new PIDController(0, 0, 0),
+                // Right Controller
+                new PIDController(0, 0, 0),
+                // Sends voltages to motors
+                this::tankDriveVolts, this);
+
+        resetOdometry(autoTrajectory.getInitialPose());
+
+        return ramseteCommand.andThen(() -> tankDriveVolts(0, 0));
     }
 }
