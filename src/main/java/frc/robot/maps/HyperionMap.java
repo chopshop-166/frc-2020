@@ -9,8 +9,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class HyperionMap extends RobotMap {
 
     @Override
-    public DifferentialDriveMap getDriveMap() {
-        return new DifferentialDriveMap() {
+    public DriveKinematics getDriveMap() {
+        return new DriveKinematics() {
 
             @Override
             public SmartSpeedController getRight() {

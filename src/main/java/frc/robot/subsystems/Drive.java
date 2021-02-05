@@ -2,20 +2,24 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.PersistenceCheck;
 
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.maps.RobotMap.DriveKinematics;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -34,6 +38,7 @@ import io.github.oblarg.oblog.annotations.Log;
  * 
  * 6) Sensors? Encoders, Gyro
  */
+
 public class Drive extends SubsystemBase implements Loggable {
 
     @Log.SpeedController
@@ -44,14 +49,33 @@ public class Drive extends SubsystemBase implements Loggable {
     private final GyroBase gyro;
 
     private final DifferentialDrive driveTrain;
+
+    private final DifferentialDriveKinematics trajectoryKinematics;
+
+    private final DifferentialDriveOdometry odometry;
     @Log.Encoder
-    private final IEncoder driveRightEncoder;
+    private final IEncoder rightEncoder;
     @Log.Encoder
-    private final IEncoder driveLeftEncoder;
+    private final IEncoder leftEncoder;
     @Log
     private final PIDController pid;
 
+    // Distance gain of the trajectory controller; 2.0 should work for most robots
+    private final double RAMSETE_B = 2.0;
+
+    // Temporal gain of the trajectory controller; 0.7 should work for most robots
+    private final double RAMSETE_ZETA = 0.7;
+
+    // Ramsete Controller used to control the robot during auto
+    RamseteController trajectoryController = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
+
     private final double ALIGN_PID_FEED = 0.2;
+
+    // TODO Max speed is 3.9624 m/s, but we're gonna start real slow
+    public final double MAX_SPEED_MPS = 0.5;
+
+    // TODO find value for max acceleration
+    public double MAX_ACCELERATION = 1.0;
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -59,16 +83,46 @@ public class Drive extends SubsystemBase implements Loggable {
      * 
      * @param map represents the drive map
      */
-    public Drive(final DifferentialDriveMap map) {
+    public Drive(final DriveKinematics map) {
         super();
         rightMotorGroup = map.getRight();
         leftMotorGroup = map.getLeft();
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
+        trajectoryKinematics = map.getKinematics();
         pid = new PIDController(0.0106, 0.0004, 0.008);
-        driveRightEncoder = rightMotorGroup.getEncoder();
-        driveLeftEncoder = leftMotorGroup.getEncoder();
+        rightEncoder = rightMotorGroup.getEncoder();
+        leftEncoder = leftMotorGroup.getEncoder();
+        odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+    }
+
+    @Override
+    public void periodic() {
+        // Update the odometry in the periodic block
+        odometry.update(gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
+    }
+
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+    private double encoderAvg() {
+        return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+    }
+
+    public void resetGyro() {
+        gyro.reset();
+    }
+
+    public double getTurnRate() {
+        return gyro.getRate();
+    }
+
+    public void tankDriveVolts(double left, double right) {
+        leftMotorGroup.setVoltage(left);
+        rightMotorGroup.setVoltage(right);
+        driveTrain.feed();
     }
 
     public CommandBase cancel() {
@@ -116,15 +170,14 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public CommandBase driveDistance(final double distance, final double speed) {
         final CommandBase cmd = new FunctionalCommand(() -> {
-            driveLeftEncoder.reset();
-            driveRightEncoder.reset();
+            leftEncoder.reset();
+            rightEncoder.reset();
         }, () -> {
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            final double avg = (driveLeftEncoder.getDistance() + driveRightEncoder.getDistance()) / 2;
-            return (avg >= distance);
+            return (encoderAvg() >= distance);
         }, this);
         cmd.setName("Drive Distance");
         return cmd;
@@ -132,7 +185,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public CommandBase turnDegrees(final double degrees, final double speed) {
         final CommandBase cmd = new FunctionalCommand(() -> {
-            gyro.reset();
+            resetGyro();
         }, () -> {
             double realSpeed = speed;
             if (degrees < 0 && speed > 0) {
@@ -174,7 +227,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
             @Override
             public void initialize() {
-                gyro.reset();
+                resetGyro();
                 pid.setSetpoint(SmartDashboard.getNumber("Angle Offset", 0));
                 pid.setTolerance(0.75);
             }
@@ -183,7 +236,7 @@ public class Drive extends SubsystemBase implements Loggable {
             public void execute() {
 
                 if (pid.getPositionError() <= 5 && (i % 50 == 0)) {
-                    gyro.reset();
+                    resetGyro();
                     pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
                     i = 0;
                 }

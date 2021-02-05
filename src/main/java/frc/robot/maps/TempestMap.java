@@ -21,9 +21,9 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 public class TempestMap extends RobotMap {
 
     @Override
-    public DifferentialDriveMap getDriveMap() {
+    public DriveKinematics getDriveMap() {
         final double distancePerPulse = (1.0 / 256.0) * (4.0 * Math.PI);
-        return new DifferentialDriveMap() {
+        return new DriveKinematics() {
             @Override
             public SmartSpeedController getLeft() {
                 return SmartSpeedController.group(new WPI_TalonSRX(4), new WPI_TalonSRX(1));
