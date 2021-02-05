@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.List;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.PersistenceCheck;
@@ -12,12 +13,14 @@ import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -67,10 +70,10 @@ public class Drive extends SubsystemBase implements Loggable {
     private final PIDController pid;
 
     // Distance gain of the trajectory controller; 2.0 should work for most robots
-    private final double RAMSETE_B = 2.0;
+    private final static double RAMSETE_B = 2.0;
 
     // Temporal gain of the trajectory controller; 0.7 should work for most robots
-    private final double RAMSETE_ZETA = 0.7;
+    private final static double RAMSETE_ZETA = 0.7;
 
     // Ramsete Controller used to control the robot during auto
     RamseteController trajectoryController = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
@@ -82,6 +85,15 @@ public class Drive extends SubsystemBase implements Loggable {
 
     // TODO find value for max acceleration
     public double MAX_ACCELERATION = 1.0;
+
+    // TODO find values for ks,kv,ka using characterization
+    public final static double KS_VOLTS = 0.0;
+    public final static double KV_VOLT_SPM = 0.0;
+    public final static double KA_VOLT_SSPM = 0.0;
+
+    // TODO find values for kp, kd using characterization
+    public final static double DRIVE_VEL_P = 0.0;
+    public final static double DRIVE_VEL_D = 0.0;
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -283,11 +295,11 @@ public class Drive extends SubsystemBase implements Loggable {
 
     }
 
-    public Command autonomousCommand() {
+    public Command autonomousCommand(Pose2d initial, List<Translation2d> waypoints, Pose2d endpoint) {
         TrajectoryConfig config = new TrajectoryConfig(MAX_SPEED_MPS, MAX_ACCELERATION)
                 .setKinematics(trajectoryKinematics);
 
-        Trajectory autoTrajectory = null;
+        Trajectory autoTrajectory = TrajectoryGenerator.generateTrajectory(initial, waypoints, endpoint, config);
 
         RamseteCommand ramseteCommand = new RamseteCommand(autoTrajectory,
                 // Gets pose
@@ -295,15 +307,15 @@ public class Drive extends SubsystemBase implements Loggable {
                 // Creates our ramsete controller
                 new RamseteController(RAMSETE_B, RAMSETE_ZETA),
                 // TODO Uses info from our characterization
-                new SimpleMotorFeedforward(0, 0, 0),
+                new SimpleMotorFeedforward(KS_VOLTS, KV_VOLT_SPM, KA_VOLT_SSPM),
                 // Describes how the drivetrain is influenced by motor speed
                 trajectoryKinematics,
                 // Gets the speed of the wheels
                 this::getWheelSpeeds,
                 // Left Controller
-                new PIDController(0, 0, 0),
+                new PIDController(DRIVE_VEL_P, 0, DRIVE_VEL_D),
                 // Right Controller
-                new PIDController(0, 0, 0),
+                new PIDController(DRIVE_VEL_P, 0, DRIVE_VEL_D),
                 // Sends voltages to motors
                 this::tankDriveVolts, this);
 
