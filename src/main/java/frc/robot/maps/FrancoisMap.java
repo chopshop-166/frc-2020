@@ -21,6 +21,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
 @RobotMapFor("Francois")
@@ -30,11 +31,11 @@ public class FrancoisMap extends RobotMap {
     WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
 
     @Override
-    public DifferentialDriveMap getDriveMap() {
+    public DriveKinematics getDriveMap() {
         // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
         final int averageCount = 15;
         final double distancePerRev = (1.0 / 12.27) * (6.0 * Math.PI);
-        return new DifferentialDriveMap() {
+        return new RobotMap.DriveKinematics() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
 
@@ -75,7 +76,7 @@ public class FrancoisMap extends RobotMap {
                 return new PigeonGyro(controlPanel);
             }
         };
-    }
+    };
 
     @Override
     public IntakeMap getIntakeMap() {

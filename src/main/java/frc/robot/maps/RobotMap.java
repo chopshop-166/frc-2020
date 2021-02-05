@@ -17,6 +17,9 @@ import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 public class RobotMap {
 
@@ -27,8 +30,14 @@ public class RobotMap {
         talon.enableCurrentLimit(true);
     }
 
-    public DifferentialDriveMap getDriveMap() {
-        return new DifferentialDriveMap() {
+    public static interface DriveKinematics extends DifferentialDriveMap {
+        default DifferentialDriveKinematics getKinematics() {
+            return new DifferentialDriveKinematics(1);
+        }
+    }
+
+    public DriveKinematics getDriveMap() {
+        return new DriveKinematics() {
 
             @Override
             public SmartSpeedController getRight() {
