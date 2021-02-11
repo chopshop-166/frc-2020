@@ -63,7 +63,8 @@ public class Robot extends CommandRobot {
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
     final private Shooter shooter = new Shooter(map.getShooterMap());
-    final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
+    // final private ControlPanel controlPanel = new
+    // ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
     final private Indexer indexer = new Indexer(map.getIndexerMap());
     final private Led led = new Led(map.getLEDMap());
@@ -106,7 +107,8 @@ public class Robot extends CommandRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
-        controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() -> copilotController.getX(Hand.kLeft)));
+        // controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() ->
+        // copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
 
         // protovision
@@ -228,8 +230,8 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase cancelAll() {
-        final CommandBase cmd = new ParallelCommandGroup(controlPanel.cancel(), drive.cancel(), indexer.cancel(),
-                intake.cancel(), lift.cancel(), shooter.cancel());
+        final CommandBase cmd = new ParallelCommandGroup(drive.cancel(), indexer.cancel(), intake.cancel(),
+                lift.cancel(), shooter.cancel());
         cmd.setName("Cancel All");
         return cmd;
     }
@@ -277,7 +279,7 @@ public class Robot extends CommandRobot {
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         driveController.getButton(Button.kB).whenHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
-        driveController.getButton(Button.kX).whenPressed(maxSpeedNBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kX).whenHeld(maxSpeedNBalls(5)).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
@@ -285,8 +287,8 @@ public class Robot extends CommandRobot {
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
 
-        copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
-        copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
+        // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
+        // copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
@@ -294,6 +296,6 @@ public class Robot extends CommandRobot {
         endTrigger.whenActive(endGame());
         copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
-        copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
+        // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
     }
 }

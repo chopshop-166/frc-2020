@@ -149,21 +149,25 @@ public class FrancoisMap extends RobotMap {
                 return SmartSpeedController.wrap(singulator);
             }
 
+            // TODO Find values for voltage limits
             public BooleanSupplier topPierreIR() {
                 topPierreIR.setLimitsVoltage(1.2, 1.4);
                 return topPierreIR::getTriggerState;
             }
 
+            // TODO Find values for voltage limits; test 1-3.5 and then test 1.5-3.5
             public BooleanSupplier bottomPierreIR() {
-                bottomPierreIR.setLimitsVoltage(1.2, 1.4);
+                bottomPierreIR.setLimitsVoltage(1, 3.5);
                 return bottomPierreIR::getTriggerState;
             }
 
+            // TODO Find values for voltage limits
             public BooleanSupplier backIntakeIR() {
                 backIntakeIR.setLimitsVoltage(1.2, 2.6);
                 return backIntakeIR::getTriggerState;
             }
 
+            // TODO Find values for voltage limits
             public BooleanSupplier frontIntakeIR() {
                 frontIntakeIR.setLimitsVoltage(1.2, 1.4);
                 return frontIntakeIR::getTriggerState;

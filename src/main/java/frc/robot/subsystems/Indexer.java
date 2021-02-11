@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -66,6 +67,15 @@ public class Indexer extends SubsystemBase implements Loggable {
         return cmd;
     }
 
+    @Override
+    public void periodic() {
+        super.periodic();
+        SmartDashboard.putBoolean("Top Pierre", topPierreIR.getAsBoolean());
+        SmartDashboard.putBoolean("bOTTOM Pierre", bottomPierreIR.getAsBoolean());
+        SmartDashboard.putBoolean("BackIntake", backIntakeIR.getAsBoolean());
+        SmartDashboard.putBoolean("Front intake", frontIntakeIR.getAsBoolean());
+    }
+
     public CommandBase indexBall() {
         CommandBase cmd = new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
         cmd.setName("Intake to Pierre");
@@ -112,7 +122,7 @@ public class Indexer extends SubsystemBase implements Loggable {
             if ((frontIntakeIR.getAsBoolean() || backIntakeIR.getAsBoolean()) && !topPierreIR.getAsBoolean()) {
                 singulator.set(SINGULATOR_MOTOR_SPEED);
             }
-            // This checks to see if a ball is at the top of Pierre and doesn't not run
+            // This checks to see if a ball is at the top of Pierre and does not run
             // because sometimes it will
             if ((bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean() && backIntakeIR.getAsBoolean())) {
                 pierreMotor.set(PIERRE_INDEX_SPEED);
