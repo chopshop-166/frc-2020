@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
@@ -86,13 +87,11 @@ public class Drive extends SubsystemBase implements Loggable {
     // TODO find value for max acceleration
     public double MAX_ACCELERATION = 1.0;
 
-    // TODO find values for ks,kv,ka using characterization
-    public final static double KS_VOLTS = 0.0;
-    public final static double KV_VOLT_SPM = 0.0;
-    public final static double KA_VOLT_SSPM = 0.0;
+    public final static double KS_VOLTS = 0.187;
+    public final static double KV_VOLT_SPM = 0.0249;
+    public final static double KA_VOLT_SSPM = 0.00267;
 
-    // TODO find values for kp, kd using characterization
-    public final static double DRIVE_VEL_P = 0.0;
+    public final static double DRIVE_VEL_P = 0.121;
     public final static double DRIVE_VEL_D = 0.0;
 
     /**
@@ -299,7 +298,19 @@ public class Drive extends SubsystemBase implements Loggable {
         TrajectoryConfig config = new TrajectoryConfig(MAX_SPEED_MPS, MAX_ACCELERATION)
                 .setKinematics(trajectoryKinematics);
 
-        Trajectory autoTrajectory = TrajectoryGenerator.generateTrajectory(initial, waypoints, endpoint, config);
+        Trajectory autoTrajectory = TrajectoryGenerator.generateTrajectory( // Start at the origin facing the +X
+                // direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints, making an 's' curve path
+                List.of(
+                        // First Movement
+                        new Translation2d(1, 1),
+                        // Second Movement
+                        new Translation2d(2, -1)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(3, 0, new Rotation2d(0)),
+                // Pass config
+                config);
 
         RamseteCommand ramseteCommand = new RamseteCommand(autoTrajectory,
                 // Gets pose
