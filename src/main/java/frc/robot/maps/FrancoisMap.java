@@ -157,7 +157,7 @@ public class FrancoisMap extends RobotMap {
 
             // TODO Find values for voltage limits; test 1-3.5 and then test 1.5-3.5
             public BooleanSupplier bottomPierreIR() {
-                bottomPierreIR.setLimitsVoltage(1.2, 1.4);
+                bottomPierreIR.setLimitsVoltage(1.0, 1.2);
                 return bottomPierreIR::getTriggerState;
             }
 
