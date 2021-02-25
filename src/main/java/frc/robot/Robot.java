@@ -87,6 +87,8 @@ public class Robot extends CommandRobot {
         nameEntry.setPersistent();
         SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
+        SmartDashboard.putData("unloadBallToShooter", indexer.unloadBall());
+        SmartDashboard.putData("ShootNoSpinup", indexer.shootBall());
         SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
@@ -202,9 +204,9 @@ public class Robot extends CommandRobot {
         return cmd;
     }
 
-    public CommandBase maxSpeedNBalls(final int ballAmount) {
-        final CommandBase cmd = CommandUtils.repeat(ballAmount,
-                new SequentialCommandGroup(shooter.linearSpinUp(() -> Shooter.MAX_SPEED), indexer.shootBall()));
+    public CommandBase maxSpeedNBalls() {
+        final CommandBase cmd = new SequentialCommandGroup(shooter.linearSpinUp(() -> Shooter.MAX_SPEED),
+                indexer.loadBallToTop(), indexer.unloadBall());
         cmd.setName("Shoot All Balls");
         return cmd;
     }
@@ -278,8 +280,8 @@ public class Robot extends CommandRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
-        driveController.getButton(Button.kX).whenHeld(maxSpeedNBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
