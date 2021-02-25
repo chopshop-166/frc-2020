@@ -85,7 +85,6 @@ public class Robot extends CommandRobot {
         Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
-        SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("unloadBallToShooter", indexer.unloadBall());
         SmartDashboard.putData("ShootNoSpinup", indexer.shootBall());
@@ -218,8 +217,8 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase systemsCheck() {
-        final CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesion(),
-                shooter.spinUp(1000), indexer.shootAllBalls(1));
+        final CommandBase cmd = new SequentialCommandGroup(intake.intake(), shooter.spinUp(1000),
+                indexer.shootAllBalls(1));
         cmd.setName("SYSTEMS CHECK");
         return cmd;
     }
