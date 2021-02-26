@@ -75,18 +75,6 @@ public class Indexer extends SubsystemBase implements Loggable {
         // SmartDashboard.putBoolean("Front intake", frontIntakeIR.getAsBoolean());
     }
 
-    public CommandBase indexBall() {
-        CommandBase cmd = new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
-        cmd.setName("Index Ball");
-        return cmd;
-    }
-
-    public CommandBase intakeToPierre() {
-        CommandBase cmd = new SequentialCommandGroup(singulator(PIERRE_INDEX_SPEED), indexBall());
-        cmd.setName("Intake to Pierre");
-        return cmd;
-    }
-
     // Will shoot all the balls. the only thing missing to this is the command to
     // spin up the shooter. that happens in robot
     public CommandBase shootBall() {
@@ -111,25 +99,6 @@ public class Indexer extends SubsystemBase implements Loggable {
 
     public CommandBase discharge() {
         return singulator(-SINGULATOR_MOTOR_SPEED);
-    }
-
-    // This command will make sure that pierre has possesion of the ball. It will be
-    // at the bottom
-    public CommandBase pierrePossesion() {
-        CommandBase cmd = new FunctionalCommand(() -> {
-        }, () -> {
-            // This checks to see if a ball is at the top of Pierre and does not run
-            // because sometimes it will
-            if ((bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean())) {
-                pierreMotor.set(PIERRE_INDEX_SPEED);
-            }
-        }, (interrupted) -> {
-            pierreMotor.set(0);
-        }, () -> {
-            return (bottomPierreIR.getAsBoolean()) || topPierreIR.getAsBoolean();
-        }, this);
-        cmd.setName("Pierre Possession");
-        return cmd;
     }
 
     // this will bring the ball to the top of pierre
@@ -171,19 +140,17 @@ public class Indexer extends SubsystemBase implements Loggable {
     }
 
     // this will make space for another ball
-    public CommandBase runToClearBottomSensor() {
+    public CommandBase indexBall() {
         CommandBase cmd = new FunctionalCommand(() -> {
+        }, () -> {
             if (bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
                 pierreMotor.set(PIERRE_INDEX_SPEED);
+            } else {
+                pierreMotor.set(0);
             }
-        }, () -> {
         }, (interrupted) -> {
-            pierreMotor.set(0);
-            if (interrupted == false) {
-                ballCounting++;
-            }
         }, () -> {
-            return !bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
+            return false;
         }, this);
         cmd.setName("Clear Bottom Sensor");
         return cmd;

@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.maps.RobotMap;
-import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -88,7 +87,7 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
         SmartDashboard.putData("unloadBallToShooter", indexer.unloadBall());
         SmartDashboard.putData("ShootNoSpinup", indexer.shootBall());
-        SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
+        SmartDashboard.putData("index ball", indexer.indexBall());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
@@ -278,7 +277,7 @@ public class Robot extends CommandRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+        driveController.getButton(Button.kA).whenHeld(intake.intake());
         driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
@@ -290,7 +289,7 @@ public class Robot extends CommandRobot {
 
         // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         // copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
-        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+        copilotController.getButton(Button.kA).whenHeld(intake.intake());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
