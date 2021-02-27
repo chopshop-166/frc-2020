@@ -30,7 +30,7 @@ public class RobotMap {
 
     public static interface DriveKinematics extends DifferentialDriveMap {
         default DifferentialDriveKinematics getKinematics() {
-            return new DifferentialDriveKinematics(1);
+            return new DifferentialDriveKinematics(0.69);
         }
     }
 

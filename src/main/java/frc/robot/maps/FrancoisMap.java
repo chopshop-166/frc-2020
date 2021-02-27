@@ -21,6 +21,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+import edu.wpi.first.wpilibj.util.Units;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
@@ -32,7 +33,8 @@ public class FrancoisMap extends RobotMap {
     public DriveKinematics getDriveMap() {
         // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
         final int averageCount = 15;
-        final double distancePerRev = (1.0 / 12.27) * (6.0 * Math.PI);
+        final double distancePerRev = Units.inchesToMeters((1.0 / 12.27) * (6.0 * Math.PI));
+        // TODO find real trackwidth in Meters
         return new RobotMap.DriveKinematics() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
@@ -48,7 +50,7 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
-                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev/60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
@@ -61,7 +63,7 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
-                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev/60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
