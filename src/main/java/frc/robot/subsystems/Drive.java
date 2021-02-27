@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -82,16 +83,16 @@ public class Drive extends SubsystemBase implements Loggable {
     private final double ALIGN_PID_FEED = 0.2;
 
     // TODO Max speed is 3.9624 m/s, but we're gonna start real slow
-    public final double MAX_SPEED_MPS = 0.5;
+    public final double MAX_SPEED_MPS = 1;
 
     // TODO find value for max acceleration
     public double MAX_ACCELERATION = 1.0;
 
-    public final static double KS_VOLTS = 0.187;
-    public final static double KV_VOLT_SPM = 0.0249;
-    public final static double KA_VOLT_SSPM = 0.00267;
+    public final static double KS_VOLTS = 0.294;
+    public final static double KV_VOLT_SPM = 3.06;
+    public final static double KA_VOLT_SSPM = 0.291;
 
-    public final static double DRIVE_VEL_P = 0.121;
+    public final static double DRIVE_VEL_P = 2.06;
     public final static double DRIVE_VEL_D = 0.0;
 
     /**
@@ -111,13 +112,17 @@ public class Drive extends SubsystemBase implements Loggable {
         pid = new PIDController(0.0106, 0.0004, 0.008);
         rightEncoder = rightMotorGroup.getEncoder();
         leftEncoder = leftMotorGroup.getEncoder();
-        odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+        odometry = new DifferentialDriveOdometry(getRot());
+    }
+
+    public Rotation2d getRot() {
+        return Rotation2d.fromDegrees(gyro.getAngle());
     }
 
     @Override
     public void periodic() {
         // Update the odometry in the periodic block
-        odometry.update(gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
+        odometry.update(getRot(), leftEncoder.getDistance(), rightEncoder.getDistance());
     }
 
     public Pose2d getPose() {
@@ -126,7 +131,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public void resetOdometry(Pose2d pose) {
         resetEncoders();
-        odometry.resetPosition(pose, gyro.getRotation2d());
+        odometry.resetPosition(pose, getRot());
     }
 
     private double encoderAvg() {
@@ -294,9 +299,12 @@ public class Drive extends SubsystemBase implements Loggable {
 
     }
 
-    public Command autonomousCommand(Pose2d initial, List<Translation2d> waypoints, Pose2d endpoint) {
+    public CommandBase autonomousCommand() {
+        var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+                new SimpleMotorFeedforward(KS_VOLTS, KV_VOLT_SPM, KA_VOLT_SSPM), trajectoryKinematics, 10);
+
         TrajectoryConfig config = new TrajectoryConfig(MAX_SPEED_MPS, MAX_ACCELERATION)
-                .setKinematics(trajectoryKinematics);
+                .setKinematics(trajectoryKinematics).addConstraint(autoVoltageConstraint);
 
         Trajectory autoTrajectory = TrajectoryGenerator.generateTrajectory( // Start at the origin facing the +X
                 // direction
@@ -304,9 +312,9 @@ public class Drive extends SubsystemBase implements Loggable {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(
                         // First Movement
-                        new Translation2d(1, 1),
+                        new Translation2d(1, -1),
                         // Second Movement
-                        new Translation2d(2, -1)),
+                        new Translation2d(2, 1)),
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(3, 0, new Rotation2d(0)),
                 // Pass config
