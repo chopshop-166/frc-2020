@@ -135,8 +135,8 @@ public class FrancoisMap extends RobotMap {
         return new IndexMap() {
             AnalogTrigger topPierreIR = new AnalogTrigger(0);
             AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
-            AnalogTrigger backIntakeIR = new AnalogTrigger(2);
-            AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
+            // AnalogTrigger backIntakeIR = new AnalogTrigger(2);
+            // AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
 
             @Override
             public SmartSpeedController pierreMotor() {
@@ -152,26 +152,25 @@ public class FrancoisMap extends RobotMap {
                 return SmartSpeedController.wrap(singulator);
             }
 
+            // TODO Find values for voltage limits
             public BooleanSupplier topPierreIR() {
                 topPierreIR.setLimitsVoltage(1.2, 1.4);
                 return topPierreIR::getTriggerState;
             }
 
+            // TODO Find values for voltage limits; test 1-3.5 and then test 1.5-3.5
             public BooleanSupplier bottomPierreIR() {
-                bottomPierreIR.setLimitsVoltage(1.2, 1.4);
+                bottomPierreIR.setLimitsVoltage(1.0, 1.2);
                 return bottomPierreIR::getTriggerState;
             }
 
-            public BooleanSupplier backIntakeIR() {
-                backIntakeIR.setLimitsVoltage(1.2, 2.6);
-                return backIntakeIR::getTriggerState;
-            }
-
-            public BooleanSupplier frontIntakeIR() {
-                frontIntakeIR.setLimitsVoltage(1.2, 1.4);
-                return frontIntakeIR::getTriggerState;
-            }
-
+            /*
+             * backIntakeIR.setLimitsVoltage(1.2, 2.6); return
+             * backIntakeIR::getTriggerState; }
+             * 
+             * { frontIntakeIR.setLimitsVoltage(1.2, 1.4); return
+             * frontIntakeIR::getTriggerState; }
+             */
         };
     }
 

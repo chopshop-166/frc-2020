@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.maps.RobotMap;
-import frc.robot.subsystems.ControlPanel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -63,7 +62,8 @@ public class Robot extends CommandRobot {
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
     final private Shooter shooter = new Shooter(map.getShooterMap());
-    final private ControlPanel controlPanel = new ControlPanel(map.getControlPanelMap());
+    // final private ControlPanel controlPanel = new
+    // ControlPanel(map.getControlPanelMap());
     final private Lift lift = new Lift(map.getLiftMap());
     final private Indexer indexer = new Indexer(map.getIndexerMap());
     final private Led led = new Led(map.getLEDMap());
@@ -84,9 +84,10 @@ public class Robot extends CommandRobot {
         Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
-        SmartDashboard.putData("bottom pierre", indexer.pierrePossesion());
         SmartDashboard.putData("loadtotop", indexer.loadBallToTop());
-        SmartDashboard.putData("runtoclear", indexer.runToClearBottomSensor());
+        SmartDashboard.putData("unloadBallToShooter", indexer.unloadBall());
+        SmartDashboard.putData("ShootNoSpinup", indexer.shootBall());
+        SmartDashboard.putData("index ball", indexer.indexBall());
         SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
@@ -106,7 +107,8 @@ public class Robot extends CommandRobot {
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
-        controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() -> copilotController.getX(Hand.kLeft)));
+        // controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() ->
+        // copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
 
         // protovision
@@ -187,15 +189,22 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase shootAuto() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootAllBalls(3), shooter.spinDown(),
+        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.spinDown(),
                 drive.drivePastLine());
         cmd.setName("Shoot Auto");
         return cmd;
     }
 
-    public CommandBase shootAllBalls(final int ballAmount) {
+    public CommandBase shootNBalls(final int ballAmount) {
         final CommandBase cmd = CommandUtils.repeat(ballAmount,
-                new SequentialCommandGroup(shooter.shooterMath(), indexer.shootBall()));
+                new SequentialCommandGroup(shooter.spinUpForDistance(), indexer.shootBall()));
+        cmd.setName("Shoot All Balls");
+        return cmd;
+    }
+
+    public CommandBase maxSpeedNBalls() {
+        final CommandBase cmd = new SequentialCommandGroup(shooter.linearSpinUp(() -> Shooter.MAX_SPEED),
+                indexer.loadBallToTop(), indexer.unloadBall());
         cmd.setName("Shoot All Balls");
         return cmd;
     }
@@ -207,8 +216,8 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase systemsCheck() {
-        final CommandBase cmd = new SequentialCommandGroup(intake.intake(), indexer.pierrePossesion(),
-                shooter.spinUp(1000), indexer.shootAllBalls(1));
+        final CommandBase cmd = new SequentialCommandGroup(intake.intake(), shooter.spinUp(1000),
+                indexer.shootAllBalls(1));
         cmd.setName("SYSTEMS CHECK");
         return cmd;
     }
@@ -221,8 +230,8 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase cancelAll() {
-        final CommandBase cmd = new ParallelCommandGroup(controlPanel.cancel(), drive.cancel(), indexer.cancel(),
-                intake.cancel(), lift.cancel(), shooter.cancel());
+        final CommandBase cmd = new ParallelCommandGroup(drive.cancel(), indexer.cancel(), intake.cancel(),
+                lift.cancel(), shooter.cancel());
         cmd.setName("Cancel All");
         return cmd;
     }
@@ -268,9 +277,9 @@ public class Robot extends CommandRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        driveController.getButton(Button.kB).whenHeld(shootAllBalls(5)).whenReleased(shooter.spinDown());
-
+        driveController.getButton(Button.kA).whenHeld(intake.intake());
+        driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.spinDown());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
@@ -278,15 +287,15 @@ public class Robot extends CommandRobot {
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
 
-        copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
-        copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
-        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+        // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
+        // copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
+        copilotController.getButton(Button.kA).whenHeld(intake.intake());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.whenActive(endGame());
         copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
-        copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
+        // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
     }
 }

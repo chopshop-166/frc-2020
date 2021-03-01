@@ -9,7 +9,6 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,7 +51,8 @@ public class Shooter extends SubsystemBase implements Loggable {
     // RPM equal to 1ft/s
     public final static double BALL_SPEED_RATIO = 27.358;
 
-    private final static double MAX_SHOOTER_SPEED = 5400;
+    // Original Value: 5400
+    public final static double MAX_SPEED = 3400;
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
@@ -77,21 +77,24 @@ public class Shooter extends SubsystemBase implements Loggable {
 
     @Override
     public void periodic() {
-        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 160);
+        // Distance is measured in meters
+        distanceToTarget = SmartDashboard.getNumber("Distance To Target", 3.8);
         horizontalDistance = Math.sqrt((verticalDistance * verticalDistance) - (distanceToTarget * distanceToTarget));
         super.periodic();
     }
 
-    public CommandBase shooterMath() {
+    public CommandBase spinUpForDistance() {
         return linearSpinUp(() -> {
+            // Distance is measured in meters
             double dist = SmartDashboard.getNumber("Distance To Target", 3.8);
             if (!SmartDashboard.getBoolean("Sees Target", false)) {
                 output = INITIATION_LINE_SPEED;
             } else {
+                // calculated through linear regression in an excel spreadsheet
                 output = 2800.7 * (Math.pow(dist, 0.3094));
             }
-
-            return output;
+            // Caps speed to ensure we can achieve the speed
+            return Math.min(MAX_SPEED, output);
         });
 
     }
@@ -109,14 +112,15 @@ public class Shooter extends SubsystemBase implements Loggable {
             {
                 addRequirements(Shooter.this);
             }
-            PersistenceCheck check = new PersistenceCheck(25, () -> {
-                return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED)) <= .05);
+            PersistenceCheck check = new PersistenceCheck(10, () -> {
+                return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SPEED)) <= 100.0);
             });
 
             @Override
             public void initialize() {
-                output = Math.min(output, MAX_SHOOTER_SPEED);
-                shooterWheelMotor.setSetpoint(Math.min(speed.getAsDouble(), MAX_SHOOTER_SPEED));
+                output = Math.min(speed.getAsDouble(), MAX_SPEED);
+                shooterWheelMotor.setSetpoint(Math.min(speed.getAsDouble(), MAX_SPEED));
+                check.reset();
             }
 
             @Override
@@ -148,41 +152,30 @@ public class Shooter extends SubsystemBase implements Loggable {
      * Calculates RPM with some gear ratio mathematics. (returns inches/second) Also
      * applies a 15% increase.
      */
-    public CommandBase calculatedShoot() {
-        final double rpmSpeed;
-
-        // If it doesn't see the target, it will just shoot at the last speed.
-        if (SmartDashboard.getBoolean("Sees Target", false)) {
-            rpmSpeed = SmartDashboard.getNumber("Last RPM", 0);
-        } else {
-            final double rpm = calculateVelocity() * BALL_SPEED_RATIO * 1.15;
-            SmartDashboard.putNumber("Last RPM", rpm);
-            rpmSpeed = rpm;
-        }
-        final CommandBase cmd = new InstantCommand(() -> {
-            shooterWheelMotor.setSetpoint(rpmSpeed);
-        }, this);
-        cmd.setName("calculatedShoot");
-        return cmd;
-    }
-
     /*
+     * public CommandBase calculatedShoot() { final double rpmSpeed;
+     * 
+     * // If it doesn't see the target, it will just shoot at the last speed. if
+     * (SmartDashboard.getBoolean("Sees Target", false)) { rpmSpeed =
+     * SmartDashboard.getNumber("Last RPM", 0); } else { final double rpm =
+     * calculateVelocity() * BALL_SPEED_RATIO * 1.15;
+     * SmartDashboard.putNumber("Last RPM", rpm); rpmSpeed = rpm; } final
+     * CommandBase cmd = new InstantCommand(() -> {
+     * shooterWheelMotor.setSetpoint(rpmSpeed); }, this);
+     * cmd.setName("calculatedShoot"); return cmd; }
+     *
      * Finds the needed velocity to reach a target (x, y) or (horizontalDistance,
      * verticalDistance). The formula takes takes theta or launch angle, target and
      * gravity.
+     * 
+     * public static double calculateVelocity() { // Checks if the target is within
+     * reach, plus a 12.5% leniency rate- incase lift // gets it there or something.
+     * if ((horizontalDistance * Math.tan(THETA)) * 1.125 >= verticalDistance) {
+     * final double gravitySide = GRAVITY * horizontalDistance * horizontalDistance;
+     * final double tanSide = horizontalDistance * Math.tan(THETA) -
+     * verticalDistance; final double cosSide = Math.cos(THETA) * Math.cos(THETA);
+     * 
+     * velocity = Math.sqrt(gravitySide / tanSide / cosSide / 2); } else { velocity
+     * = 0; } return velocity; }
      */
-    public static double calculateVelocity() {
-        // Checks if the target is within reach, plus a 12.5% leniency rate- incase lift
-        // gets it there or something.
-        if ((horizontalDistance * Math.tan(THETA)) * 1.125 >= verticalDistance) {
-            final double gravitySide = GRAVITY * horizontalDistance * horizontalDistance;
-            final double tanSide = horizontalDistance * Math.tan(THETA) - verticalDistance;
-            final double cosSide = Math.cos(THETA) * Math.cos(THETA);
-
-            velocity = Math.sqrt(gravitySide / tanSide / cosSide / 2);
-        } else {
-            velocity = 0;
-        }
-        return velocity;
-    }
 }

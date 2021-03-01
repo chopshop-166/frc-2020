@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -33,27 +34,26 @@ public class Indexer extends SubsystemBase implements Loggable {
     @Log.SpeedController
     final SmartSpeedController pierreMotor;
 
-    final BooleanSupplier frontIntakeIR;
-
     final BooleanSupplier bottomPierreIR;
-
     final BooleanSupplier topPierreIR;
-    final BooleanSupplier backIntakeIR;
+    // final BooleanSupplier frontIntakeIR;
+    // final BooleanSupplier backIntakeIR;
 
     @Log
     public double ballCounting;
 
     private static final double SINGULATOR_MOTOR_SPEED = 1.0;
-    private static final double PIERRE_INDEX_SPEED = 0.6;
+    // Previous value was 0.6
+    private static final double PIERRE_INDEX_SPEED = 0.4;
     private static final double PIERRE_SHOOT_SPEED = 1.0;
 
     public Indexer(final IndexMap map) {
         super();
         singulator = map.singulator();
-        frontIntakeIR = map.frontIntakeIR();
-        bottomPierreIR = map.bottomPierreIR();
         topPierreIR = map.topPierreIR();
-        backIntakeIR = map.backIntakeIR();
+        bottomPierreIR = map.bottomPierreIR();
+        // frontIntakeIR = map.frontIntakeIR();
+        // backIntakeIR = map.backIntakeIR();
         pierreMotor = map.pierreMotor();
 
     }
@@ -66,16 +66,13 @@ public class Indexer extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-    public CommandBase indexBall() {
-        CommandBase cmd = new SequentialCommandGroup(pierrePossesion(), runToClearBottomSensor());
-        cmd.setName("Intake to Pierre");
-        return cmd;
-    }
-
-    public CommandBase intakeToPierre() {
-        CommandBase cmd = new SequentialCommandGroup(singulator(PIERRE_INDEX_SPEED), indexBall());
-        cmd.setName("Intake to Pierre");
-        return cmd;
+    @Override
+    public void periodic() {
+        super.periodic();
+        SmartDashboard.putBoolean("Top Pierre", topPierreIR.getAsBoolean());
+        SmartDashboard.putBoolean("bOTTOM Pierre", bottomPierreIR.getAsBoolean());
+        // SmartDashboard.putBoolean("BackIntake", backIntakeIR.getAsBoolean());
+        // SmartDashboard.putBoolean("Front intake", frontIntakeIR.getAsBoolean());
     }
 
     // Will shoot all the balls. the only thing missing to this is the command to
@@ -102,30 +99,6 @@ public class Indexer extends SubsystemBase implements Loggable {
 
     public CommandBase discharge() {
         return singulator(-SINGULATOR_MOTOR_SPEED);
-    }
-
-    // This command will make sure that pierre has possesion of the ball. It will be
-    // at the bottom
-    public CommandBase pierrePossesion() {
-        CommandBase cmd = new FunctionalCommand(() -> {
-        }, () -> {
-            if ((frontIntakeIR.getAsBoolean() || backIntakeIR.getAsBoolean()) && !topPierreIR.getAsBoolean()) {
-                singulator.set(SINGULATOR_MOTOR_SPEED);
-            }
-            // This checks to see if a ball is at the top of Pierre and doesn't not run
-            // because sometimes it will
-            if ((bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean() && backIntakeIR.getAsBoolean())) {
-                pierreMotor.set(PIERRE_INDEX_SPEED);
-                singulator.set(SINGULATOR_MOTOR_SPEED);
-            }
-        }, (interrupted) -> {
-            pierreMotor.set(0);
-            singulator.set(0);
-        }, () -> {
-            return ((bottomPierreIR.getAsBoolean() && !backIntakeIR.getAsBoolean())) || topPierreIR.getAsBoolean();
-        }, this);
-        cmd.setName("Pierre Possession");
-        return cmd;
     }
 
     // this will bring the ball to the top of pierre
@@ -167,19 +140,17 @@ public class Indexer extends SubsystemBase implements Loggable {
     }
 
     // this will make space for another ball
-    public CommandBase runToClearBottomSensor() {
+    public CommandBase indexBall() {
         CommandBase cmd = new FunctionalCommand(() -> {
+        }, () -> {
             if (bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean()) {
                 pierreMotor.set(PIERRE_INDEX_SPEED);
+            } else {
+                pierreMotor.set(0);
             }
-        }, () -> {
         }, (interrupted) -> {
-            pierreMotor.set(0);
-            if (interrupted == false) {
-                ballCounting++;
-            }
         }, () -> {
-            return !bottomPierreIR.getAsBoolean() || topPierreIR.getAsBoolean();
+            return false;
         }, this);
         cmd.setName("Clear Bottom Sensor");
         return cmd;
