@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
@@ -7,6 +9,8 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
@@ -18,10 +22,12 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -83,7 +89,7 @@ public class Drive extends SubsystemBase implements Loggable {
     private final double ALIGN_PID_FEED = 0.2;
 
     // TODO Max speed is 3.9624 m/s, but we're gonna start real slow
-    public final double MAX_SPEED_MPS = 1;
+    public final double MAX_SPEED_MPS = 2;
 
     // TODO find value for max acceleration
     public double MAX_ACCELERATION = 1.0;
@@ -92,8 +98,10 @@ public class Drive extends SubsystemBase implements Loggable {
     public final static double KV_VOLT_SPM = 3.06;
     public final static double KA_VOLT_SSPM = 0.291;
 
-    public final static double DRIVE_VEL_P = 2.06;
+    public final static double DRIVE_VEL_P = 0.56;
     public final static double DRIVE_VEL_D = 0.0;
+
+    Field2d field = new Field2d();
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -113,6 +121,7 @@ public class Drive extends SubsystemBase implements Loggable {
         rightEncoder = rightMotorGroup.getEncoder();
         leftEncoder = leftMotorGroup.getEncoder();
         odometry = new DifferentialDriveOdometry(getRot());
+        SmartDashboard.putData("Field", field);
     }
 
     public Rotation2d getRot() {
@@ -123,6 +132,7 @@ public class Drive extends SubsystemBase implements Loggable {
     public void periodic() {
         // Update the odometry in the periodic block
         odometry.update(getRot(), leftEncoder.getDistance(), rightEncoder.getDistance());
+        field.setRobotPose(getPose());
     }
 
     public Pose2d getPose() {
@@ -303,22 +313,18 @@ public class Drive extends SubsystemBase implements Loggable {
         var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
                 new SimpleMotorFeedforward(KS_VOLTS, KV_VOLT_SPM, KA_VOLT_SSPM), trajectoryKinematics, 10);
 
-        TrajectoryConfig config = new TrajectoryConfig(MAX_SPEED_MPS, MAX_ACCELERATION)
-                .setKinematics(trajectoryKinematics).addConstraint(autoVoltageConstraint);
+        // TrajectoryConfig config = new TrajectoryConfig(MAX_SPEED_MPS,
+        // MAX_ACCELERATION)
+        // .setKinematics(trajectoryKinematics).addConstraint(autoVoltageConstraint);
 
-        Trajectory autoTrajectory = TrajectoryGenerator.generateTrajectory( // Start at the origin facing the +X
-                // direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(
-                        // First Movement
-                        new Translation2d(1, -1),
-                        // Second Movement
-                        new Translation2d(2, 1)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(3, 0, new Rotation2d(0)),
-                // Pass config
-                config);
+        String trajectoryJSON = "paths/Slolom.wpilib.json";
+        Trajectory autoTrajectory = new Trajectory();
+        try {
+            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+            autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        } catch (IOException ex) {
+            DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+        }
 
         RamseteCommand ramseteCommand = new RamseteCommand(autoTrajectory,
                 // Gets pose
