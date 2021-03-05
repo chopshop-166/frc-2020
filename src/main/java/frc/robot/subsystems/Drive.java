@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.PersistenceCheck;
@@ -18,18 +17,13 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -88,10 +82,8 @@ public class Drive extends SubsystemBase implements Loggable {
 
     private final double ALIGN_PID_FEED = 0.2;
 
-    // TODO Max speed is 3.9624 m/s, but we're gonna start real slow
     public final double MAX_SPEED_MPS = 2;
 
-    // TODO find value for max acceleration
     public double MAX_ACCELERATION = 1.0;
 
     public final static double KS_VOLTS = 0.294;
@@ -310,12 +302,6 @@ public class Drive extends SubsystemBase implements Loggable {
     }
 
     public CommandBase autonomousCommand(String trajectoryName) {
-        var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-                new SimpleMotorFeedforward(KS_VOLTS, KV_VOLT_SPM, KA_VOLT_SSPM), trajectoryKinematics, 10);
-
-        // TrajectoryConfig config = new TrajectoryConfig(MAX_SPEED_MPS,
-        // MAX_ACCELERATION)
-        // .setKinematics(trajectoryKinematics).addConstraint(autoVoltageConstraint);
 
         String trajectoryJSON = "paths/" + trajectoryName + ".wpilib.json";
         Trajectory autoTrajectory = new Trajectory();
