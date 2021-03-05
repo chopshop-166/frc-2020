@@ -309,7 +309,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     }
 
-    public CommandBase autonomousCommand() {
+    public CommandBase autonomousCommand(String trajectoryName) {
         var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
                 new SimpleMotorFeedforward(KS_VOLTS, KV_VOLT_SPM, KA_VOLT_SSPM), trajectoryKinematics, 10);
 
@@ -317,7 +317,7 @@ public class Drive extends SubsystemBase implements Loggable {
         // MAX_ACCELERATION)
         // .setKinematics(trajectoryKinematics).addConstraint(autoVoltageConstraint);
 
-        String trajectoryJSON = "paths/Slolom.wpilib.json";
+        String trajectoryJSON = "paths/" + trajectoryName + ".wpilib.json";
         Trajectory autoTrajectory = new Trajectory();
         try {
             Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
@@ -331,7 +331,7 @@ public class Drive extends SubsystemBase implements Loggable {
                 this::getPose,
                 // Creates our ramsete controller
                 new RamseteController(RAMSETE_B, RAMSETE_ZETA),
-                // TODO Uses info from our characterization
+                // Allows for robot control
                 new SimpleMotorFeedforward(KS_VOLTS, KV_VOLT_SPM, KA_VOLT_SSPM),
                 // Describes how the drivetrain is influenced by motor speed
                 trajectoryKinematics,
