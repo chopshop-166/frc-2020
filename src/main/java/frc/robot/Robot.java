@@ -103,6 +103,11 @@ public class Robot extends CommandRobot {
 
         autoChooser.setDefaultOption("Test", drive.autonomousCommand("Test"));
         autoChooser.addOption("Slolom", drive.autonomousCommand("Slolom"));
+        autoChooser.addOption("Barrel", drive.autonomousCommand("Barrel"));
+        autoChooser.addOption("CollectBlue", drive.autonomousCommand("CollectBlue"));
+        autoChooser.addOption("CollectRed", drive.autonomousCommand("CollectRed"));
+        autoChooser.addOption("Squiggle", drive.autonomousCommand("Squiggle"));
+
         autoChooser.addOption("Pass the Line", drive.drivePastLine());
         autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
