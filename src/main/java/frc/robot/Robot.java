@@ -269,7 +269,6 @@ public class Robot extends CommandRobot {
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
         copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
         final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
-        endTrigger.whenActive(endGame());
         copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
     }
