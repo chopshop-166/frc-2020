@@ -74,44 +74,6 @@ public class RobotMap {
 
     }
 
-    public static class ControlPanelMap {
-        public SmartSpeedController spinner() {
-            return new MockSpeedController();
-        }
-    }
-
-    public ControlPanelMap getControlPanelMap() {
-        return new ControlPanelMap();
-    }
-
-    public static class LiftMap {
-
-        public PIDSpeedController elevator() {
-            return new MockPIDSpeedController();
-        }
-
-        public ISolenoid liftBrake() {
-            return new MockSolenoid();
-        }
-
-        public BooleanSupplier upperLiftLimit() {
-            return new MockDigitalInput()::getAsBoolean;
-        }
-
-        public BooleanSupplier lowerLiftLimit() {
-            return new MockDigitalInput()::getAsBoolean;
-        }
-
-        public IEncoder getLiftEncoder() {
-            return new MockEncoder();
-        }
-
-    }
-
-    public LiftMap getLiftMap() {
-        return new LiftMap();
-    }
-
     public static class IndexMap {
         public SmartSpeedController singulator() {
             return new MockSpeedController();
