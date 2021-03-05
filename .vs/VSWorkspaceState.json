@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\main",
+    "\\src\\main\\java",
+    "\\src\\main\\java\\frc",
+    "\\src\\main\\java\\frc\\robot",
+    "\\src\\main\\java\\frc\\robot\\subsystems"
+  ],
+  "SelectedNode": "\\src\\main\\java\\frc\\robot\\subsystems\\Shooter.java",
+  "PreviewInSolutionExplorer": false
+}
