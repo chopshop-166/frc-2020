@@ -99,9 +99,10 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("ring light on", led.ringLightOn());
         SmartDashboard.putData("ring light off", led.ringLightOff());
 
-        SmartDashboard.putData("Autonomous Test", drive.autonomousCommand());
+        SmartDashboard.putData("Autonomous Test", drive.autonomousCommand("Slolom"));
 
-        autoChooser.setDefaultOption("Nothing", new InstantCommand());
+        autoChooser.setDefaultOption("Test", drive.autonomousCommand("Test"));
+        autoChooser.addOption("Slolom", drive.autonomousCommand("Slolom"));
         autoChooser.addOption("Pass the Line", drive.drivePastLine());
         autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
 
@@ -159,7 +160,7 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void autonomousInit() {
-        autonomousCommand = drive.autonomousCommand();
+        autonomousCommand = autoChooser.getSelected();
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
