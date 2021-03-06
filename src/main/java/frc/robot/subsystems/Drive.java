@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -312,6 +313,8 @@ public class Drive extends SubsystemBase implements Loggable {
             DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
         }
 
+        final Trajectory finalAutoTrajectory = autoTrajectory;
+
         RamseteCommand ramseteCommand = new RamseteCommand(autoTrajectory,
                 // Gets pose
                 this::getPose,
@@ -330,8 +333,9 @@ public class Drive extends SubsystemBase implements Loggable {
                 // Sends voltages to motors
                 this::tankDriveVolts, this);
 
-        resetOdometry(autoTrajectory.getInitialPose());
-
-        return ramseteCommand.andThen(() -> tankDriveVolts(0, 0));
+        CommandBase cmd = (new InstantCommand(() -> resetOdometry(finalAutoTrajectory.getInitialPose())))
+                .andThen(ramseteCommand).andThen(() -> tankDriveVolts(0, 0));
+        cmd.setName(trajectoryName);
+        return cmd;
     }
 }

@@ -32,8 +32,10 @@ public class FrancoisMap extends RobotMap {
     @Override
     public DriveKinematics getDriveMap() {
         // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
+        // multiplied by a correcion factor found by comparing distance traveled to
+        // encoder values
         final int averageCount = 15;
-        final double distancePerRev = Units.inchesToMeters((1.0 / 12.27) * (6.0 * Math.PI));
+        final double distancePerRev = Units.inchesToMeters((1.0 / 12.27) * (6.0 * Math.PI)) * 0.9533562075675308;
         // TODO find real trackwidth in Meters
         return new RobotMap.DriveKinematics() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
@@ -50,7 +52,7 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
-                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev/60);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
@@ -63,7 +65,7 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
-                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev/60);
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
