@@ -14,8 +14,8 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
@@ -74,7 +74,7 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void robotInit() {
-        super.robotInit();
+        // super.robotInit();
         Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
@@ -100,20 +100,11 @@ public class Robot extends CommandRobot {
         autoChooser.addOption("CollectRed", drive.autonomousCommand("CollectRed"));
         autoChooser.addOption("Squiggle", drive.autonomousCommand("Squiggle"));
 
-        autoChooser.addOption("Pass the Line", drive.drivePastLine());
-        autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
-
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
-
-        // protovision
-        camera0 = CameraServer.getInstance().startAutomaticCapture(0);
-        camera0.setResolution(320, 240);
-        camera0.setFPS(20);
-        // videoSink.getProperty("compression").set(70);
-        videoSink = CameraServer.getInstance().getServer();
+        DriverStation.getInstance().silenceJoystickConnectionWarning(true);
     }
 
     /**
