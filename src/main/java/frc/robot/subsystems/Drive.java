@@ -73,7 +73,7 @@ public class Drive extends SubsystemBase implements Loggable {
     private final PIDController pid;
 
     // Distance gain of the trajectory controller; 2.0 should work for most robots
-    private final static double RAMSETE_B = 2.0;
+    private final static double RAMSETE_B = 1.8;
 
     // Temporal gain of the trajectory controller; 0.7 should work for most robots
     private final static double RAMSETE_ZETA = 0.7;
@@ -85,7 +85,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public final double MAX_SPEED_MPS = 2;
 
-    public double MAX_ACCELERATION = 1.0;
+    public double MAX_ACCELERATION = 1.2;
 
     public final static double KS_VOLTS = 0.294;
     public final static double KV_VOLT_SPM = 3.06;
@@ -303,6 +303,10 @@ public class Drive extends SubsystemBase implements Loggable {
     }
 
     public CommandBase autonomousCommand(String trajectoryName) {
+        return autonomousCommand(trajectoryName, true);
+    }
+
+    public CommandBase autonomousCommand(String trajectoryName, Boolean resetPose) {
 
         String trajectoryJSON = "paths/" + trajectoryName + ".wpilib.json";
         Trajectory autoTrajectory = new Trajectory();
@@ -333,8 +337,14 @@ public class Drive extends SubsystemBase implements Loggable {
                 // Sends voltages to motors
                 this::tankDriveVolts, this);
 
-        CommandBase cmd = (new InstantCommand(() -> resetOdometry(finalAutoTrajectory.getInitialPose())))
-                .andThen(ramseteCommand).andThen(() -> tankDriveVolts(0, 0));
+        CommandBase cmd;
+        if (resetPose) {
+            cmd = (new InstantCommand(() -> resetOdometry(finalAutoTrajectory.getInitialPose())))
+                    .andThen(ramseteCommand).andThen(() -> tankDriveVolts(0, 0));
+        } else {
+            cmd = ramseteCommand.andThen(() -> tankDriveVolts(0, 0));
+        }
+
         cmd.setName(trajectoryName);
         return cmd;
     }
