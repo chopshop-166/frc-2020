@@ -73,7 +73,7 @@ public class Drive extends SubsystemBase implements Loggable {
     private final PIDController pid;
 
     // Distance gain of the trajectory controller; 2.0 should work for most robots
-    private final static double RAMSETE_B = 1.8;
+    private final static double RAMSETE_B = 1.7;
 
     // Temporal gain of the trajectory controller; 0.7 should work for most robots
     private final static double RAMSETE_ZETA = 0.7;
