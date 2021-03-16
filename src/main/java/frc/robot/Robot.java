@@ -50,7 +50,6 @@ public class Robot extends CommandRobot {
 
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
-    final private ButtonXboxController copilotController = new ButtonXboxController(5);
 
     final private NetworkTableEntry nameEntry = Shuffleboard.getTab("RobotData").addPersistent("RobotName", "Unknown")
             .getEntry();
@@ -264,12 +263,5 @@ public class Robot extends CommandRobot {
         driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
-
-        copilotController.getButton(Button.kA).whenHeld(intake.intake());
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
-        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.spinDown());
-        final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
-        copilotController.getButton(Button.kY).whenHeld(regurgitate());
-        copilotController.getButton(Button.kBack).whenPressed(cancelAll());
     }
 }

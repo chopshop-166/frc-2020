@@ -49,6 +49,8 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                // The distance being divided by 60 essentially takes distance and converts it
+                // to velocity (in m/s)
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
@@ -62,6 +64,8 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                // The distance being divided by 60 essentially takes distance and converts it
+                // to velocity (in m/s)
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
