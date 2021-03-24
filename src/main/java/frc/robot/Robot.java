@@ -103,11 +103,17 @@ public class Robot extends CommandRobot {
 
         autoChooser.setDefaultOption("Test", drive.autonomousCommand("Test"));
         autoChooser.addOption("Slolom", drive.autonomousCommand("Slolom"));
+        autoChooser.addOption("PathPlan Slolom", drive.autonomousCommand("Slolom", true, false));
         autoChooser.addOption("Barrel", drive.autonomousCommand("Barrel"));
+        autoChooser.addOption("PathPlan Barrel", drive.autonomousCommand("Barrel", true, false));
         autoChooser.addOption("CollectBlue", drive.autonomousCommand("CollectBlue"));
         autoChooser.addOption("CollectRed", drive.autonomousCommand("CollectRed"));
         autoChooser.addOption("Bounce", drive.autonomousCommand("Bounce1").andThen(drive.autonomousCommand("Bounce2"))
                 .andThen(drive.autonomousCommand("Bounce3")).andThen(drive.autonomousCommand("Bounce4")));
+        autoChooser.addOption("PathPlan Bounce",
+                drive.autonomousCommand("Bounce1", true, false).andThen(drive.autonomousCommand("Bounce2", true, false))
+                        .andThen(drive.autonomousCommand("Bounce3", true, false))
+                        .andThen(drive.autonomousCommand("Bounce4", true, false)));
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
