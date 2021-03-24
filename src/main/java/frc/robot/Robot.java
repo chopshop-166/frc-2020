@@ -11,7 +11,6 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;

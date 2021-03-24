@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 public class FrancoisMap extends RobotMap {
     // controlPanel is defined here due to the gyro being plugged into this speed
     // controller as well as the control panel motor
-    WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
+    WPI_TalonSRX gyro = new WPI_TalonSRX(43);
 
     @Override
     public DifferentialDriveMap getDriveMap() {
@@ -76,7 +76,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public GyroBase getGyro() {
-                return new PigeonGyro(controlPanel);
+                return new PigeonGyro(gyro);
             }
         };
     }
