@@ -103,7 +103,6 @@ public class Robot extends CommandRobot {
 
         autoChooser.setDefaultOption("Test", drive.autonomousCommand("Test"));
         autoChooser.addOption("Slolom", drive.autonomousCommand("Slolom"));
-        autoChooser.addOption("Barrel-PathPlanner", drive.autonomousCommand("Barrel", true, false));
         autoChooser.addOption("Barrel", drive.autonomousCommand("Barrel"));
         autoChooser.addOption("CollectBlue", drive.autonomousCommand("CollectBlue"));
         autoChooser.addOption("CollectRed", drive.autonomousCommand("CollectRed"));
