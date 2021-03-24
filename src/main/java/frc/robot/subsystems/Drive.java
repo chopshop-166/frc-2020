@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.DriveKinematics;
+import frc.robot.utils.PathPlannerUtils;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -303,18 +304,27 @@ public class Drive extends SubsystemBase implements Loggable {
     }
 
     public CommandBase autonomousCommand(String trajectoryName) {
-        return autonomousCommand(trajectoryName, true);
+        return autonomousCommand(trajectoryName, true, true);
     }
 
-    public CommandBase autonomousCommand(String trajectoryName, Boolean resetPose) {
-
-        String trajectoryJSON = "paths/" + trajectoryName + ".wpilib.json";
+    public CommandBase autonomousCommand(String trajectoryName, Boolean resetPose, boolean isJson) {
         Trajectory autoTrajectory = new Trajectory();
-        try {
-            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-            autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-        } catch (IOException ex) {
-            DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+        if (isJson) {
+            String trajectoryJSON = "paths/" + trajectoryName + ".wpilib.json";
+            try {
+                Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+                autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+            } catch (IOException ex) {
+                DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+            }
+        } else {
+            String trajectoryCSV = "paths/" + trajectoryName + ".csv";
+            try {
+                Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryCSV);
+                autoTrajectory = PathPlannerUtils.fromPathPlannerCSV(trajectoryPath);
+            } catch (IOException ex) {
+                DriverStation.reportError("Unable to open trajectory: " + trajectoryCSV, ex.getStackTrace());
+            }
         }
 
         final Trajectory finalAutoTrajectory = autoTrajectory;
