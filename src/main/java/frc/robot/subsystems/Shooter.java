@@ -128,13 +128,19 @@ public class Shooter extends SubsystemBase implements Loggable {
                 return check.getAsBoolean();
             }
         };
-        cmd.setName("linear spin up");
+        cmd.setName("Linear Spin Up");
         return cmd;
     }
 
-    public CommandBase spinDown() {
+    public CommandBase SlowSpin() {
+        final CommandBase cmd = new InstantCommand(() -> shooterWheelMotor.setSetpoint(2000), this);
+        cmd.setName("Slow Spin");
+        return cmd;
+    }
+
+    public CommandBase stopShooter() {
         final CommandBase cmd = new InstantCommand(shooterWheelMotor::stopMotor, this);
-        cmd.setName("spinDown");
+        cmd.setName("Stop Shooter");
         return cmd;
     }
 
@@ -142,9 +148,9 @@ public class Shooter extends SubsystemBase implements Loggable {
         final CommandBase cmd = new StartEndCommand(() -> {
             shooterWheelMotor.set(0.3);
         }, () -> {
-            spinDown();
+            SlowSpin();
         }, this);
-        cmd.setName("mandatoryEvacuation");
+        cmd.setName("Mandatory Evacuation");
         return cmd;
     }
 
