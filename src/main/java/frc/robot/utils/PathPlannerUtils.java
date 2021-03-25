@@ -1,9 +1,7 @@
 package frc.robot.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
-import java.util.Vector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.Math;
@@ -40,12 +38,12 @@ public class PathPlannerUtils {
 
     public static Trajectory fromPathPlannerCSV(Path path) throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(path)) {
-            Vector<Trajectory.State> stateList = new Vector<Trajectory.State>();
+            ArrayList<Trajectory.State> stateList = new ArrayList<Trajectory.State>();
             String line;
             while ((line = reader.readLine()) != null) {
                 stateList.add(processLine(line));
             }
-            return new Trajectory(Collections.list((stateList.elements())));
+            return new Trajectory(stateList);
         }
     }
 }
