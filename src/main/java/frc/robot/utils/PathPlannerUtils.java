@@ -27,8 +27,8 @@ public class PathPlannerUtils {
         // Fill in pose information
         double x = 0, y = 0, rotation = 0;
         x = lineSplit[3];
-        y = lineSplit[4];
-        rotation = Math.toRadians(lineSplit[5]);
+        y = -lineSplit[4];
+        rotation = -Math.toRadians(lineSplit[5]);
 
         Pose2d pose = new Pose2d(x, y, new Rotation2d(rotation));
         state.poseMeters = pose;
