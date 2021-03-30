@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 public class FrancoisMap extends RobotMap {
     // controlPanel is defined here due to the gyro being plugged into this speed
     // controller as well as the control panel motor
-    WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
+    WPI_TalonSRX gyro = new WPI_TalonSRX(43);
 
     @Override
     public DifferentialDriveMap getDriveMap() {
@@ -49,7 +49,9 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
-                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                // The distance being divided by 60 essentially takes distance and converts it
+                // to velocity (in m/s)
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
@@ -62,7 +64,9 @@ public class FrancoisMap extends RobotMap {
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
-                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev);
+                // The distance being divided by 60 essentially takes distance and converts it
+                // to velocity (in m/s)
+                sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
                 return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
@@ -72,7 +76,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public GyroBase getGyro() {
-                return new PigeonGyro(controlPanel);
+                return new PigeonGyro(gyro);
             }
         };
     }
@@ -120,17 +124,6 @@ public class FrancoisMap extends RobotMap {
     }
 
     @Override
-    public ControlPanelMap getControlPanelMap() {
-        return new ControlPanelMap() {
-            @Override
-            public SmartSpeedController spinner() {
-                setBAGCurrentLimits(controlPanel);
-                return SmartSpeedController.wrap(controlPanel);
-            }
-        };
-    }
-
-    @Override
     public IndexMap getIndexerMap() {
         return new IndexMap() {
             AnalogTrigger topPierreIR = new AnalogTrigger(0);
@@ -171,52 +164,6 @@ public class FrancoisMap extends RobotMap {
              * { frontIntakeIR.setLimitsVoltage(1.2, 1.4); return
              * frontIntakeIR::getTriggerState; }
              */
-        };
-    }
-
-    @Override
-    public LiftMap getLiftMap() {
-        return new LiftMap() {
-            CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
-            CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
-            PIDSparkMax pidLeader = new PIDSparkMax(leader);
-            WDigitalInput upperLimit = new WDigitalInput(0);
-            WDigitalInput lowerLimit = new WDigitalInput(1);
-            double distancePerRev = (1.0 / 81.0) * (2.551 * Math.PI);
-
-            @Override
-            public PIDSparkMax elevator() {
-                leader.setInverted(true);
-                follower.follow(leader, true);
-                leader.setIdleMode(IdleMode.kBrake);
-                follower.setIdleMode(IdleMode.kBrake);
-
-                return pidLeader;
-            }
-
-            @Override
-            public ISolenoid liftBrake() {
-                WSolenoid brake = new WSolenoid(0);
-                return brake;
-            }
-
-            @Override
-            public BooleanSupplier upperLiftLimit() {
-                upperLimit.setInverted(true);
-                return upperLimit::get;
-            }
-
-            @Override
-            public BooleanSupplier lowerLiftLimit() {
-                lowerLimit.setInverted(true);
-                return lowerLimit::get;
-            }
-
-            @Override
-            public IEncoder getLiftEncoder() {
-                pidLeader.getEncoder().setPositionScaleFactor(distancePerRev);
-                return pidLeader.getEncoder();
-            }
         };
     }
 
