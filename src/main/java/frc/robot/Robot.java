@@ -267,5 +267,9 @@ public class Robot extends CommandRobot {
         stopShooter.whenActive(shooter.stopShooter());
         final DpadTrigger enableShooter = DpadTrigger.DpadUp(driveController);
         enableShooter.whenActive(shooter.SlowSpin());
+        final DpadTrigger intakeDown = DpadTrigger.DpadLeft(driveController);
+        intakeDown.whenActive(intake.deployIntake());
+        final DpadTrigger intakeUp = DpadTrigger.DpadRight(driveController);
+        intakeUp.whenActive(intake.retractIntake());
     }
 }
