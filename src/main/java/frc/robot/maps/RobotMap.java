@@ -28,9 +28,10 @@ public class RobotMap {
         talon.enableCurrentLimit(true);
     }
 
+    // DriveKinematics takes trackwidth in meters
     public static interface DriveKinematics extends DifferentialDriveMap {
         default DifferentialDriveKinematics getKinematics() {
-            return new DifferentialDriveKinematics(0.642);
+            return new DifferentialDriveKinematics(1);
         }
     }
 

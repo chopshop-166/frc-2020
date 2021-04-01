@@ -20,6 +20,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.util.Units;
 
@@ -36,13 +37,18 @@ public class FrancoisMap extends RobotMap {
         // encoder values
         final int averageCount = 15;
         final double distancePerRev = Units.inchesToMeters((1.0 / 12.27) * (6.0 * Math.PI)) * 0.9533562075675308;
-        // TODO find real trackwidth in Meters
+
         return new RobotMap.DriveKinematics() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
 
             CANSparkMax leftLeader = new CANSparkMax(29, MotorType.kBrushless);
             CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
+
+            @Override
+            public DifferentialDriveKinematics getKinematics() {
+                return new DifferentialDriveKinematics(0.642);
+            }
 
             @Override
             public SmartSpeedController getRight() {

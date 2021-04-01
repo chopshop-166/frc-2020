@@ -113,18 +113,18 @@ public class Drive extends SubsystemBase implements Loggable {
         pid = new PIDController(0.0106, 0.0004, 0.008);
         rightEncoder = rightMotorGroup.getEncoder();
         leftEncoder = leftMotorGroup.getEncoder();
-        odometry = new DifferentialDriveOdometry(getRot());
+        odometry = new DifferentialDriveOdometry(getRotation());
         SmartDashboard.putData("Field", field);
     }
 
-    public Rotation2d getRot() {
+    public Rotation2d getRotation() {
         return Rotation2d.fromDegrees(gyro.getAngle());
     }
 
     @Override
     public void periodic() {
         // Update the odometry in the periodic block
-        odometry.update(getRot(), leftEncoder.getDistance(), rightEncoder.getDistance());
+        odometry.update(getRotation(), leftEncoder.getDistance(), rightEncoder.getDistance());
         field.setRobotPose(getPose());
     }
 
@@ -134,7 +134,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public void resetOdometry(Pose2d pose) {
         resetEncoders();
-        odometry.resetPosition(pose, getRot());
+        odometry.resetPosition(pose, getRotation());
     }
 
     private double encoderAvg() {

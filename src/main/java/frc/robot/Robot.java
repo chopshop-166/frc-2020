@@ -74,7 +74,7 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void robotInit() {
-        // super.robotInit();
+        super.robotInit();
         Logger.configureLoggingAndConfig(this, false);
         configureButtonBindings();
         nameEntry.setPersistent();
@@ -91,15 +91,11 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("ring light on", led.ringLightOn());
         SmartDashboard.putData("ring light off", led.ringLightOff());
 
-        SmartDashboard.putData("Autonomous Test", drive.autonomousCommand("Slolom"));
-
         autoChooser.setDefaultOption("Test", drive.autonomousCommand("Test"));
         autoChooser.addOption("Slolom", drive.autonomousCommand("Slolom"));
         autoChooser.addOption("Barrel", drive.autonomousCommand("Barrel"));
-        autoChooser.addOption("CollectBlue", drive.autonomousCommand("CollectBlue"));
-        autoChooser.addOption("CollectRed", drive.autonomousCommand("CollectRed"));
-        autoChooser.addOption("Bounce", drive.autonomousCommand("Bounce1").andThen(drive.autonomousCommand("Bounce2"))
-                .andThen(drive.autonomousCommand("Bounce3")).andThen(drive.autonomousCommand("Bounce4")));
+        autoChooser.addOption("Bounce", drive.autonomousCommand("Bounce1").andThen(drive.autonomousCommand("Bounce2"),
+                drive.autonomousCommand("Bounce3"), drive.autonomousCommand("Bounce4")));
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
