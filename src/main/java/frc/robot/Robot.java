@@ -37,6 +37,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
 import frc.robot.subsystems.Shooter;
 import frc.robot.triggers.DpadTrigger;
+import frc.robot.triggers.DpadTrigger.DpadDirection;
 import io.github.oblarg.oblog.Logger;
 
 /**
@@ -179,7 +180,7 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase shootAuto() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.SlowSpin(),
+        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.slowSpin(),
                 drive.drivePastLine());
         cmd.setName("Shoot Auto");
         return cmd;
@@ -255,21 +256,17 @@ public class Robot extends CommandRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake());
-        driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.SlowSpin());
-        driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.SlowSpin());
+        driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.slowSpin());
+        driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.slowSpin());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
-        final DpadTrigger stopShooter = DpadTrigger.DpadDown(driveController);
-        stopShooter.whenActive(shooter.stopShooter());
-        final DpadTrigger enableShooter = DpadTrigger.DpadUp(driveController);
-        enableShooter.whenActive(shooter.SlowSpin());
-        final DpadTrigger intakeDown = DpadTrigger.DpadLeft(driveController);
-        intakeDown.whenActive(intake.deployIntake());
-        final DpadTrigger intakeUp = DpadTrigger.DpadRight(driveController);
-        intakeUp.whenActive(intake.retractIntake());
+        new DpadTrigger(driveController, DpadDirection.Up).whenActive(shooter.slowSpin());
+        new DpadTrigger(driveController, DpadDirection.Down).whenActive(shooter.stopShooter());
+        new DpadTrigger(driveController, DpadDirection.Left).whenActive(intake.deployIntake());
+        new DpadTrigger(driveController, DpadDirection.Right).whenActive(intake.retractIntake());
     }
 }

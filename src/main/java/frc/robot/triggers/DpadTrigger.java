@@ -14,89 +14,25 @@ public class DpadTrigger extends Trigger {
      * @param controller The controller to use
      * @param angle      The angle of dpad button (0 is up)
      */
-    public DpadTrigger(XboxController controller, int angle) {
+    public DpadTrigger(XboxController controller, DpadDirection angle) {
         super(() -> {
-            return (controller.getPOV(0) == angle);
+            return (controller.getPOV(0) == angle.getAngle());
         });
     }
 
-    /**
-     * Creates a trigger for the up button
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadUp(XboxController controller) {
-        return new DpadTrigger(controller, 0);
-    }
+    public enum DpadDirection {
+        Up(0), UpRight(45), Right(90), DownRight(135), Down(180), DownLeft(225), Left(270), LeftUp(315);
 
-    /**
-     * Creates a trigger for the up and right buttons
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadUpRight(XboxController controller) {
-        return new DpadTrigger(controller, 45);
-    }
+        private int dPadRotation;
 
-    /**
-     * Creates a trigger for the right button
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadRight(XboxController controller) {
-        return new DpadTrigger(controller, 90);
-    }
+        // Returning an interger to compare whether we're in the right place or not
+        private int getAngle() {
+            return this.dPadRotation;
+        }
 
-    /**
-     * Creates a trigger for the right and down buttons
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadDownRight(XboxController controller) {
-        return new DpadTrigger(controller, 135);
-    }
-
-    /**
-     * Creates a trigger for the down button
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadDown(XboxController controller) {
-        return new DpadTrigger(controller, 180);
-    }
-
-    /**
-     * Creates a trigger for the down and left buttons
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadDownLeft(XboxController controller) {
-        return new DpadTrigger(controller, 225);
-    }
-
-    /**
-     * Creates a trigger for the left button
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadLeft(XboxController controller) {
-        return new DpadTrigger(controller, 270);
-    }
-
-    /**
-     * Creates a trigger for the up and left buttons
-     * 
-     * @param controller The controller to use
-     * @return The Dpad Trigger
-     */
-    public static DpadTrigger DpadUpLeft(XboxController controller) {
-        return new DpadTrigger(controller, 315);
+        // Returning the level the lift is at (top middle or bottom)
+        private DpadDirection(int rotation) {
+            this.dPadRotation = rotation;
+        }
     }
 }
