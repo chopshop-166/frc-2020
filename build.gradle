@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "com.github.spotbugs" version "4.2.1"
+    id "com.github.spotbugs" version "4.7.0"
     id "pmd"
     id "edu.wpi.first.GradleRIO" version "2021.2.2"
     id "com.chopshop166.plugin" version "0.5"
@@ -95,7 +95,7 @@ spotbugs {
 }
 
 pmd {
-    toolVersion = "6.23.0"
+    toolVersion = "6.33.0"
     ignoreFailures = true
     ruleSets = []
     ruleSetFiles = files("$rootProject.projectDir/config/pmd-ruleset.xml")
