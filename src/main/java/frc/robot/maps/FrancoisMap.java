@@ -3,7 +3,6 @@ package frc.robot.maps;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
-import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.ISolenoid;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
 import com.chopshop166.chopshoplib.outputs.Modifier;
@@ -12,8 +11,8 @@ import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.sensors.WDigitalInput;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
+import com.chopshop166.chopshoplib.sensors.WDigitalInput;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -21,7 +20,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+import edu.wpi.first.wpilibj.util.Units;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
@@ -30,16 +31,24 @@ public class FrancoisMap extends RobotMap {
     WPI_TalonSRX gyro = new WPI_TalonSRX(43);
 
     @Override
-    public DifferentialDriveMap getDriveMap() {
+    public DriveKinematics getDriveMap() {
         // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
+        // multiplied by a correcion factor found by comparing distance traveled to
+        // encoder values
         final int averageCount = 15;
-        final double distancePerRev = (1.0 / 12.27) * (6.0 * Math.PI);
-        return new DifferentialDriveMap() {
+        final double distancePerRev = Units.inchesToMeters((1.0 / 12.27) * (6.0 * Math.PI)) * 0.9533562075675308;
+
+        return new RobotMap.DriveKinematics() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
 
             CANSparkMax leftLeader = new CANSparkMax(29, MotorType.kBrushless);
             CANSparkMax leftFollower = new CANSparkMax(25, MotorType.kBrushless);
+
+            @Override
+            public DifferentialDriveKinematics getKinematics() {
+                return new DifferentialDriveKinematics(0.642);
+            }
 
             @Override
             public SmartSpeedController getRight() {
@@ -79,7 +88,7 @@ public class FrancoisMap extends RobotMap {
                 return new PigeonGyro(gyro);
             }
         };
-    }
+    };
 
     @Override
     public IntakeMap getIntakeMap() {

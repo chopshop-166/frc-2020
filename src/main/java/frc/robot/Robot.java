@@ -15,8 +15,8 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController.Direction;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
@@ -92,21 +92,17 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("ring light on", led.ringLightOn());
         SmartDashboard.putData("ring light off", led.ringLightOff());
 
-        autoChooser.setDefaultOption("Nothing", new InstantCommand());
-        autoChooser.addOption("Pass the Line", drive.drivePastLine());
-        autoChooser.addOption("Shoot 3 Balls and Pass Line", shootAuto());
+        autoChooser.setDefaultOption("Test", drive.autonomousCommand("Test"));
+        autoChooser.addOption("Slolom", drive.autonomousCommand("Slolom"));
+        autoChooser.addOption("Barrel", drive.autonomousCommand("Barrel"));
+        autoChooser.addOption("Bounce", drive.autonomousCommand("Bounce1").andThen(drive.autonomousCommand("Bounce2"),
+                drive.autonomousCommand("Bounce3"), drive.autonomousCommand("Bounce4")));
 
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
-
-        // protovision
-        camera0 = CameraServer.getInstance().startAutomaticCapture(0);
-        camera0.setResolution(320, 240);
-        camera0.setFPS(20);
-        // videoSink.getProperty("compression").set(70);
-        videoSink = CameraServer.getInstance().getServer();
+        DriverStation.getInstance().silenceJoystickConnectionWarning(true);
     }
 
     /**

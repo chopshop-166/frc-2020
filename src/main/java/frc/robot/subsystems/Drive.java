@@ -1,21 +1,37 @@
 package frc.robot.subsystems;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.PersistenceCheck;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.maps.RobotMap.DriveKinematics;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -34,6 +50,7 @@ import io.github.oblarg.oblog.annotations.Log;
  * 
  * 6) Sensors? Encoders, Gyro
  */
+
 public class Drive extends SubsystemBase implements Loggable {
 
     @Log.SpeedController
@@ -44,14 +61,40 @@ public class Drive extends SubsystemBase implements Loggable {
     private final GyroBase gyro;
 
     private final DifferentialDrive driveTrain;
+
+    private final DifferentialDriveKinematics trajectoryKinematics;
+
+    private final DifferentialDriveOdometry odometry;
     @Log.Encoder
-    private final IEncoder driveRightEncoder;
+    private final IEncoder rightEncoder;
     @Log.Encoder
-    private final IEncoder driveLeftEncoder;
+    private final IEncoder leftEncoder;
     @Log
     private final PIDController pid;
 
+    // Distance gain of the trajectory controller; 2.0 should work for most robots
+    private final static double RAMSETE_B = 1.7;
+
+    // Temporal gain of the trajectory controller; 0.7 should work for most robots
+    private final static double RAMSETE_ZETA = 0.7;
+
+    // Ramsete Controller used to control the robot during auto
+    RamseteController trajectoryController = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
+
     private final double ALIGN_PID_FEED = 0.2;
+
+    public final double MAX_SPEED_MPS = 2;
+
+    public double MAX_ACCELERATION = 1.2;
+
+    public final static double KS_VOLTS = 0.294;
+    public final static double KV_VOLT_SPM = 3.06;
+    public final static double KA_VOLT_SSPM = 0.291;
+
+    public final static double DRIVE_VEL_P = 0.56;
+    public final static double DRIVE_VEL_D = 0.0;
+
+    Field2d field = new Field2d();
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -59,16 +102,66 @@ public class Drive extends SubsystemBase implements Loggable {
      * 
      * @param map represents the drive map
      */
-    public Drive(final DifferentialDriveMap map) {
+    public Drive(final DriveKinematics map) {
         super();
         rightMotorGroup = map.getRight();
         leftMotorGroup = map.getLeft();
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
+        trajectoryKinematics = map.getKinematics();
         pid = new PIDController(0.0106, 0.0004, 0.008);
-        driveRightEncoder = rightMotorGroup.getEncoder();
-        driveLeftEncoder = leftMotorGroup.getEncoder();
+        rightEncoder = rightMotorGroup.getEncoder();
+        leftEncoder = leftMotorGroup.getEncoder();
+        odometry = new DifferentialDriveOdometry(getRotation());
+        SmartDashboard.putData("Field", field);
+    }
+
+    public Rotation2d getRotation() {
+        return Rotation2d.fromDegrees(gyro.getAngle());
+    }
+
+    @Override
+    public void periodic() {
+        // Update the odometry in the periodic block
+        odometry.update(getRotation(), leftEncoder.getDistance(), rightEncoder.getDistance());
+        field.setRobotPose(getPose());
+    }
+
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        resetEncoders();
+        odometry.resetPosition(pose, getRotation());
+    }
+
+    private double encoderAvg() {
+        return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+    }
+
+    public void resetEncoders() {
+        leftEncoder.reset();
+        rightEncoder.reset();
+    }
+
+    public void resetGyro() {
+        gyro.reset();
+    }
+
+    public double getTurnRate() {
+        return gyro.getRate();
+    }
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
+    }
+
+    public void tankDriveVolts(double left, double right) {
+        leftMotorGroup.setVoltage(left);
+        rightMotorGroup.setVoltage(right);
+        driveTrain.feed();
     }
 
     public CommandBase cancel() {
@@ -116,15 +209,13 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public CommandBase driveDistance(final double distance, final double speed) {
         final CommandBase cmd = new FunctionalCommand(() -> {
-            driveLeftEncoder.reset();
-            driveRightEncoder.reset();
+            resetEncoders();
         }, () -> {
             driveTrain.arcadeDrive(speed, 0);
         }, (interrupted) -> {
             driveTrain.stopMotor();
         }, () -> {
-            final double avg = (driveLeftEncoder.getDistance() + driveRightEncoder.getDistance()) / 2;
-            return (avg >= distance);
+            return (encoderAvg() >= distance);
         }, this);
         cmd.setName("Drive Distance");
         return cmd;
@@ -132,7 +223,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     public CommandBase turnDegrees(final double degrees, final double speed) {
         final CommandBase cmd = new FunctionalCommand(() -> {
-            gyro.reset();
+            resetGyro();
         }, () -> {
             double realSpeed = speed;
             if (degrees < 0 && speed > 0) {
@@ -154,7 +245,6 @@ public class Drive extends SubsystemBase implements Loggable {
                 driveTrain.arcadeDrive(0, 0.4);
             } else {
                 driveTrain.arcadeDrive(0, -0.4);
-
             }
         }, this);
         cmd.setName("Turning");
@@ -174,7 +264,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
             @Override
             public void initialize() {
-                gyro.reset();
+                resetGyro();
                 pid.setSetpoint(SmartDashboard.getNumber("Angle Offset", 0));
                 pid.setTolerance(0.75);
             }
@@ -183,7 +273,7 @@ public class Drive extends SubsystemBase implements Loggable {
             public void execute() {
 
                 if (pid.getPositionError() <= 5 && (i % 50 == 0)) {
-                    gyro.reset();
+                    resetGyro();
                     pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
                     i = 0;
                 }
@@ -203,7 +293,6 @@ public class Drive extends SubsystemBase implements Loggable {
             @Override
             public void end(final boolean interrupted) {
                 driveTrain.stopMotor();
-
             }
         };
 
@@ -211,5 +300,52 @@ public class Drive extends SubsystemBase implements Loggable {
 
         return cmd;
 
+    }
+
+    public CommandBase autonomousCommand(String trajectoryName) {
+        return autonomousCommand(trajectoryName, true);
+    }
+
+    public CommandBase autonomousCommand(String trajectoryName, Boolean resetPose) {
+
+        String trajectoryJSON = "paths/" + trajectoryName + ".wpilib.json";
+        Trajectory autoTrajectory = new Trajectory();
+        try {
+            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+            autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        } catch (IOException ex) {
+            DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+        }
+
+        final Trajectory finalAutoTrajectory = autoTrajectory;
+
+        RamseteCommand ramseteCommand = new RamseteCommand(autoTrajectory,
+                // Gets pose
+                this::getPose,
+                // Creates our ramsete controller
+                new RamseteController(RAMSETE_B, RAMSETE_ZETA),
+                // Allows for robot control
+                new SimpleMotorFeedforward(KS_VOLTS, KV_VOLT_SPM, KA_VOLT_SSPM),
+                // Describes how the drivetrain is influenced by motor speed
+                trajectoryKinematics,
+                // Gets the speed of the wheels
+                this::getWheelSpeeds,
+                // Left Controller
+                new PIDController(DRIVE_VEL_P, 0, DRIVE_VEL_D),
+                // Right Controller
+                new PIDController(DRIVE_VEL_P, 0, DRIVE_VEL_D),
+                // Sends voltages to motors
+                this::tankDriveVolts, this);
+
+        CommandBase cmd;
+        if (resetPose) {
+            cmd = (new InstantCommand(() -> resetOdometry(finalAutoTrajectory.getInitialPose())))
+                    .andThen(ramseteCommand).andThen(() -> tankDriveVolts(0, 0));
+        } else {
+            cmd = ramseteCommand.andThen(() -> tankDriveVolts(0, 0));
+        }
+
+        cmd.setName(trajectoryName);
+        return cmd;
     }
 }

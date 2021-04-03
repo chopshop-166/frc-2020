@@ -1,7 +1,6 @@
 package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
-import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -9,8 +8,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class HyperionMap extends RobotMap {
 
     @Override
-    public DifferentialDriveMap getDriveMap() {
-        return new DifferentialDriveMap() {
+    public DriveKinematics getDriveMap() {
+        return new DriveKinematics() {
 
             @Override
             public SmartSpeedController getRight() {
