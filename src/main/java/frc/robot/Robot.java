@@ -11,6 +11,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController.Direction;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
@@ -36,8 +37,6 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
 import frc.robot.subsystems.Shooter;
-import frc.robot.triggers.DpadTrigger;
-import frc.robot.triggers.DpadTrigger.DpadDirection;
 import io.github.oblarg.oblog.Logger;
 
 /**
@@ -264,9 +263,9 @@ public class Robot extends CommandRobot {
         driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
-        new DpadTrigger(driveController, DpadDirection.Up).whenActive(shooter.slowSpin());
-        new DpadTrigger(driveController, DpadDirection.Down).whenActive(shooter.stopShooter());
-        new DpadTrigger(driveController, DpadDirection.Left).whenActive(intake.deployIntake());
-        new DpadTrigger(driveController, DpadDirection.Right).whenActive(intake.retractIntake());
+        driveController.getPovButton(Direction.Up).whenActive(shooter.slowSpin());
+        driveController.getPovButton(Direction.Down).whenActive(shooter.stopShooter());
+        driveController.getPovButton(Direction.Right).whenActive(intake.retractIntake());
+        driveController.getPovButton(Direction.Left).whenActive(intake.deployIntake());
     }
 }
