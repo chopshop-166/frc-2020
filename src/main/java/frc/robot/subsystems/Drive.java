@@ -34,6 +34,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.DriveKinematics;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.photonvision.PhotonCamera;
+
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -95,6 +97,11 @@ public class Drive extends SubsystemBase implements Loggable {
     public final static double DRIVE_VEL_D = 0.0;
 
     Field2d field = new Field2d();
+
+    private final double[] yawMin = {1,2};
+    private final double[] yawMax = {1,2};
+    private final double[] pitchMin = {1,2};
+    private final double[] pitchMax = {1,2};
 
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
@@ -248,6 +255,30 @@ public class Drive extends SubsystemBase implements Loggable {
             }
         }, this);
         cmd.setName("Turning");
+        return cmd;
+    }
+
+        public CommandBase visionAlignDegreeser() {
+        final CommandBase cmd = new RunCommand(() -> {
+            PhotonCamera camera = new PhotonCamera("gloworm");
+            var result = camera.getLatestResult();
+            var bestTarget = result.getBestTarget();
+            double yaw = bestTarget.getYaw();
+            double pitch = bestTarget.getPitch();
+            double skew = bestTarget.getSkew();
+
+            if (result.hasTargets()) {
+                if ((yaw > yawMin[1] && yaw < yawMax[1]) && (pitch > pitchMin[1] && pitch < pitchMax[1])) {
+                        SmartDashboard.putNumber("Target Setup", 1);
+                    }
+                else if ((yaw > yawMin[2] && yaw < yawMax[2]) && (pitch > pitchMin[2] && pitch < pitchMax[2])){
+                        SmartDashboard.putNumber("Target Setup", 2);
+                }
+            } else {
+                SmartDashboard.putNumber("Target Setup", 0);
+            }
+        }, this);
+        cmd.setName("Turn Degreeser");
         return cmd;
     }
 
