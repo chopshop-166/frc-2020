@@ -36,7 +36,6 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.photonvision.PhotonCamera;
 
-
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
  * an axis is triggered
@@ -100,17 +99,13 @@ public class Drive extends SubsystemBase implements Loggable {
 
     Field2d field = new Field2d();
 
-    private final double[] yawMin = {1,2};
-    private final double[] yawMax = {1,2};
-    private final double[] pitchMin = {1,2};
-    private final double[] pitchMax = {1,2};
+    private final double[] yawMin = { 1, 2 };
+    private final double[] yawMax = { 1, 2 };
+    private final double[] pitchMin = { 1, 2 };
+    private final double[] pitchMax = { 1, 2 };
 
     private enum Quadrant {
-        UNKNOWN("unknown"),
-        REDA("redA"),
-        REDB("redB"),
-        BLUEA("blueA"),
-        BLUEB("blueB");
+        UNKNOWN("unknown"), REDA("redA"), REDB("redB"), BLUEA("blueA"), BLUEB("blueB");
 
         public final String pathName;
 
@@ -287,7 +282,7 @@ public class Drive extends SubsystemBase implements Loggable {
         double pitch = bestTarget.getPitch();
 
         if (result.hasTargets()) {
-            for (int i=1; i<Quadrant.values().length; i++) {
+            for (int i = 1; i < Quadrant.values().length; i++) {
                 if ((yaw > yawMin[i] && yaw < yawMax[i]) && (pitch > pitchMin[i] && pitch < pitchMax[i])) {
                     return Quadrant.values()[i];
                 }
@@ -295,7 +290,7 @@ public class Drive extends SubsystemBase implements Loggable {
         }
         return Quadrant.UNKNOWN;
     }
-    
+
     public CommandBase galacticSearch() {
         Quadrant pathName = visionField();
         return autonomousCommand(pathName.getPath());
