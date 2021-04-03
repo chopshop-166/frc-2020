@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.photonvision.PhotonCamera;
+
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -53,6 +55,11 @@ public class Drive extends SubsystemBase implements Loggable {
 
     private final double ALIGN_PID_FEED = 0.2;
 
+    private final double[] yawMin = {1,2};
+    private final double[] yawMax = {1,2};
+    private final double[] pitchMin = {1,2};
+    private final double[] pitchMax = {1,2};
+
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
      * differential drive
@@ -66,7 +73,7 @@ public class Drive extends SubsystemBase implements Loggable {
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
-        pid = new PIDController(0.0106, 0.0004, 0.008);
+        pid = new PIDController(0.0082, 0, 0);
         driveRightEncoder = rightMotorGroup.getEncoder();
         driveLeftEncoder = leftMotorGroup.getEncoder();
     }
@@ -154,10 +161,33 @@ public class Drive extends SubsystemBase implements Loggable {
                 driveTrain.arcadeDrive(0, 0.4);
             } else {
                 driveTrain.arcadeDrive(0, -0.4);
-
             }
         }, this);
         cmd.setName("Turning");
+        return cmd;
+    }
+
+        public CommandBase visionAlignDegreeser() {
+        final CommandBase cmd = new RunCommand(() -> {
+            PhotonCamera camera = new PhotonCamera("gloworm");
+            var result = camera.getLatestResult();
+            var bestTarget = result.getBestTarget();
+            double yaw = bestTarget.getYaw();
+            double pitch = bestTarget.getPitch();
+            double skew = bestTarget.getSkew();
+
+            if (result.hasTargets()) {
+                if ((yaw > yawMin[1] && yaw < yawMax[1]) && (pitch > pitchMin[1] && pitch < pitchMax[1])) {
+                        SmartDashboard.putNumber("Target Setup", 1);
+                    }
+                else if ((yaw > yawMin[2] && yaw < yawMax[2]) && (pitch > pitchMin[2] && pitch < pitchMax[2])){
+                        SmartDashboard.putNumber("Target Setup", 2);
+                }
+            } else {
+                SmartDashboard.putNumber("Target Setup", 0);
+            }
+        }, this);
+        cmd.setName("Turn Degreeser");
         return cmd;
     }
 
