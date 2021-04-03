@@ -11,6 +11,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController.Direction;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
@@ -178,7 +179,7 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase shootAuto() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.spinDown(),
+        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.slowSpin(),
                 drive.drivePastLine());
         cmd.setName("Shoot Auto");
         return cmd;
@@ -254,13 +255,17 @@ public class Robot extends CommandRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake());
-        driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.spinDown());
-        driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.spinDown());
+        driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.slowSpin());
+        driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.slowSpin());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
+        driveController.getPovButton(Direction.Up).whenActive(shooter.slowSpin());
+        driveController.getPovButton(Direction.Down).whenActive(shooter.stopShooter());
+        driveController.getPovButton(Direction.Right).whenActive(intake.retractIntake());
+        driveController.getPovButton(Direction.Left).whenActive(intake.deployIntake());
     }
 }
