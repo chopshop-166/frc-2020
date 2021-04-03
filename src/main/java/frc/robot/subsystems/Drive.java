@@ -74,6 +74,8 @@ public class Drive extends SubsystemBase implements Loggable {
     @Log
     private final PIDController pid;
 
+    private final PhotonCamera camera;
+
     // Distance gain of the trajectory controller; 2.0 should work for most robots
     private final static double RAMSETE_B = 1.7;
 
@@ -103,6 +105,24 @@ public class Drive extends SubsystemBase implements Loggable {
     private final double[] pitchMin = {1,2};
     private final double[] pitchMax = {1,2};
 
+    private enum Quadrant {
+        UNKNOWN("unknown"),
+        REDA("redA"),
+        REDB("redB"),
+        BLUEA("blueA"),
+        BLUEB("blueB");
+
+        public final String pathName;
+
+        private Quadrant(String pathName) {
+            this.pathName = pathName;
+        }
+
+        public String getPath() {
+            return pathName;
+        }
+    }
+
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
      * differential drive
@@ -122,6 +142,7 @@ public class Drive extends SubsystemBase implements Loggable {
         leftEncoder = leftMotorGroup.getEncoder();
         odometry = new DifferentialDriveOdometry(getRotation());
         SmartDashboard.putData("Field", field);
+        camera = new PhotonCamera("gloworm");
     }
 
     public Rotation2d getRotation() {
@@ -258,28 +279,27 @@ public class Drive extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-        public CommandBase visionAlignDegreeser() {
-        final CommandBase cmd = new RunCommand(() -> {
-            PhotonCamera camera = new PhotonCamera("gloworm");
-            var result = camera.getLatestResult();
-            var bestTarget = result.getBestTarget();
-            double yaw = bestTarget.getYaw();
-            double pitch = bestTarget.getPitch();
-            double skew = bestTarget.getSkew();
+    public Quadrant visionField() {
+        var result = camera.getLatestResult();
+        var bestTarget = result.getBestTarget();
 
-            if (result.hasTargets()) {
-                if ((yaw > yawMin[1] && yaw < yawMax[1]) && (pitch > pitchMin[1] && pitch < pitchMax[1])) {
-                        SmartDashboard.putNumber("Target Setup", 1);
-                    }
-                else if ((yaw > yawMin[2] && yaw < yawMax[2]) && (pitch > pitchMin[2] && pitch < pitchMax[2])){
-                        SmartDashboard.putNumber("Target Setup", 2);
+        double yaw = bestTarget.getYaw();
+        double pitch = bestTarget.getPitch();
+
+        if (result.hasTargets()) {
+            for (int i=1; i<Quadrant.values().length; i++) {
+                if ((yaw > yawMin[i] && yaw < yawMax[i]) && (pitch > pitchMin[i] && pitch < pitchMax[i])) {
+                    return Quadrant.values()[i];
                 }
-            } else {
-                SmartDashboard.putNumber("Target Setup", 0);
             }
-        }, this);
-        cmd.setName("Turn Degreeser");
-        return cmd;
+        }
+        return Quadrant.UNKNOWN;
+    }
+    
+    public CommandBase galacticSearch() {
+        Quadrant pathName = visionField();
+        //return autonomousCommand(pathName.getPath());
+        return 0;
     }
 
     public CommandBase visionAlignDegrees() {
