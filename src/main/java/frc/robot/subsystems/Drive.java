@@ -298,8 +298,7 @@ public class Drive extends SubsystemBase implements Loggable {
     
     public CommandBase galacticSearch() {
         Quadrant pathName = visionField();
-        //return autonomousCommand(pathName.getPath());
-        return 0;
+        return autonomousCommand(pathName.getPath());
     }
 
     public CommandBase visionAlignDegrees() {
