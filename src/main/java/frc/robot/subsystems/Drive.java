@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.DriveKinematics;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.photonvision.PhotonCamera;
 
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
@@ -72,6 +73,8 @@ public class Drive extends SubsystemBase implements Loggable {
     @Log
     private final PIDController pid;
 
+    private final PhotonCamera camera;
+
     // Distance gain of the trajectory controller; 2.0 should work for most robots
     private final static double RAMSETE_B = 1.7;
 
@@ -96,6 +99,25 @@ public class Drive extends SubsystemBase implements Loggable {
 
     Field2d field = new Field2d();
 
+    private final double[] yawMin = { 1, 2 };
+    private final double[] yawMax = { 1, 2 };
+    private final double[] pitchMin = { 1, 2 };
+    private final double[] pitchMax = { 1, 2 };
+
+    private enum Quadrant {
+        UNKNOWN("unknown"), REDA("redA"), REDB("redB"), BLUEA("blueA"), BLUEB("blueB");
+
+        public final String pathName;
+
+        private Quadrant(String pathName) {
+            this.pathName = pathName;
+        }
+
+        public String getPath() {
+            return pathName;
+        }
+    }
+
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
      * differential drive
@@ -115,6 +137,7 @@ public class Drive extends SubsystemBase implements Loggable {
         leftEncoder = leftMotorGroup.getEncoder();
         odometry = new DifferentialDriveOdometry(getRotation());
         SmartDashboard.putData("Field", field);
+        camera = new PhotonCamera("gloworm");
     }
 
     public Rotation2d getRotation() {
@@ -249,6 +272,28 @@ public class Drive extends SubsystemBase implements Loggable {
         }, this);
         cmd.setName("Turning");
         return cmd;
+    }
+
+    public Quadrant visionField() {
+        var result = camera.getLatestResult();
+        var bestTarget = result.getBestTarget();
+
+        double yaw = bestTarget.getYaw();
+        double pitch = bestTarget.getPitch();
+
+        if (result.hasTargets()) {
+            for (int i = 1; i < Quadrant.values().length; i++) {
+                if ((yaw > yawMin[i] && yaw < yawMax[i]) && (pitch > pitchMin[i] && pitch < pitchMax[i])) {
+                    return Quadrant.values()[i];
+                }
+            }
+        }
+        return Quadrant.UNKNOWN;
+    }
+
+    public CommandBase galacticSearch() {
+        Quadrant pathName = visionField();
+        return autonomousCommand(pathName.getPath());
     }
 
     public CommandBase visionAlignDegrees() {
