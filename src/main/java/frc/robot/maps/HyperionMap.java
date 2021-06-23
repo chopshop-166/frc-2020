@@ -4,8 +4,14 @@ import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import frc.robot.logger.RobotLogger;
+
 @RobotMapFor("Hyperion")
 public class HyperionMap extends RobotMap {
+
+    public HyperionMap(final RobotLogger logger) {
+        super(logger);
+    }
 
     @Override
     public DriveKinematics getDriveMap() {
