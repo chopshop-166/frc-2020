@@ -1,5 +1,6 @@
 package frc.robot.maps;
 
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
@@ -10,28 +11,28 @@ import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.outputs.WSolenoid;
-import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
-import com.chopshop166.chopshoplib.sensors.WDigitalInput;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.logger.RobotLogger;
+import frc.robot.logger.SubsystemLogger;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
     // controlPanel is defined here due to the gyro being plugged into this speed
     // controller as well as the control panel motor
-    WPI_TalonSRX gyro = new WPI_TalonSRX(43);
+    WPI_TalonSRX gyroTalon = new WPI_TalonSRX(43);
 
-    public FrancoisMap(RobotLogger logger) {
+    public FrancoisMap(final RobotLogger logger) {
         super(logger);
     }
 
@@ -42,6 +43,7 @@ public class FrancoisMap extends RobotMap {
         // encoder values
         final int averageCount = 15;
         final double distancePerRev = Units.inchesToMeters((1.0 / 12.27) * (6.0 * Math.PI)) * 0.9533562075675308;
+        final SubsystemLogger driveLogger = logger.addSubsystem("Drive");
 
         return new RobotMap.DriveKinematics() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
@@ -58,10 +60,18 @@ public class FrancoisMap extends RobotMap {
             @Override
             public SmartSpeedController getRight() {
                 // We invert the motor so the controller outputs are aligned
+
                 rightLeader.setInverted(true);
                 rightFollower.follow(rightLeader);
 
                 PIDSparkMax sendLeader = new PIDSparkMax(rightLeader);
+                PIDSparkMax sendFollower = new PIDSparkMax(rightFollower);
+
+                driveLogger.register(sendLeader, Map.of("Side", "Right", "Motor", "A"));
+                driveLogger.register(sendFollower, Map.of("Side", "Right", "Motor", "B"));
+                driveLogger.register(sendLeader.getEncoder(), Map.of("Side", "Right", "Motor", "A"));
+                driveLogger.register(sendFollower.getEncoder(), Map.of("Side", "Right", "Motor", "B"));
+
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
                 // The distance being divided by 60 essentially takes distance and converts it
                 // to velocity (in m/s)
@@ -77,6 +87,13 @@ public class FrancoisMap extends RobotMap {
                 leftFollower.follow(leftLeader);
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
+                PIDSparkMax sendFollower = new PIDSparkMax(leftFollower);
+
+                driveLogger.register(sendLeader, Map.of("Side", "Left", "Motor", "A"));
+                driveLogger.register(sendFollower, Map.of("Side", "Left", "Motor", "B"));
+                driveLogger.register(sendLeader.getEncoder(), Map.of("Side", "Left", "Motor", "A"));
+                driveLogger.register(sendFollower.getEncoder(), Map.of("Side", "Left", "Motor", "B"));
+
                 sendLeader.getEncoder().setPositionScaleFactor(distancePerRev);
                 // The distance being divided by 60 essentially takes distance and converts it
                 // to velocity (in m/s)
@@ -90,7 +107,9 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public GyroBase getGyro() {
-                return new PigeonGyro(gyro);
+                final PigeonGyro gyro = new PigeonGyro(gyroTalon);
+                driveLogger.register(gyro);
+                return gyro;
             }
         };
     };
@@ -98,14 +117,21 @@ public class FrancoisMap extends RobotMap {
     @Override
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
+
+            final SubsystemLogger intakeLogger = logger.addSubsystem("Intake");
+
             @Override
             public SmartSpeedController intake() {
-                return SmartSpeedController.wrap(new WPI_TalonSRX(42));
+                SmartSpeedController intake = SmartSpeedController.wrap(new WPI_TalonSRX(42));
+                intakeLogger.register(intake, Map.of("Motor", "IntakeA"));
+                return intake;
             }
 
             @Override
             public WDSolenoid deployIntake() {
-                return new WDSolenoid(1, 2);
+                WDSolenoid solenoid = new WDSolenoid(1, 2);
+                intakeLogger.register(solenoid);
+                return solenoid;
             }
         };
     }
@@ -113,12 +139,19 @@ public class FrancoisMap extends RobotMap {
     @Override
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
+            private SubsystemLogger shooterLogger = logger.addSubsystem("Intake");
             CANSparkMax leader = new CANSparkMax(23, MotorType.kBrushless);
             CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
             PIDSparkMax pidLeader = new PIDSparkMax(leader);
+            PIDSparkMax pidFollower = new PIDSparkMax(follower);
 
             @Override
             public PIDSparkMax shooterWheel() {
+                shooterLogger.register(pidLeader, Map.of("Motor", "A"));
+                shooterLogger.register(pidFollower, Map.of("Motor", "B"));
+                shooterLogger.register(pidLeader.getEncoder(), Map.of("Motor", "A"));
+                shooterLogger.register(pidFollower.getEncoder(), Map.of("Motor", "B"));
+
                 leader.setIdleMode(IdleMode.kCoast);
                 follower.setIdleMode(IdleMode.kCoast);
                 leader.setInverted(true);
@@ -140,15 +173,18 @@ public class FrancoisMap extends RobotMap {
     @Override
     public IndexMap getIndexerMap() {
         return new IndexMap() {
-            AnalogTrigger topPierreIR = new AnalogTrigger(0);
-            AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
-            // AnalogTrigger backIntakeIR = new AnalogTrigger(2);
-            // AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
+            private SubsystemLogger indexerLogger = logger.addSubsystem("Indexer");
+            AnalogInput topPierreIRAnalog = new AnalogInput(0);
+            AnalogTrigger topPierreIR = new AnalogTrigger(topPierreIRAnalog);
+
+            AnalogInput bottomPierreIRAnalog = new AnalogInput(1);
+            AnalogTrigger bottomPierreIR = new AnalogTrigger(bottomPierreIRAnalog);
 
             @Override
             public SmartSpeedController pierreMotor() {
                 final WPI_TalonSRX pierreMotor = new WPI_TalonSRX(40);
                 setBAGCurrentLimits(pierreMotor);
+                indexerLogger.register(pierreMotor, Map.of("Motor", "Pierre"));
                 return SmartSpeedController.wrap(pierreMotor);
             }
 
@@ -156,28 +192,25 @@ public class FrancoisMap extends RobotMap {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
                 singulator.setInverted(true);
                 setBAGCurrentLimits(singulator);
+                indexerLogger.register(singulator, Map.of("Motor", "Singulator"));
                 return SmartSpeedController.wrap(singulator);
             }
 
             // TODO Find values for voltage limits
             public BooleanSupplier topPierreIR() {
                 topPierreIR.setLimitsVoltage(1.2, 1.4);
+                indexerLogger.register(topPierreIRAnalog, Map.of("Sensor", "TopPierre"));
+                indexerLogger.register(topPierreIR, Map.of("Sensor", "TopPierre"));
                 return topPierreIR::getTriggerState;
             }
 
             // TODO Find values for voltage limits; test 1-3.5 and then test 1.5-3.5
             public BooleanSupplier bottomPierreIR() {
                 bottomPierreIR.setLimitsVoltage(1.0, 1.2);
+                indexerLogger.register(bottomPierreIRAnalog, Map.of("Sensor", "BottomPierre"));
+                indexerLogger.register(bottomPierreIR, Map.of("Sensor", "BottomPierre"));
                 return bottomPierreIR::getTriggerState;
             }
-
-            /*
-             * backIntakeIR.setLimitsVoltage(1.2, 2.6); return
-             * backIntakeIR::getTriggerState; }
-             * 
-             * { frontIntakeIR.setLimitsVoltage(1.2, 1.4); return
-             * frontIntakeIR::getTriggerState; }
-             */
         };
     }
 
