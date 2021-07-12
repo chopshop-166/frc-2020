@@ -81,7 +81,7 @@ public class Drive extends SubsystemBase implements Loggable {
     // Ramsete Controller used to control the robot during auto
     RamseteController trajectoryController = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
 
-    private final double ALIGN_PID_FEED = 0.2;
+    private final double ALIGN_PID_FEED = .2;
 
     public final double MAX_SPEED_MPS = 2;
 
@@ -110,7 +110,7 @@ public class Drive extends SubsystemBase implements Loggable {
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
         trajectoryKinematics = map.getKinematics();
-        pid = new PIDController(0.0106, 0.0004, 0.008);
+        pid = new PIDController(0.005, 0.0, 0.0);
         rightEncoder = rightMotorGroup.getEncoder();
         leftEncoder = leftMotorGroup.getEncoder();
         odometry = new DifferentialDriveOdometry(getRotation());
@@ -265,20 +265,13 @@ public class Drive extends SubsystemBase implements Loggable {
             @Override
             public void initialize() {
                 resetGyro();
-                pid.setSetpoint(SmartDashboard.getNumber("Angle Offset", 0));
-                pid.setTolerance(0.75);
+                pid.setSetpoint(0);
+                pid.setTolerance(5);
             }
 
             @Override
             public void execute() {
-
-                if (pid.getPositionError() <= 5 && (i % 50 == 0)) {
-                    resetGyro();
-                    pid.setSetpoint((SmartDashboard.getNumber("Angle Offset", 0)));
-                    i = 0;
-                }
-
-                double turning = pid.calculate(-gyro.getAngle());
+                double turning = pid.calculate(-SmartDashboard.getNumber("Angle Offset", 0));
                 turning += (turning < 0) ? -ALIGN_PID_FEED : ALIGN_PID_FEED;
                 SmartDashboard.putNumber("pid Out", turning);
                 driveTrain.arcadeDrive(0, turning);

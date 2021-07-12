@@ -50,6 +50,7 @@ public class Robot extends CommandRobot {
 
     private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
+    final private ButtonXboxController copilotController = new ButtonXboxController(0);
 
     final private NetworkTableEntry nameEntry = Shuffleboard.getTab("RobotData").addPersistent("RobotName", "Unknown")
             .getEntry();
@@ -182,16 +183,22 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase shootNBalls(final int ballAmount) {
-        final CommandBase cmd = CommandUtils.repeat(ballAmount,
-                new SequentialCommandGroup(shooter.spinUpForDistance(), indexer.shootBall()));
+        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUpForDistance(), indexer.shootBall());
         cmd.setName("Shoot All Balls");
         return cmd;
     }
 
     public CommandBase maxSpeedNBalls() {
         final CommandBase cmd = new SequentialCommandGroup(shooter.linearSpinUp(() -> Shooter.MAX_SPEED),
-                indexer.loadBallToTop(), indexer.unloadBall());
+                indexer.shootBall());
         cmd.setName("Shoot All Balls");
+        return cmd;
+    }
+
+    public CommandBase shootAtSpeed(final int ballAmount, double shooterSpeed) {
+        final CommandBase cmd = CommandUtils.repeat(ballAmount,
+                new SequentialCommandGroup(shooter.linearSpinUp(() -> shooterSpeed), indexer.shootBall()));
+        cmd.setName("Shoot Balls At Speed");
         return cmd;
     }
 
@@ -251,17 +258,22 @@ public class Robot extends CommandRobot {
      */
     private void configureButtonBindings() {
         driveController.getButton(Button.kA).whenHeld(intake.intake());
-        driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.slowSpin());
-        driveController.getButton(Button.kX).whileHeld(maxSpeedNBalls()).whenReleased(shooter.slowSpin());
+        // driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.slowSpin());
+        driveController.getButton(Button.kB).whileHeld(shootAtSpeed(5, 4100));
+        driveController.getButton(Button.kX).whileHeld(led.ringLightOn().andThen(visionAlignment()))
+                .whenReleased(led.ringLightOff());
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
-        driveController.getButton(Button.kStart).whenPressed(visionAlignment());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
         driveController.getPovButton(Direction.Up).whenActive(shooter.slowSpin());
         driveController.getPovButton(Direction.Down).whenActive(shooter.stopShooter());
         driveController.getPovButton(Direction.Right).whenActive(intake.retractIntake());
         driveController.getPovButton(Direction.Left).whenActive(intake.deployIntake());
+
+        copilotController.getButton(Button.kX).whileHeld(shootAtSpeed(5, 4600)).whenReleased(shooter.slowSpin());
+        copilotController.getButton(Button.kB).whileHeld(shootAtSpeed(5, 4350)).whenReleased(shooter.slowSpin());
+        copilotController.getButton(Button.kA).whileHeld(shootAtSpeed(5, 4100));
     }
 }

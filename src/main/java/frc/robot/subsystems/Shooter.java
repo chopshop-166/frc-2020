@@ -51,7 +51,7 @@ public class Shooter extends SubsystemBase implements Loggable {
     public final static double BALL_SPEED_RATIO = 27.358;
 
     // Original Value: 5400
-    public final static double MAX_SPEED = 3400;
+    public final static double MAX_SPEED = 5400;
 
     public Shooter(final RobotMap.ShooterMap map) {
         super();
@@ -91,6 +91,7 @@ public class Shooter extends SubsystemBase implements Loggable {
             } else {
                 // calculated through linear regression in an excel spreadsheet
                 output = 2800.7 * (Math.pow(dist, 0.3094));
+                SmartDashboard.putNumber("VisionShooterTarget", output);
             }
             // Caps speed to ensure we can achieve the speed
             return Math.min(MAX_SPEED, output);
@@ -111,7 +112,7 @@ public class Shooter extends SubsystemBase implements Loggable {
             {
                 addRequirements(Shooter.this);
             }
-            PersistenceCheck check = new PersistenceCheck(10, () -> {
+            PersistenceCheck check = new PersistenceCheck(5, () -> {
                 return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SPEED)) <= 100.0);
             });
 
