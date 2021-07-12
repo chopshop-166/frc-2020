@@ -36,6 +36,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
+import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
 import io.github.oblarg.oblog.Logger;
 
@@ -61,6 +62,8 @@ public class Robot extends CommandRobot {
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
     final private Shooter shooter = new Shooter(map.getShooterMap());
+    // ControlPanel(map.getControlPanelMap());
+    final private Lift lift = new Lift(map.getLiftMap());
     final private Indexer indexer = new Indexer(map.getIndexerMap());
     final private Led led = new Led(map.getLEDMap());
 
@@ -84,10 +87,12 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("unloadBallToShooter", indexer.unloadBall());
         SmartDashboard.putData("ShootNoSpinup", indexer.shootBall());
         SmartDashboard.putData("index ball", indexer.indexBall());
+        SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
 
         SmartDashboard.putData("cam toggle", camToggle());
+        SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
         SmartDashboard.putData("vision align only", drive.visionAlignDegrees());
         SmartDashboard.putData("vision align", visionAlignment());
         SmartDashboard.putData("ring light on", led.ringLightOn());
@@ -102,6 +107,9 @@ public class Robot extends CommandRobot {
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
+        lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
+        // controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() ->
+        // copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
         DriverStation.getInstance().silenceJoystickConnectionWarning(true);
     }
@@ -202,6 +210,12 @@ public class Robot extends CommandRobot {
         return cmd;
     }
 
+    public CommandBase afterMatchPit() {
+        final CommandBase cmd = new SequentialCommandGroup(lift.resetLift(), intake.retractIntake());
+        cmd.setName("After Match Pit");
+        return cmd;
+    }
+
     public CommandBase systemsCheck() {
         final CommandBase cmd = new SequentialCommandGroup(intake.intake(), shooter.spinUp(1000),
                 indexer.shootAllBalls(1));
@@ -209,9 +223,15 @@ public class Robot extends CommandRobot {
         return cmd;
     }
 
+    public CommandBase endGame() {
+        final CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(), lift.disengageRatchet());
+        endGameCmd.setName("End Game Lift");
+        return endGameCmd;
+    }
+
     public CommandBase cancelAll() {
         final CommandBase cmd = new ParallelCommandGroup(drive.cancel(), indexer.cancel(), intake.cancel(),
-                shooter.cancel());
+                lift.cancel(), shooter.cancel());
         cmd.setName("Cancel All");
         return cmd;
     }
