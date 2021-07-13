@@ -287,10 +287,17 @@ public class Robot extends CommandRobot {
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
-        driveController.getPovButton(Direction.Up).whenActive(shooter.slowSpin());
-        driveController.getPovButton(Direction.Down).whenActive(shooter.stopShooter());
-        driveController.getPovButton(Direction.Right).whenActive(intake.retractIntake());
-        driveController.getPovButton(Direction.Left).whenActive(intake.deployIntake());
+
+        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.indexBall());
+        // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
+        // copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
+        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.slowSpin());
+        final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
+        endTrigger.whenActive(endGame());
+        copilotController.getButton(Button.kY).whenHeld(regurgitate());
+        copilotController.getButton(Button.kBack).whenPressed(cancelAll());
+        // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
 
         copilotController.getButton(Button.kX).whileHeld(shootAtSpeed(5, 4600)).whenReleased(shooter.slowSpin());
         copilotController.getButton(Button.kB).whileHeld(shootAtSpeed(5, 4350)).whenReleased(shooter.slowSpin());
