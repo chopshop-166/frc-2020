@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.Direction;
+import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
@@ -177,63 +178,42 @@ public class Robot extends CommandRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public CommandBase regurgitate() {
-        final CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.discharge());
-        cmd.setName("Regurgitate");
-        return cmd;
+    public Command regurgitate() {
+        return parallel("Regurgitate", intake.discharge(), indexer.discharge());
     }
 
-    public CommandBase shootAuto() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.slowSpin(),
-                drive.drivePastLine());
-        cmd.setName("Shoot Auto");
-        return cmd;
+    public Command shootAuto() {
+        return sequence("Shoot Auto", shooter.spinUp(4500), shootNBalls(3), shooter.slowSpin(), drive.drivePastLine());
     }
 
-    public CommandBase shootNBalls(final int ballAmount) {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUpForDistance(), indexer.shootBall());
-        cmd.setName("Shoot All Balls");
-        return cmd;
+    public Command shootNBalls(final int ballAmount) {
+        return sequence("Shoot All Balls", shooter.spinUpForDistance(), indexer.shootBall());
     }
 
-    public CommandBase maxSpeedNBalls() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.linearSpinUp(() -> Shooter.MAX_SPEED),
-                indexer.shootBall());
-        cmd.setName("Shoot All Balls");
-        return cmd;
+    public Command maxSpeedNBalls() {
+        return sequence("Shoot All Balls", shooter.linearSpinUp(() -> Shooter.MAX_SPEED), indexer.shootBall());
     }
 
-    public CommandBase shootAtSpeed(final int ballAmount, double shooterSpeed) {
-        final CommandBase cmd = CommandUtils.repeat(ballAmount,
-                new SequentialCommandGroup(shooter.linearSpinUp(() -> shooterSpeed), indexer.shootBall()));
-        cmd.setName("Shoot Balls At Speed");
-        return cmd;
+    public Command shootAtSpeed(final int ballAmount, double shooterSpeed) {
+        return CommandUtils.repeat(ballAmount,
+                sequence("Shoot Balls At Speed", shooter.linearSpinUp(() -> shooterSpeed), indexer.shootBall()));
     }
 
     public CommandBase afterMatchPit() {
-        final CommandBase cmd = new SequentialCommandGroup(lift.resetLift(), intake.retractIntake());
-        cmd.setName("After Match Pit");
-        return cmd;
+        return new SequentialCommandGroup(lift.resetLift(), intake.retractIntake()).withName("After Match Pit");
     }
 
-    public CommandBase systemsCheck() {
-        final CommandBase cmd = new SequentialCommandGroup(intake.intake(), shooter.spinUp(1000),
-                indexer.shootAllBalls(1));
-        cmd.setName("SYSTEMS CHECK");
-        return cmd;
+    public Command systemsCheck() {
+        return sequence("SYSTEMS CHECK", intake.intake(), shooter.spinUp(1000), indexer.shootAllBalls(1));
     }
 
-    public CommandBase endGame() {
-        final CommandBase endGameCmd = new SequentialCommandGroup(intake.deployIntake(), lift.disengageRatchet());
-        endGameCmd.setName("End Game Lift");
-        return endGameCmd;
+    public Command endGame() {
+        return sequence("End Game Lift", intake.deployIntake(), lift.disengageRatchet());
     }
 
-    public CommandBase cancelAll() {
-        final CommandBase cmd = new ParallelCommandGroup(drive.cancel(), indexer.cancel(), intake.cancel(),
-                lift.cancel(), shooter.cancel());
-        cmd.setName("Cancel All");
-        return cmd;
+    public Command cancelAll() {
+        return parallel("Cancel All", drive.cancel(), indexer.cancel(), intake.cancel(), lift.cancel(),
+                shooter.cancel());
     }
 
     public CommandBase camToggle() {
