@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.Direction;
+import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
@@ -36,6 +37,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
+import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Shooter;
 import io.github.oblarg.oblog.Logger;
 
@@ -61,6 +63,8 @@ public class Robot extends CommandRobot {
     final private Drive drive = new Drive(map.getDriveMap());
     final private Intake intake = new Intake(map.getIntakeMap());
     final private Shooter shooter = new Shooter(map.getShooterMap());
+    // ControlPanel(map.getControlPanelMap());
+    final private Lift lift = new Lift(map.getLiftMap());
     final private Indexer indexer = new Indexer(map.getIndexerMap());
     final private Led led = new Led(map.getLEDMap());
 
@@ -84,10 +88,12 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("unloadBallToShooter", indexer.unloadBall());
         SmartDashboard.putData("ShootNoSpinup", indexer.shootBall());
         SmartDashboard.putData("index ball", indexer.indexBall());
+        SmartDashboard.putData("lift brake toggle", lift.toggleBrake());
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
 
         SmartDashboard.putData("cam toggle", camToggle());
+        SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
         SmartDashboard.putData("vision align only", drive.visionAlignDegrees());
         SmartDashboard.putData("vision align", visionAlignment());
         SmartDashboard.putData("ring light on", led.ringLightOn());
@@ -102,6 +108,9 @@ public class Robot extends CommandRobot {
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
+        lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
+        // controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() ->
+        // copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
         DriverStation.getInstance().silenceJoystickConnectionWarning(true);
     }
@@ -169,51 +178,42 @@ public class Robot extends CommandRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    public CommandBase regurgitate() {
-        final CommandBase cmd = new ParallelCommandGroup(intake.discharge(), indexer.discharge());
-        cmd.setName("Regurgitate");
-        return cmd;
+    public Command regurgitate() {
+        return parallel("Regurgitate", intake.discharge(), indexer.discharge());
     }
 
-    public CommandBase shootAuto() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUp(4500), shootNBalls(3), shooter.slowSpin(),
-                drive.drivePastLine());
-        cmd.setName("Shoot Auto");
-        return cmd;
+    public Command shootAuto() {
+        return sequence("Shoot Auto", shooter.spinUp(4500), shootNBalls(3), shooter.slowSpin(), drive.drivePastLine());
     }
 
-    public CommandBase shootNBalls(final int ballAmount) {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.spinUpForDistance(), indexer.shootBall());
-        cmd.setName("Shoot All Balls");
-        return cmd;
+    public Command shootNBalls(final int ballAmount) {
+        return sequence("Shoot All Balls", shooter.spinUpForDistance(), indexer.shootBall());
     }
 
-    public CommandBase maxSpeedNBalls() {
-        final CommandBase cmd = new SequentialCommandGroup(shooter.linearSpinUp(() -> Shooter.MAX_SPEED),
-                indexer.shootBall());
-        cmd.setName("Shoot All Balls");
-        return cmd;
+    public Command maxSpeedNBalls() {
+        return sequence("Shoot All Balls", shooter.linearSpinUp(() -> Shooter.MAX_SPEED), indexer.shootBall());
     }
 
-    public CommandBase shootAtSpeed(final int ballAmount, double shooterSpeed) {
-        final CommandBase cmd = CommandUtils.repeat(ballAmount,
-                new SequentialCommandGroup(shooter.linearSpinUp(() -> shooterSpeed), indexer.shootBall()));
-        cmd.setName("Shoot Balls At Speed");
-        return cmd;
+    public Command shootAtSpeed(final int ballAmount, double shooterSpeed) {
+        return CommandUtils.repeat(ballAmount,
+                sequence("Shoot Balls At Speed", shooter.linearSpinUp(() -> shooterSpeed), indexer.shootBall()));
     }
 
-    public CommandBase systemsCheck() {
-        final CommandBase cmd = new SequentialCommandGroup(intake.intake(), shooter.spinUp(1000),
-                indexer.shootAllBalls(1));
-        cmd.setName("SYSTEMS CHECK");
-        return cmd;
+    public CommandBase afterMatchPit() {
+        return new SequentialCommandGroup(lift.resetLift(), intake.retractIntake()).withName("After Match Pit");
     }
 
-    public CommandBase cancelAll() {
-        final CommandBase cmd = new ParallelCommandGroup(drive.cancel(), indexer.cancel(), intake.cancel(),
+    public Command systemsCheck() {
+        return sequence("SYSTEMS CHECK", intake.intake(), shooter.spinUp(1000), indexer.shootAllBalls(1));
+    }
+
+    public Command endGame() {
+        return sequence("End Game Lift", intake.deployIntake(), lift.disengageRatchet());
+    }
+
+    public Command cancelAll() {
+        return parallel("Cancel All", drive.cancel(), indexer.cancel(), intake.cancel(), lift.cancel(),
                 shooter.cancel());
-        cmd.setName("Cancel All");
-        return cmd;
     }
 
     public CommandBase camToggle() {
@@ -267,10 +267,17 @@ public class Robot extends CommandRobot {
         driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
-        driveController.getPovButton(Direction.Up).whenActive(shooter.slowSpin());
-        driveController.getPovButton(Direction.Down).whenActive(shooter.stopShooter());
-        driveController.getPovButton(Direction.Right).whenActive(intake.retractIntake());
-        driveController.getPovButton(Direction.Left).whenActive(intake.deployIntake());
+
+        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.indexBall());
+        // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
+        // copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
+        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.slowSpin());
+        final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
+        endTrigger.whenActive(endGame());
+        copilotController.getButton(Button.kY).whenHeld(regurgitate());
+        copilotController.getButton(Button.kBack).whenPressed(cancelAll());
+        // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
 
         copilotController.getButton(Button.kX).whileHeld(shootAtSpeed(5, 4600)).whenReleased(shooter.slowSpin());
         copilotController.getButton(Button.kB).whileHeld(shootAtSpeed(5, 4350)).whenReleased(shooter.slowSpin());

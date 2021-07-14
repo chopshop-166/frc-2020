@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.util.Units;
 public class FrancoisMap extends RobotMap {
     // controlPanel is defined here due to the gyro being plugged into this speed
     // controller as well as the control panel motor
-    WPI_TalonSRX gyro = new WPI_TalonSRX(43);
+    WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
 
     @Override
     public DriveKinematics getDriveMap() {
@@ -85,7 +85,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public GyroBase getGyro() {
-                return new PigeonGyro(gyro);
+                return new PigeonGyro(controlPanel);
             }
         };
     };
@@ -133,12 +133,23 @@ public class FrancoisMap extends RobotMap {
     }
 
     @Override
+    public ControlPanelMap getControlPanelMap() {
+        return new ControlPanelMap() {
+            @Override
+            public SmartSpeedController spinner() {
+                setBAGCurrentLimits(controlPanel);
+                return SmartSpeedController.wrap(controlPanel);
+            }
+        };
+    }
+
+    @Override
     public IndexMap getIndexerMap() {
         return new IndexMap() {
             AnalogTrigger topPierreIR = new AnalogTrigger(0);
             AnalogTrigger bottomPierreIR = new AnalogTrigger(1);
-            // AnalogTrigger backIntakeIR = new AnalogTrigger(2);
-            // AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
+            AnalogTrigger backIntakeIR = new AnalogTrigger(2);
+            AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
 
             @Override
             public SmartSpeedController pierreMotor() {
@@ -149,7 +160,6 @@ public class FrancoisMap extends RobotMap {
 
             public SmartSpeedController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
-                singulator.setInverted(true);
                 setBAGCurrentLimits(singulator);
                 return SmartSpeedController.wrap(singulator);
             }
@@ -166,13 +176,62 @@ public class FrancoisMap extends RobotMap {
                 return bottomPierreIR::getTriggerState;
             }
 
-            /*
-             * backIntakeIR.setLimitsVoltage(1.2, 2.6); return
-             * backIntakeIR::getTriggerState; }
-             * 
-             * { frontIntakeIR.setLimitsVoltage(1.2, 1.4); return
-             * frontIntakeIR::getTriggerState; }
-             */
+            public BooleanSupplier backIntakeIR() {
+                backIntakeIR.setLimitsVoltage(1.2, 2.6);
+                return backIntakeIR::getTriggerState;
+            }
+
+            public BooleanSupplier frontIntakeIR() {
+                frontIntakeIR.setLimitsVoltage(1.2, 1.4);
+                return frontIntakeIR::getTriggerState;
+            }
+        };
+
+    }
+
+    @Override
+    public LiftMap getLiftMap() {
+        return new LiftMap() {
+            CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
+            CANSparkMax leader = new CANSparkMax(28, MotorType.kBrushless);
+            PIDSparkMax pidLeader = new PIDSparkMax(leader);
+            WDigitalInput upperLimit = new WDigitalInput(0);
+            WDigitalInput lowerLimit = new WDigitalInput(1);
+            double distancePerRev = (1.0 / 81.0) * (2.551 * Math.PI);
+
+            @Override
+            public PIDSparkMax elevator() {
+                leader.setInverted(true);
+                follower.follow(leader, true);
+                leader.setIdleMode(IdleMode.kBrake);
+                follower.setIdleMode(IdleMode.kBrake);
+
+                return pidLeader;
+            }
+
+            @Override
+            public ISolenoid liftBrake() {
+                WSolenoid brake = new WSolenoid(0);
+                return brake;
+            }
+
+            @Override
+            public BooleanSupplier upperLiftLimit() {
+                upperLimit.setInverted(true);
+                return upperLimit::get;
+            }
+
+            @Override
+            public BooleanSupplier lowerLiftLimit() {
+                lowerLimit.setInverted(true);
+                return lowerLimit::get;
+            }
+
+            @Override
+            public IEncoder getLiftEncoder() {
+                pidLeader.getEncoder().setPositionScaleFactor(distancePerRev);
+                return pidLeader.getEncoder();
+            }
         };
     }
 
