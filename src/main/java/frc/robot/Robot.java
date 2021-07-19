@@ -16,6 +16,7 @@ import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -113,6 +114,8 @@ public class Robot extends CommandRobot {
         // copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
         DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+
+        CameraServer.getInstance().startAutomaticCapture();
     }
 
     /**
@@ -257,7 +260,7 @@ public class Robot extends CommandRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.intake());
+        driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         // driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.slowSpin());
         driveController.getButton(Button.kB).whileHeld(shootAtSpeed(5, 4100));
         driveController.getButton(Button.kX).whileHeld(led.ringLightOn().andThen(visionAlignment()))
@@ -268,19 +271,16 @@ public class Robot extends CommandRobot {
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
 
-        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.indexBall());
+        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
         // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         // copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
-        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.slowSpin());
+        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.stopShooter());
+        copilotController.getButton(Button.kB).whileHeld(shootNBalls(5));
         final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.whenActive(endGame());
         copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
         // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
-
-        copilotController.getButton(Button.kX).whileHeld(shootAtSpeed(5, 4600)).whenReleased(shooter.slowSpin());
-        copilotController.getButton(Button.kB).whileHeld(shootAtSpeed(5, 4350)).whenReleased(shooter.slowSpin());
-        copilotController.getButton(Button.kA).whileHeld(shootAtSpeed(5, 4100));
     }
 }
