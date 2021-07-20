@@ -11,7 +11,6 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.chopshop166.chopshoplib.controls.ButtonXboxController.Direction;
 import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
 import edu.wpi.cscore.UsbCamera;
@@ -30,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.maps.RobotMap;

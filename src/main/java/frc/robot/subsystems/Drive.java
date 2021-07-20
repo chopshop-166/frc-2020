@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -38,16 +37,16 @@ import io.github.oblarg.oblog.annotations.Log;
 /**
  * 1) What does it do? Makes motors turn a certain amount depending on how much
  * an axis is triggered
- * 
+ *
  * 2) What modes does it have? Not at the moment
- * 
+ *
  * 3) What interactions does it have with other subsystems? Does not have any
  * interactions with other systems other than the space it shares on the robot
- * 
+ *
  * 4) How is it triggered -> OI? No triggers runs by default
- * 
+ *
  * 5) Does it store any state? Right and Left motor groups.
- * 
+ *
  * 6) Sensors? Encoders, Gyro
  */
 
@@ -99,7 +98,7 @@ public class Drive extends SubsystemBase implements Loggable {
     /**
      * Gets the left and right motor(s) from robot map and then puts them into a
      * differential drive
-     * 
+     *
      * @param map represents the drive map
      */
     public Drive(final DriveKinematics map) {
@@ -178,7 +177,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
     /**
      * Maps the drive axises
-     * 
+     *
      * @param forward defines the forward direction
      * @param turn    defines the direction to turn
      * @return returns a run command so drive will stay running as long as drive is
@@ -256,7 +255,6 @@ public class Drive extends SubsystemBase implements Loggable {
             {
                 addRequirements(Drive.this);
             }
-            int i;
             PersistenceCheck check = new PersistenceCheck(25, () -> {
                 return (pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false));
 
@@ -275,7 +273,6 @@ public class Drive extends SubsystemBase implements Loggable {
                 turning += (turning < 0) ? -ALIGN_PID_FEED : ALIGN_PID_FEED;
                 SmartDashboard.putNumber("pid Out", turning);
                 driveTrain.arcadeDrive(0, turning);
-                i++;
             }
 
             @Override
