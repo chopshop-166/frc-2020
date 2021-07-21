@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GyroBase;
@@ -109,11 +110,13 @@ public class Drive extends SubsystemBase implements Loggable {
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
         driveTrain.setRightSideInverted(false);
         trajectoryKinematics = map.getKinematics();
-        pid = new PIDController(0.005, 0.0, 0.0);
         rightEncoder = rightMotorGroup.getEncoder();
         leftEncoder = leftMotorGroup.getEncoder();
         odometry = new DifferentialDriveOdometry(getRotation());
         SmartDashboard.putData("Field", field);
+
+        // Configure PID parameters
+        pid = new PIDController(0.005, 0.0, 0.0);
     }
 
     public Rotation2d getRotation() {
@@ -250,25 +253,25 @@ public class Drive extends SubsystemBase implements Loggable {
         return cmd;
     }
 
-    public CommandBase visionAlignDegrees() {
+    // This is meant to be called in a whileHeld()
+    // It will continously try to align the robot to the vision target
+    public CommandBase visionAlign() {
         final CommandBase cmd = new CommandBase() {
             {
                 addRequirements(Drive.this);
             }
-            PersistenceCheck check = new PersistenceCheck(25, () -> {
-                return (pid.atSetpoint() || !SmartDashboard.getBoolean("Sees Target", false));
-
-            });
 
             @Override
             public void initialize() {
                 resetGyro();
                 pid.setSetpoint(0);
-                pid.setTolerance(5);
+                pid.setTolerance(2.5);
             }
 
             @Override
             public void execute() {
+                // really only want to update if we have new frame information
+
                 double turning = pid.calculate(-SmartDashboard.getNumber("Angle Offset", 0));
                 turning += (turning < 0) ? -ALIGN_PID_FEED : ALIGN_PID_FEED;
                 SmartDashboard.putNumber("pid Out", turning);
@@ -277,7 +280,7 @@ public class Drive extends SubsystemBase implements Loggable {
 
             @Override
             public boolean isFinished() {
-                return check.getAsBoolean();
+                return false;
             }
 
             @Override
@@ -286,7 +289,65 @@ public class Drive extends SubsystemBase implements Loggable {
             }
         };
 
-        cmd.setName("Turn Degrees");
+        cmd.setName("Vision Align");
+
+        return cmd;
+
+    }
+
+    // This is meant to be called in a whileHeld()
+    // It will continously try to align the robot to the vision target
+    public CommandBase visionAlignDegrees() {
+        final CommandBase cmd = new CommandBase() {
+            {
+                addRequirements(Drive.this);
+            }
+            double gyroAngle = 0;
+            NetworkTableEntry angleEntry = SmartDashboard.getEntry("LatestMeasure");
+            long lastUpdate = 0;
+
+            @Override
+            public void initialize() {
+                gyroAngle = gyro.getAngle();
+                pid.setSetpoint(0);
+                pid.setTolerance(2.5);
+            }
+
+            @Override
+            public void execute() {
+                // Only update our target if there's new information since last time
+                if (lastUpdate > angleEntry.getLastChange()) {
+                    // Here we update the stored gyro angle based on the new camera info
+                    // First get the current gyro angle
+                    gyroAngle = gyro.getAngle();
+                    // Then add the current angle offset from the camera
+                    gyroAngle += angleEntry.getDouble(0);
+                    lastUpdate = angleEntry.getLastChange();
+                }
+
+                // Calculate the new output info
+                double turning = pid.calculate(gyroAngle - gyro.getAngle());
+
+                // Add a small factor to overcome stiction
+                turning += (turning < 0) ? -ALIGN_PID_FEED : ALIGN_PID_FEED;
+
+                // Put the output on shuffleboard so we can tune this
+                SmartDashboard.putNumber("PID Out", turning);
+                driveTrain.arcadeDrive(0, turning);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            public void end(final boolean interrupted) {
+                driveTrain.stopMotor();
+            }
+        };
+
+        cmd.setName("Vision Align Degrees");
 
         return cmd;
 
