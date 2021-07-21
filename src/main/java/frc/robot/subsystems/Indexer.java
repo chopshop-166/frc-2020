@@ -94,7 +94,7 @@ public class Indexer extends SubsystemBase implements Loggable {
         }, (interrupted) -> {
             singulator.set(0);
         }, () -> {
-            return bottomPierreIR.getAsBoolean();
+            return backIntakeIR.getAsBoolean();
         }, this);
         cmd.setName("Run Singulator");
         return cmd;
