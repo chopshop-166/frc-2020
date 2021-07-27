@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Indexer;
@@ -91,29 +90,31 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("Deploy intake", intake.deployIntake());
         SmartDashboard.putData("Retract intake", intake.retractIntake());
 
-        SmartDashboard.putData("cam toggle", camToggle());
         SmartDashboard.putData("After Match Lift Sequence", afterMatchPit());
-        SmartDashboard.putData("vision align only", drive.visionAlignDegrees());
-        SmartDashboard.putData("vision align", visionAlignment());
-        SmartDashboard.putData("ring light on", led.ringLightOn());
-        SmartDashboard.putData("ring light off", led.ringLightOff());
+        SmartDashboard.putData("vision Align Only", drive.visionAlign());
+        SmartDashboard.putData("Vision Align", visionAlignment());
+        SmartDashboard.putData("Vision Align Degrees", visionAlignmentDegrees());
+        SmartDashboard.putData("Enable Targeting", enableTargeting());
+        SmartDashboard.putData("Disable Targeting", disableTargeting());
 
-        autoChooser.setDefaultOption("Test", drive.autonomousCommand("Test"));
-        autoChooser.addOption("Slolom", drive.autonomousCommand("Slolom"));
-        autoChooser.addOption("Barrel", drive.autonomousCommand("Barrel"));
-        autoChooser.addOption("Bounce", drive.autonomousCommand("Bounce1").andThen(drive.autonomousCommand("Bounce2"),
-                drive.autonomousCommand("Bounce3"), drive.autonomousCommand("Bounce4")));
-
+        // Add autonomous options to shuffleboard
+        autoChooser.setDefaultOption("Auto", shootAuto());
+        autoChooser.addOption("Back Off Line", drive.drivePastLine());
         Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
 
+        // Configure subsystem default commands
         drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
         // controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() ->
         // copilotController.getX(Hand.kLeft)));
         indexer.setDefaultCommand(indexer.indexBall());
+
+        // Disable joystick connection warnings
         DriverStation.getInstance().silenceJoystickConnectionWarning(true);
 
-        CameraServer.getInstance().startAutomaticCapture();
+        // Configure Intake camera to display on shuffleboard
+        camera0 = CameraServer.getInstance().startAutomaticCapture();
+        Shuffleboard.getTab("Camera").add("USB Camera 0", camera0);
     }
 
     /**
@@ -217,38 +218,26 @@ public class Robot extends CommandRobot {
                 shooter.cancel());
     }
 
-    public CommandBase camToggle() {
-        final CommandBase camTogglecmd = new StartEndCommand(() -> {
-            SmartDashboard.putBoolean("Is Shooting", true);
-        }, () -> {
-            SmartDashboard.putBoolean("Is Shooting", false);
-        });
-        camTogglecmd.setName("camToggle");
-        return camTogglecmd;
-    }
-
     public CommandBase enableTargeting() {
-        final CommandBase cmd = new InstantCommand(() -> {
+        return new InstantCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", true);
-
-        });
-        cmd.setName("Targeting On");
-        return cmd;
+        }).andThen(led.ringLightOn()).withName("Enable Targeting");
     }
 
     public CommandBase disableTargeting() {
-        final CommandBase cmd = new InstantCommand(() -> {
+        return new InstantCommand(() -> {
             SmartDashboard.putBoolean("Is Shooting", false);
-        });
-        cmd.setName("Targeting Off");
-        return cmd;
+        }).andThen(led.ringLightOff()).withName("Disable Targeting");
     }
 
     public CommandBase visionAlignment() {
-        final CommandBase cmd = new SequentialCommandGroup(enableTargeting(), led.ringLightOn(),
-                drive.visionAlignDegrees());
-        cmd.setName("Vision Alignment");
-        return cmd;
+        return new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlign())
+                .withName("Vision Alignment");
+    }
+
+    public CommandBase visionAlignmentDegrees() {
+        return new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlignDegrees())
+                .withName("Vision Alignment");
     }
 
     /**
@@ -258,27 +247,45 @@ public class Robot extends CommandRobot {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
-        // driveController.getButton(Button.kB).whileHeld(shootNBalls(5)).whenReleased(shooter.slowSpin());
-        driveController.getButton(Button.kB).whileHeld(shootAtSpeed(5, 4100));
-        driveController.getButton(Button.kX).whileHeld(led.ringLightOn().andThen(visionAlignment()))
-                .whenReleased(led.ringLightOff());
+        // Driver Controls
+
+        // Intake (Disabled for driver)
+        // driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+
+        // Shooter Controls
+        driveController.getButton(Button.kX).whileHeld(shootAtSpeed(5, 4100)).whenReleased(shooter.stopShooter());
+        driveController.getButton(Button.kA).whileHeld(visionAlignment()).whenReleased(disableTargeting());
+        driveController.getButton(Button.kB).whileHeld(visionAlignmentDegrees()).whenReleased(disableTargeting());
+
+        // Drive Controls
         driveController.getButton(Button.kY).toggleWhenActive(
                 drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
-        driveController.getButton(Button.kBack).whenPressed(cancelAll());
         driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
         driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
 
+        // Misc
+        driveController.getButton(Button.kBack).whenPressed(cancelAll());
+
+        // CoPilot Controls
+
+        // Intake
         copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+
+        // Control Panel
         // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
         // copilotController.getButton(Button.kX).whenPressed(controlPanel.stageThreeRotation());
+        // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
+
+        // Shooter Controls
         copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
-        copilotController.getButton(Button.kBumperLeft).whenHeld(shooter.stopShooter());
-        copilotController.getButton(Button.kB).whileHeld(shootNBalls(5));
+        copilotController.getButton(Button.kBumperLeft).whenPressed(shooter.stopShooter());
+
+        // Elevator Controls
         final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
         endTrigger.whenActive(endGame());
+
+        // Misc
         copilotController.getButton(Button.kY).whenHeld(regurgitate());
         copilotController.getButton(Button.kBack).whenPressed(cancelAll());
-        // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
     }
 }
