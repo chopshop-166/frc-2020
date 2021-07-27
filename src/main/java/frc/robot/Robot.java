@@ -114,7 +114,7 @@ public class Robot extends CommandRobot {
 
         // Configure Intake camera to display on shuffleboard
         camera0 = CameraServer.getInstance().startAutomaticCapture();
-        Shuffleboard.getTab("Camera").add("Camera", camera0);
+        Shuffleboard.getTab("Camera").add("USB Camera 0", camera0);
     }
 
     /**

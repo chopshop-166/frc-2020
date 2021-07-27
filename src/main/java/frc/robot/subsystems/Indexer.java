@@ -114,7 +114,7 @@ public class Indexer extends SubsystemBase implements Loggable {
             }
             // This checks to see if a ball is at the top of Pierre and doesn't not run
             // because sometimes it will
-            if ((bottomPierreIR.getAsBoolean() && !topPierreIR.getAsBoolean() && backIntakeIR.getAsBoolean())) {
+            if ((!topPierreIR.getAsBoolean() && backIntakeIR.getAsBoolean())) {
                 pierreMotor.set(PIERRE_INDEX_SPEED);
                 singulator.set(SINGULATOR_MOTOR_SPEED);
             }
