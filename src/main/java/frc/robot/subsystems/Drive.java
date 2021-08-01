@@ -116,7 +116,7 @@ public class Drive extends SubsystemBase implements Loggable {
         SmartDashboard.putData("Field", field);
 
         // Configure PID parameters
-        pid = new PIDController(0.0082, 0.0, 0.001);
+        pid = new PIDController(0.0085, 0.0, 0.001);
     }
 
     public Rotation2d getRotation() {
@@ -175,7 +175,7 @@ public class Drive extends SubsystemBase implements Loggable {
     }
 
     public CommandBase drivePastLine() {
-        return driveDistance(40, 0.5);
+        return driveDistance(2, 0.5);
     }
 
     /**

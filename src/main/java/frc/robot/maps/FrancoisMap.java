@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 
 @RobotMapFor("Francois")
@@ -166,7 +167,7 @@ public class FrancoisMap extends RobotMap {
 
             // TODO Find values for voltage limits
             public BooleanSupplier topPierreIR() {
-                topPierreIR.setLimitsVoltage(1.2, 1.4);
+                topPierreIR.setLimitsVoltage(1.1, 2);
                 return topPierreIR::getTriggerState;
             }
 
@@ -218,12 +219,14 @@ public class FrancoisMap extends RobotMap {
             @Override
             public BooleanSupplier upperLiftLimit() {
                 upperLimit.setInverted(true);
+                SmartDashboard.putData(upperLimit);
                 return upperLimit::get;
             }
 
             @Override
             public BooleanSupplier lowerLiftLimit() {
                 lowerLimit.setInverted(true);
+                SmartDashboard.putData(lowerLimit);
                 return lowerLimit::get;
             }
 

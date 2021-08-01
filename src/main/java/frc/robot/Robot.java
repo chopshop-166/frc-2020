@@ -185,7 +185,8 @@ public class Robot extends CommandRobot {
     }
 
     public Command shootAuto() {
-        return sequence("Shoot Auto", shooter.spinUp(4500), shootNBalls(3), shooter.slowSpin(), drive.drivePastLine());
+        return sequence("Shoot Auto", shooter.spinUp(4500), indexer.shootBall(), indexer.shootBall(),
+                indexer.shootBall(), shooter.stopShooter(), drive.drivePastLine());
     }
 
     public Command shootNBalls(final int ballAmount) {
@@ -231,8 +232,7 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase visionAlignment() {
-        return new SequentialCommandGroup(enableTargeting(), led.ringLightOn(), drive.visionAlign())
-                .withName("Vision Alignment");
+        return new SequentialCommandGroup(enableTargeting(), drive.visionAlign()).withName("Vision Alignment");
     }
 
     public CommandBase visionAlignmentDegrees() {
@@ -253,9 +253,12 @@ public class Robot extends CommandRobot {
         // driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
 
         // Shooter Controls
-        driveController.getButton(Button.kX).whileHeld(shootAtSpeed(5, 4100)).whenReleased(shooter.stopShooter());
+        driveController.getButton(Button.kX).whileHeld(shootAtSpeed(5, Shooter.SHOOTER_SPEED))
+                .whenReleased(shooter.stopShooter());
         driveController.getButton(Button.kA).whileHeld(visionAlignment()).whenReleased(disableTargeting());
-        driveController.getButton(Button.kB).whileHeld(visionAlignmentDegrees()).whenReleased(disableTargeting());
+        // driveController.getButton(Button.kB).whileHeld(visionAlignmentDegrees()).whenReleased(disableTargeting());
+        driveController.getButton(Button.kB).whileHeld(shootAtSpeed(5, Shooter.TRENCH_SPEED))
+                .whenReleased(shooter.stopShooter());
 
         // Drive Controls
         driveController.getButton(Button.kY).toggleWhenActive(
@@ -277,7 +280,7 @@ public class Robot extends CommandRobot {
         // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
 
         // Shooter Controls
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(4400));
+        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(Shooter.SHOOTER_SPEED));
         copilotController.getButton(Button.kBumperLeft).whenPressed(shooter.stopShooter());
 
         // Elevator Controls

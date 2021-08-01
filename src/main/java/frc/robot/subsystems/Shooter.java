@@ -41,6 +41,9 @@ public class Shooter extends SubsystemBase implements Loggable {
     @Log
     public double testSpeed = INITIATION_LINE_SPEED;
     private final static double INITIATION_LINE_SPEED = 4400;
+    public final static double TRENCH_SPEED = 5000;
+    private final static double TESTING_SPEED = 2500;
+    public final static double SHOOTER_SPEED = INITIATION_LINE_SPEED;
 
     // inches/second/second
     public final static double GRAVITY = 386.2205;
@@ -112,8 +115,8 @@ public class Shooter extends SubsystemBase implements Loggable {
             {
                 addRequirements(Shooter.this);
             }
-            PersistenceCheck check = new PersistenceCheck(5, () -> {
-                return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SPEED)) <= 100.0);
+            PersistenceCheck check = new PersistenceCheck(3, () -> {
+                return (Math.abs(shooterEncoder.getRate() - Math.min(speed.getAsDouble(), MAX_SPEED)) <= 200.0);
             });
 
             @Override
