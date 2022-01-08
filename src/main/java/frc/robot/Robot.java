@@ -7,27 +7,22 @@
 
 package frc.robot;
 
-import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
-import com.chopshop166.chopshoplib.commands.CommandUtils;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.chopshop166.chopshoplib.triggers.XboxTrigger;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.maps.RobotMap;
@@ -48,7 +43,6 @@ import io.github.oblarg.oblog.Logger;
  */
 public class Robot extends CommandRobot {
 
-    private Command autonomousCommand;
     final private ButtonXboxController driveController = new ButtonXboxController(1);
     final private ButtonXboxController copilotController = new ButtonXboxController(0);
 
@@ -66,11 +60,15 @@ public class Robot extends CommandRobot {
     final private Indexer indexer = new Indexer(map.getIndexerMap());
     final private Led led = new Led(map.getLEDMap());
 
-    final private SendableChooser<Command> autoChooser = new SendableChooser<>();
-
     UsbCamera camera0;
     VideoSink videoSink;
     boolean camera0Active = true;
+
+    @Autonomous(name = "Auto", defaultAuto = true)
+    public CommandBase shootAutoCmd = shootAuto();
+
+    @Autonomous(name = "Back Off Line")
+    public CommandBase backOffLine = drive.drivePastLine();
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -97,23 +95,11 @@ public class Robot extends CommandRobot {
         SmartDashboard.putData("Enable Targeting", enableTargeting());
         SmartDashboard.putData("Disable Targeting", disableTargeting());
 
-        // Add autonomous options to shuffleboard
-        autoChooser.setDefaultOption("Auto", shootAuto());
-        autoChooser.addOption("Back Off Line", drive.drivePastLine());
-        Shuffleboard.getTab("Shuffleboard").add("Autonomous", autoChooser);
-
-        // Configure subsystem default commands
-        drive.setDefaultCommand(drive.drive(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
-        lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
-        // controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() ->
-        // copilotController.getX(Hand.kLeft)));
-        indexer.setDefaultCommand(indexer.indexBall());
-
         // Disable joystick connection warnings
-        DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+        DriverStation.silenceJoystickConnectionWarning(true);
 
         // Configure Intake camera to display on shuffleboard
-        camera0 = CameraServer.getInstance().startAutomaticCapture();
+        camera0 = CameraServer.startAutomaticCapture();
         Shuffleboard.getTab("Camera").add("USB Camera 0", camera0);
     }
 
@@ -135,56 +121,16 @@ public class Robot extends CommandRobot {
         // and running subsystem periodic() methods. This must be called from the
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
-        CommandScheduler.getInstance().run();
+        super.robotPeriodic();
         Logger.updateEntries();
 
-    }
-
-    /**
-     * This function is called once each time the robot enters Disabled mode.
-     */
-    @Override
-    public void disabledInit() {
-        RobotUtils.resetAll(this);
-        CommandScheduler.getInstance().cancelAll();
-    }
-
-    /**
-     * This autonomous runs the autonomous command selected by your
-     * {@link RobotContainer} class.
-     */
-    @Override
-    public void autonomousInit() {
-        autonomousCommand = autoChooser.getSelected();
-
-        // schedule the autonomous command (example)
-        if (autonomousCommand != null) {
-            autonomousCommand.schedule();
-        }
-    }
-
-    @Override
-    public void teleopInit() {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
-        if (autonomousCommand != null) {
-            autonomousCommand.cancel();
-        }
-    }
-
-    @Override
-    public void testInit() {
-        // Cancels all running commands at the start of test mode.
-        CommandScheduler.getInstance().cancelAll();
     }
 
     public Command regurgitate() {
         return parallel("Regurgitate", intake.discharge(), indexer.discharge());
     }
 
-    public Command shootAuto() {
+    public CommandBase shootAuto() {
         return sequence("Shoot Auto", shooter.spinUp(4500), indexer.shootBall(), indexer.shootBall(),
                 indexer.shootBall(), shooter.stopShooter(), drive.drivePastLine());
     }
@@ -198,7 +144,7 @@ public class Robot extends CommandRobot {
     }
 
     public Command shootAtSpeed(final int ballAmount, double shooterSpeed) {
-        return CommandUtils.repeat(ballAmount,
+        return repeat(ballAmount,
                 sequence("Shoot Balls At Speed", shooter.linearSpinUp(() -> shooterSpeed), indexer.shootBall()));
     }
 
@@ -246,33 +192,33 @@ public class Robot extends CommandRobot {
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    private void configureButtonBindings() {
+    public void configureButtonBindings() {
         // Driver Controls
 
         // Intake (Disabled for driver)
         // driveController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
 
         // Shooter Controls
-        driveController.getButton(Button.kX).whileHeld(shootAtSpeed(5, Shooter.SHOOTER_SPEED))
+        driveController.x().whileHeld(shootAtSpeed(5, Shooter.SHOOTER_SPEED))
                 .whenReleased(shooter.stopShooter());
-        driveController.getButton(Button.kA).whileHeld(visionAlignment()).whenReleased(disableTargeting());
+        driveController.a().whileHeld(visionAlignment()).whenReleased(disableTargeting());
         // driveController.getButton(Button.kB).whileHeld(visionAlignmentDegrees()).whenReleased(disableTargeting());
-        driveController.getButton(Button.kB).whileHeld(shootAtSpeed(5, Shooter.TRENCH_SPEED))
+        driveController.b().whileHeld(shootAtSpeed(5, Shooter.TRENCH_SPEED))
                 .whenReleased(shooter.stopShooter());
 
         // Drive Controls
-        driveController.getButton(Button.kY).toggleWhenActive(
-                drive.drive(() -> -driveController.getTriggers(), () -> driveController.getX(Hand.kLeft)));
-        driveController.getButton(Button.kBumperRight).whenHeld(drive.slowTurn(true));
-        driveController.getButton(Button.kBumperLeft).whenHeld(drive.slowTurn(false));
+        driveController.y().toggleWhenActive(
+                drive.drive(() -> -driveController.getTriggers(), driveController::getLeftX));
+        driveController.rbumper().whenHeld(drive.slowTurn(true));
+        driveController.lbumper().whenHeld(drive.slowTurn(false));
 
         // Misc
-        driveController.getButton(Button.kBack).whenPressed(cancelAll());
+        driveController.back().whenPressed(cancelAll());
 
         // CoPilot Controls
 
         // Intake
-        copilotController.getButton(Button.kA).whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
+        copilotController.a().whenHeld(intake.intake()).whileHeld(indexer.intakeToPierre());
 
         // Control Panel
         // copilotController.getButton(Button.kB).whenPressed(controlPanel.stageTwoRotation());
@@ -280,15 +226,30 @@ public class Robot extends CommandRobot {
         // copilotController.getButton(Button.kStart).whenHeld(controlPanel.spinForwards());
 
         // Shooter Controls
-        copilotController.getButton(Button.kBumperRight).whenPressed(shooter.spinUp(Shooter.SHOOTER_SPEED));
-        copilotController.getButton(Button.kBumperLeft).whenPressed(shooter.stopShooter());
+        copilotController.rbumper().whenPressed(shooter.spinUp(Shooter.SHOOTER_SPEED));
+        copilotController.lbumper().whenPressed(shooter.stopShooter());
 
         // Elevator Controls
-        final XboxTrigger endTrigger = new XboxTrigger(copilotController, Hand.kRight);
-        endTrigger.whenActive(endGame());
+        copilotController.getAxis(Axis.kRightTrigger).whenActive(endGame());
 
         // Misc
-        copilotController.getButton(Button.kY).whenHeld(regurgitate());
-        copilotController.getButton(Button.kBack).whenPressed(cancelAll());
+        copilotController.y().whenHeld(regurgitate());
+        copilotController.back().whenPressed(cancelAll());
+    }
+
+    @Override
+    public void populateDashboard() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setDefaultCommands() {
+        drive.setDefaultCommand(drive.drive(driveController::getTriggers, driveController::getLeftX));
+        lift.setDefaultCommand(lift.moveLift(() -> -copilotController.getTriggers()));
+        // controlPanel.setDefaultCommand(controlPanel.spinControlPanel(() ->
+        // copilotController.getX(Hand.kLeft)));
+        indexer.setDefaultCommand(indexer.indexBall());
+
     }
 }

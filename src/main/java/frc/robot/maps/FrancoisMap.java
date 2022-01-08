@@ -2,14 +2,17 @@ package frc.robot.maps;
 
 import java.util.function.BooleanSupplier;
 
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
-import com.chopshop166.chopshoplib.outputs.ISolenoid;
+import com.chopshop166.chopshoplib.motors.Modifier;
+import com.chopshop166.chopshoplib.motors.PIDSparkMax;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import com.chopshop166.chopshoplib.outputs.ModSpeedController;
-import com.chopshop166.chopshoplib.outputs.Modifier;
-import com.chopshop166.chopshoplib.outputs.PIDSparkMax;
 import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
 import com.chopshop166.chopshoplib.outputs.WDSolenoid;
-import com.chopshop166.chopshoplib.outputs.WSolenoid;
+import com.chopshop166.chopshoplib.pneumatics.CtreDSolenoid;
+import com.chopshop166.chopshoplib.pneumatics.CtreSolenoid;
+import com.chopshop166.chopshoplib.pneumatics.ISolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
 import com.chopshop166.chopshoplib.sensors.WDigitalInput;
@@ -18,12 +21,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.GyroBase;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Units;
 
 @RobotMapFor("Francois")
 public class FrancoisMap extends RobotMap {
@@ -32,14 +35,14 @@ public class FrancoisMap extends RobotMap {
     WPI_TalonSRX controlPanel = new WPI_TalonSRX(43);
 
     @Override
-    public DriveKinematics getDriveMap() {
+    public DifferentialDriveMap getDriveMap() {
         // 1/12.27 is the gear ratio multiplied by the circumfrence of the wheel
         // multiplied by a correcion factor found by comparing distance traveled to
         // encoder values
         final int averageCount = 15;
         final double distancePerRev = Units.inchesToMeters((1.0 / 12.27) * (6.0 * Math.PI)) * 0.9533562075675308;
 
-        return new RobotMap.DriveKinematics() {
+        return new DifferentialDriveMap() {
             CANSparkMax rightLeader = new CANSparkMax(27, MotorType.kBrushless);
             CANSparkMax rightFollower = new CANSparkMax(22, MotorType.kBrushless);
 
@@ -95,13 +98,13 @@ public class FrancoisMap extends RobotMap {
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
             @Override
-            public SmartSpeedController intake() {
-                return SmartSpeedController.wrap(new WPI_TalonSRX(42));
+            public SmartMotorController intake() {
+                return new SmartMotorController(new WPI_TalonSRX(42));
             }
 
             @Override
-            public WDSolenoid deployIntake() {
-                return new WDSolenoid(1, 2);
+            public CtreDSolenoid deployIntake() {
+                return new CtreDSolenoid(1, 2);
             }
         };
     }
@@ -137,9 +140,9 @@ public class FrancoisMap extends RobotMap {
     public ControlPanelMap getControlPanelMap() {
         return new ControlPanelMap() {
             @Override
-            public SmartSpeedController spinner() {
+            public SmartMotorController spinner() {
                 setBAGCurrentLimits(controlPanel);
-                return SmartSpeedController.wrap(controlPanel);
+                return SmartMotorController.wrap(controlPanel);
             }
         };
     }
@@ -153,16 +156,16 @@ public class FrancoisMap extends RobotMap {
             AnalogTrigger frontIntakeIR = new AnalogTrigger(3);
 
             @Override
-            public SmartSpeedController pierreMotor() {
+            public SmartMotorController pierreMotor() {
                 final WPI_TalonSRX pierreMotor = new WPI_TalonSRX(40);
                 setBAGCurrentLimits(pierreMotor);
-                return SmartSpeedController.wrap(pierreMotor);
+                return new SmartMotorController(pierreMotor);
             }
 
-            public SmartSpeedController singulator() {
+            public SmartMotorController singulator() {
                 final WPI_TalonSRX singulator = new WPI_TalonSRX(41);
                 setBAGCurrentLimits(singulator);
-                return SmartSpeedController.wrap(singulator);
+                return new SmartMotorController(singulator);
             }
 
             // TODO Find values for voltage limits
@@ -212,8 +215,7 @@ public class FrancoisMap extends RobotMap {
 
             @Override
             public ISolenoid liftBrake() {
-                WSolenoid brake = new WSolenoid(0);
-                return brake;
+                return new CtreSolenoid(0);
             }
 
             @Override
@@ -243,7 +245,7 @@ public class FrancoisMap extends RobotMap {
         return new LEDMap() {
 
             public ISolenoid visionRingLightSolenoid() {
-                return new WSolenoid(7);
+                return new CtreSolenoid(7);
             }
 
         };

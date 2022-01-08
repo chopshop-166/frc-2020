@@ -3,21 +3,17 @@ package frc.robot.maps;
 import java.util.function.BooleanSupplier;
 
 import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
-import com.chopshop166.chopshoplib.outputs.IDSolenoid;
-import com.chopshop166.chopshoplib.outputs.ISolenoid;
-import com.chopshop166.chopshoplib.outputs.MockDSolenoid;
-import com.chopshop166.chopshoplib.outputs.MockPIDSpeedController;
-import com.chopshop166.chopshoplib.outputs.MockSolenoid;
-import com.chopshop166.chopshoplib.outputs.MockSpeedController;
-import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
-import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
+import com.chopshop166.chopshoplib.pneumatics.IDSolenoid;
+import com.chopshop166.chopshoplib.pneumatics.ISolenoid;
+import com.chopshop166.chopshoplib.pneumatics.MockDSolenoid;
+import com.chopshop166.chopshoplib.pneumatics.MockSolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.MockDigitalInput;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 
 public class RobotMap {
 
@@ -28,32 +24,14 @@ public class RobotMap {
         talon.enableCurrentLimit(true);
     }
 
-    // DriveKinematics takes trackwidth in meters
-    public static interface DriveKinematics extends DifferentialDriveMap {
-        default DifferentialDriveKinematics getKinematics() {
-            return new DifferentialDriveKinematics(1);
-        }
-    }
-
-    public DriveKinematics getDriveMap() {
-        return new DriveKinematics() {
-
-            @Override
-            public SmartSpeedController getRight() {
-                return new MockSpeedController();
-            }
-
-            @Override
-            public SmartSpeedController getLeft() {
-                return new MockSpeedController();
-            }
-        };
+    public DifferentialDriveMap getDriveMap() {
+        return new DifferentialDriveMap(new SmartMotorController(), new SmartMotorController(), 1.0);
     }
 
     public static class IntakeMap {
 
-        public SmartSpeedController intake() {
-            return new MockSpeedController();
+        public SmartMotorController intake() {
+            return new SmartMotorController();
         }
 
         public IDSolenoid deployIntake() {
@@ -67,8 +45,8 @@ public class RobotMap {
     }
 
     public static class ShooterMap {
-        public PIDSpeedController shooterWheel() {
-            return new MockPIDSpeedController();
+        public SmartMotorController shooterWheel() {
+            return new SmartMotorController();
         }
 
         public double shooterHeight() {
@@ -83,8 +61,8 @@ public class RobotMap {
     }
 
     public static class ControlPanelMap {
-        public SmartSpeedController spinner() {
-            return new MockSpeedController();
+        public SmartMotorController spinner() {
+            return new SmartMotorController();
         }
     }
 
@@ -94,8 +72,8 @@ public class RobotMap {
 
     public static class LiftMap {
 
-        public PIDSpeedController elevator() {
-            return new MockPIDSpeedController();
+        public SmartMotorController elevator() {
+            return new SmartMotorController();
         }
 
         public ISolenoid liftBrake() {
@@ -121,12 +99,12 @@ public class RobotMap {
     }
 
     public static class IndexMap {
-        public SmartSpeedController singulator() {
-            return new MockSpeedController();
+        public SmartMotorController singulator() {
+            return new SmartMotorController();
         }
 
-        public SmartSpeedController pierreMotor() {
-            return new MockSpeedController();
+        public SmartMotorController pierreMotor() {
+            return new SmartMotorController();
         }
 
         public BooleanSupplier frontIntakeIR() {

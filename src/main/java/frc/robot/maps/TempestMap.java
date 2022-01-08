@@ -2,41 +2,32 @@ package frc.robot.maps;
 
 import java.util.function.BooleanSupplier;
 
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
-import com.chopshop166.chopshoplib.outputs.ModSpeedController;
-import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
-import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
-import com.chopshop166.chopshoplib.outputs.SwPIDSpeedController;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
+import com.chopshop166.chopshoplib.motors.SwPIDMotorController;
 import com.chopshop166.chopshoplib.sensors.WEncoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogTrigger;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.motorcontrol.Victor;
 
 @RobotMapFor("Tempest")
 public class TempestMap extends RobotMap {
 
     @Override
-    public DriveKinematics getDriveMap() {
+    public DifferentialDriveMap getDriveMap() {
         final double distancePerPulse = (1.0 / 256.0) * (4.0 * Math.PI);
-        return new DriveKinematics() {
-            @Override
-            public SmartSpeedController getLeft() {
-                return SmartSpeedController.group(new WPI_TalonSRX(4), new WPI_TalonSRX(1));
-            }
 
-            @Override
-            public SmartSpeedController getRight() {
-                final WEncoder encoder = new WEncoder(1, 0);
-                encoder.setDistancePerPulse(distancePerPulse);
+        final WEncoder encoder = new WEncoder(1, 0);
+        encoder.setDistancePerPulse(distancePerPulse);
 
-                return new ModSpeedController(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3)),
-                        encoder);
-            }
-        };
+        return new DifferentialDriveMap(
+                new SmartMotorController(new WPI_TalonSRX(4), new WPI_TalonSRX(1)),
+                new SmartMotorController(encoder, new WPI_TalonSRX(2), new WPI_TalonSRX(3)),
+                1.0);
     }
 
     @Override
@@ -49,9 +40,9 @@ public class TempestMap extends RobotMap {
             AnalogTrigger backIntakeIR = new AnalogTrigger(3);
 
             @Override
-            public SmartSpeedController pierreMotor() {
+            public SmartMotorController pierreMotor() {
                 final Victor pierreMotor = new Victor(5);
-                return SmartSpeedController.wrap(pierreMotor);
+                return new SmartMotorController(pierreMotor);
             }
 
             public BooleanSupplier frontIntakeIR() {
@@ -81,12 +72,12 @@ public class TempestMap extends RobotMap {
     public ShooterMap getShooterMap() {
         return new ShooterMap() {
             @Override
-            public PIDSpeedController shooterWheel() {
+            public SmartMotorController shooterWheel() {
                 final Talon rollerMotor = new Talon(0);
                 final Talon rollerMotor2 = new Talon(1);
-                final SmartSpeedController bothRollers = SmartSpeedController.group(rollerMotor, rollerMotor2);
+                final SmartMotorController bothRollers = new SmartMotorController(rollerMotor, rollerMotor2);
                 final PIDController pid = new PIDController(0, 0, 0);
-                return SwPIDSpeedController.velocity(bothRollers, pid);
+                return SwPIDMotorController.velocity(bothRollers, pid);
             }
         };
     }
@@ -95,9 +86,9 @@ public class TempestMap extends RobotMap {
     public IntakeMap getIntakeMap() {
         return new IntakeMap() {
             @Override
-            public SmartSpeedController intake() {
+            public SmartMotorController intake() {
                 final Victor intakeMotor = new Victor(3);
-                return SmartSpeedController.wrap(intakeMotor);
+                return new SmartMotorController(intakeMotor);
             }
 
         };
