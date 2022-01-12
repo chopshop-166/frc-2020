@@ -6,6 +6,7 @@ import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.Modifier;
 import com.chopshop166.chopshoplib.motors.PIDSparkMax;
+import com.chopshop166.chopshoplib.motors.PIDTalonSRX;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import com.chopshop166.chopshoplib.pneumatics.CtreDSolenoid;
 import com.chopshop166.chopshoplib.pneumatics.CtreSolenoid;
@@ -97,7 +98,7 @@ public class FrancoisMap extends RobotMap {
         return new IntakeMap() {
             @Override
             public SmartMotorController intake() {
-                return new SmartMotorController(new WPI_TalonSRX(42));
+                return new PIDTalonSRX(42);
             }
 
             @Override
