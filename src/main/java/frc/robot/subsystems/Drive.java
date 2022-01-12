@@ -107,7 +107,6 @@ public class Drive extends SmartSubsystemBase implements Loggable {
         leftMotorGroup = map.getLeft();
         gyro = map.getGyro();
         driveTrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
-        driveTrain.setRightSideInverted(false);
         trajectoryKinematics = map.getKinematics();
         rightEncoder = rightMotorGroup.getEncoder();
         leftEncoder = leftMotorGroup.getEncoder();

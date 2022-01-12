@@ -7,25 +7,23 @@ import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.Modifier;
 import com.chopshop166.chopshoplib.motors.PIDSparkMax;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
-import com.chopshop166.chopshoplib.outputs.ModSpeedController;
-import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
-import com.chopshop166.chopshoplib.outputs.WDSolenoid;
 import com.chopshop166.chopshoplib.pneumatics.CtreDSolenoid;
 import com.chopshop166.chopshoplib.pneumatics.CtreSolenoid;
 import com.chopshop166.chopshoplib.pneumatics.ISolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.PigeonGyro;
 import com.chopshop166.chopshoplib.sensors.WDigitalInput;
+import com.chopshop166.chopshoplib.sensors.WGyro;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.AnalogTrigger;
-import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @RobotMapFor("Francois")
@@ -55,7 +53,7 @@ public class FrancoisMap extends RobotMap {
             }
 
             @Override
-            public SmartSpeedController getRight() {
+            public SmartMotorController getRight() {
                 // We invert the motor so the controller outputs are aligned
                 rightLeader.setInverted(true);
                 rightFollower.follow(rightLeader);
@@ -67,12 +65,12 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Right Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-                return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
+                return new SmartMotorController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
             }
 
             @Override
-            public SmartSpeedController getLeft() {
+            public SmartMotorController getLeft() {
                 leftFollower.follow(leftLeader);
 
                 PIDSparkMax sendLeader = new PIDSparkMax(leftLeader);
@@ -82,14 +80,14 @@ public class FrancoisMap extends RobotMap {
                 sendLeader.getEncoder().setVelocityScaleFactor(distancePerRev / 60);
                 SendableRegistry.add(sendLeader.getEncoder(), "Left Drive");
                 SendableRegistry.enableLiveWindow(sendLeader.getEncoder());
-                return new ModSpeedController(sendLeader, sendLeader.getEncoder(),
+                return new SmartMotorController(sendLeader, sendLeader.getEncoder(),
                         Modifier.rollingAverage(averageCount));
 
             }
 
             @Override
-            public GyroBase getGyro() {
-                return new PigeonGyro(controlPanel);
+            public WGyro getGyro() {
+                return new WGyro(new PigeonGyro(controlPanel));
             }
         };
     };
@@ -115,6 +113,7 @@ public class FrancoisMap extends RobotMap {
             CANSparkMax leader = new CANSparkMax(23, MotorType.kBrushless);
             CANSparkMax follower = new CANSparkMax(26, MotorType.kBrushless);
             PIDSparkMax pidLeader = new PIDSparkMax(leader);
+            SparkMaxPIDController pid = pidLeader.getPidController();
 
             @Override
             public PIDSparkMax shooterWheel() {
@@ -123,10 +122,10 @@ public class FrancoisMap extends RobotMap {
                 leader.setInverted(true);
                 follower.follow(leader, true);
 
-                pidLeader.setP(0.00038);
-                pidLeader.setI(0.0000001);
-                pidLeader.setD(0);
-                pidLeader.setF(0.00017);
+                pid.setP(0.00038);
+                pid.setI(0.0000001);
+                pid.setD(0);
+                pid.setFF(0.00017);
 
                 // kp = .00045, kF = .0002
 
@@ -142,7 +141,7 @@ public class FrancoisMap extends RobotMap {
             @Override
             public SmartMotorController spinner() {
                 setBAGCurrentLimits(controlPanel);
-                return SmartMotorController.wrap(controlPanel);
+                return new SmartMotorController(controlPanel);
             }
         };
     }

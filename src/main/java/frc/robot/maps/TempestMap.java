@@ -77,7 +77,7 @@ public class TempestMap extends RobotMap {
                 final Talon rollerMotor2 = new Talon(1);
                 final SmartMotorController bothRollers = new SmartMotorController(rollerMotor, rollerMotor2);
                 final PIDController pid = new PIDController(0, 0, 0);
-                return SwPIDMotorController.velocity(bothRollers, pid);
+                return SwPIDMotorController.velocity(bothRollers, pid, bothRollers.getEncoder());
             }
         };
     }
