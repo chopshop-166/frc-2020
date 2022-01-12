@@ -1,7 +1,8 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.outputs.IDSolenoid;
-import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
+import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
+import com.chopshop166.chopshoplib.pneumatics.IDSolenoid;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -17,9 +18,9 @@ import io.github.oblarg.oblog.annotations.Log;
 // The intake interacts with the Indexer It uses motors, wheels, and pistons connected by belts and bands(The controller) 
 // The intake needs to make sure the balls pass through it and don't get jammed(Member: Motor)
 
-public class Intake extends SubsystemBase implements Loggable {
+public class Intake extends SmartSubsystemBase implements Loggable {
     @Log.SpeedController
-    private final SmartSpeedController intakeMotor;
+    private final SmartMotorController intakeMotor;
     private final IDSolenoid deployPiston;
 
     private static final double INTAKE_MOTOR_SPEED = 0.85;
@@ -75,6 +76,12 @@ public class Intake extends SubsystemBase implements Loggable {
         }, this);
         cmd.setName("Retract Intake");
         return cmd;
+    }
+
+    @Override
+    public void safeState() {
+        intakeMotor.stopMotor();
+        deployPiston.set(Value.kOff);
     }
 
 }

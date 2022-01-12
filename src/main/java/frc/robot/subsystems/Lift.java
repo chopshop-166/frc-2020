@@ -3,8 +3,9 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.outputs.ISolenoid;
-import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
+import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
+import com.chopshop166.chopshoplib.pneumatics.ISolenoid;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.maps.RobotMap;
 import io.github.oblarg.oblog.Loggable;
@@ -37,10 +37,10 @@ import io.github.oblarg.oblog.annotations.Log;
  * Sensors? 1) Encoders 2) Limit Switches
  */
 
-public class Lift extends SubsystemBase implements Loggable {
+public class Lift extends SmartSubsystemBase implements Loggable {
 
     @Log.SpeedController
-    private PIDSpeedController elevatorMotor;
+    private SmartMotorController elevatorMotor;
     private ISolenoid elevatorBrake;
     @Log.Encoder
     private IEncoder liftEncoder;
@@ -210,5 +210,11 @@ public class Lift extends SubsystemBase implements Loggable {
             double getPosition = liftEncoder.getDistance();
             return Math.abs(iPoint.value() - getPosition) <= TOLERANCE_RANGE_INCHES;
         }, this);
+    }
+
+    @Override
+    public void safeState() {
+        elevatorMotor.stopMotor();
+        elevatorBrake.set(false);
     }
 }

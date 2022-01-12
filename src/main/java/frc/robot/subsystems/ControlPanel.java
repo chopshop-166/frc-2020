@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
@@ -25,16 +25,16 @@ public class ControlPanel extends SubsystemBase implements Loggable {
 
     public final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 
-    public final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
-    public final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
-    public final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
-    public final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+    public final Color kBlueTarget = new Color(0.143, 0.427, 0.429);
+    public final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
+    public final Color kRedTarget = new Color(0.561, 0.232, 0.114);
+    public final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
 
     public final ColorMatch m_colorMatcher = new ColorMatch();
     private String gameData;
     private ColorStates color;
     @Log.SpeedController
-    private SmartSpeedController spinnerMotor;
+    private SmartMotorController spinnerMotor;
 
     private static final double SPINNER_MOTOR_SPEED = 0.6;
 
@@ -78,7 +78,7 @@ public class ControlPanel extends SubsystemBase implements Loggable {
     // Mapping the cases to the correct color due to the difference in what vision
     // is reading and what the field is reading
     public ColorStates getTargetColor() {
-        gameData = DriverStation.getInstance().getGameSpecificMessage();
+        gameData = DriverStation.getGameSpecificMessage();
         if (gameData.length() > 0) {
             switch (gameData.charAt(0)) {
                 case 'R':

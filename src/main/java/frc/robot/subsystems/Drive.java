@@ -4,34 +4,33 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.PersistenceCheck;
-import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
+import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
+import com.chopshop166.chopshoplib.maps.DifferentialDriveMap;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.WGyro;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.GyroBase;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.maps.RobotMap.DriveKinematics;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -51,14 +50,14 @@ import io.github.oblarg.oblog.annotations.Log;
  * 6) Sensors? Encoders, Gyro
  */
 
-public class Drive extends SubsystemBase implements Loggable {
+public class Drive extends SmartSubsystemBase implements Loggable {
 
     @Log.SpeedController
-    private final SmartSpeedController rightMotorGroup;
+    private final SmartMotorController rightMotorGroup;
     @Log.SpeedController
-    private final SmartSpeedController leftMotorGroup;
+    private final SmartMotorController leftMotorGroup;
     @Log.Gyro
-    private final GyroBase gyro;
+    private final WGyro gyro;
 
     private final DifferentialDrive driveTrain;
 
@@ -102,7 +101,7 @@ public class Drive extends SubsystemBase implements Loggable {
      *
      * @param map represents the drive map
      */
-    public Drive(final DriveKinematics map) {
+    public Drive(final DifferentialDriveMap map) {
         super();
         rightMotorGroup = map.getRight();
         leftMotorGroup = map.getLeft();
@@ -401,5 +400,10 @@ public class Drive extends SubsystemBase implements Loggable {
 
         cmd.setName(trajectoryName);
         return cmd;
+    }
+
+    @Override
+    public void safeState() {
+        driveTrain.stopMotor();
     }
 }

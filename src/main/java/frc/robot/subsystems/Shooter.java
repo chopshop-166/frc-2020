@@ -3,14 +3,14 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.PersistenceCheck;
-import com.chopshop166.chopshoplib.outputs.PIDSpeedController;
+import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
@@ -25,9 +25,9 @@ import io.github.oblarg.oblog.annotations.Log;
  * or X for shoot all. Does it store any state? No. Sensors? No.
  */
 
-public class Shooter extends SubsystemBase implements Loggable {
+public class Shooter extends SmartSubsystemBase implements Loggable {
     @Log.SpeedController
-    private final PIDSpeedController shooterWheelMotor;
+    private final SmartMotorController shooterWheelMotor;
     @Log.Encoder
     private IEncoder shooterEncoder;
     @Log
@@ -155,6 +155,11 @@ public class Shooter extends SubsystemBase implements Loggable {
         }, this);
         cmd.setName("Mandatory Evacuation");
         return cmd;
+    }
+
+    @Override
+    public void safeState() {
+        shooterWheelMotor.stopMotor();
     }
 
     /*

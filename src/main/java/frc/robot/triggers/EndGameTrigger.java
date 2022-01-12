@@ -9,8 +9,7 @@ public class EndGameTrigger extends Trigger {
     public EndGameTrigger(double matchTime) {
         super(() -> {
             double time = Timer.getMatchTime();
-            DriverStation ds = DriverStation.getInstance();
-            return time >= matchTime || !ds.isFMSAttached();
+            return time >= matchTime || !DriverStation.isFMSAttached();
         });
     }
 

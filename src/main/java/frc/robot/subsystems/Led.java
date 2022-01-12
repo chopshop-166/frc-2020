@@ -1,15 +1,15 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.outputs.ISolenoid;
+import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
+import com.chopshop166.chopshoplib.pneumatics.ISolenoid;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.LEDMap;
 
-public class Led extends SubsystemBase {
+public class Led extends SmartSubsystemBase {
     AddressableLED robotLED;
     ISolenoid ringLight;
     AddressableLEDBuffer robotLedBuffer;
@@ -47,5 +47,10 @@ public class Led extends SubsystemBase {
         }, this);
         cmd.setName("Vision Stream");
         return cmd;
+    }
+
+    @Override
+    public void safeState() {
+        // None
     }
 }

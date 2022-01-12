@@ -2,14 +2,13 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 
-import com.chopshop166.chopshoplib.commands.CommandUtils;
-import com.chopshop166.chopshoplib.outputs.SmartSpeedController;
+import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
+import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.maps.RobotMap.IndexMap;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -26,12 +25,11 @@ import io.github.oblarg.oblog.annotations.Log;
  * balls being intaked
  * 
  */
-
-public class Indexer extends SubsystemBase implements Loggable {
+public class Indexer extends SmartSubsystemBase implements Loggable {
     @Log.SpeedController
-    final SmartSpeedController singulator;
+    final SmartMotorController singulator;
     @Log.SpeedController
-    final SmartSpeedController pierreMotor;
+    final SmartMotorController pierreMotor;
 
     final BooleanSupplier frontIntakeIR;
 
@@ -161,7 +159,7 @@ public class Indexer extends SubsystemBase implements Loggable {
 
     // this will shoot the balls until there are none left in pierre.
     public CommandBase shootAllBalls(int ballAmount) {
-        CommandBase cmd = CommandUtils.repeat(ballAmount, this::shootBall);
+        CommandBase cmd = repeat(ballAmount, this::shootBall);
         cmd.setName("Shoot All Balls");
         return cmd;
     }
@@ -183,6 +181,12 @@ public class Indexer extends SubsystemBase implements Loggable {
         }, this);
         cmd.setName("Clear Bottom Sensor");
         return cmd;
+    }
+
+    @Override
+    public void safeState() {
+        singulator.stopMotor();
+        pierreMotor.stopMotor();
     }
 
 }
